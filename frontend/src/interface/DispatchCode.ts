@@ -1,5 +1,4 @@
 import type { ActionDispatch } from "react";
-import type { SimulationState } from "./CodeInterface";
 import type { ProcessorStep } from "./ProcessorStep";
 import type Processor from "@src/class/Processor";
 import type { PlayerMode } from "./StepControl";
@@ -22,6 +21,7 @@ export enum CodeAction {
     CHANGE_EXECUTED_CODE,
     PLAY_AND_PAUSE,
     CHANGE_MODE,
+    RESET_CODE,
 };
 
 /**
@@ -38,4 +38,4 @@ export interface CodePayload {
 /**
  * Le type de fonction pour gérer les différentes actions
  */
-export type ActionFunction = (state: SimulationState, action: CodePayload) => SimulationState;
+export type ActionFunction = (state: Processor, action: CodePayload) => Processor;
