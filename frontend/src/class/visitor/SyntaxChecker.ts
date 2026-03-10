@@ -279,7 +279,7 @@ export class SyntaxCheckerVisitor implements Visitor {
                 }
 
                 case CheckerAction.REDUCE: {
-                    if (index === RiscSyntaxState.LABEL_ARGS) {
+                    if (index === RiscSyntaxState.LABEL_ARGS || index === RiscSyntaxState.IMM_LOAD_LABEL) {
                         const token = checkerStack.at(-1);
                         if (token && !this.labelArray.find(tk => tk.value === token.value + ":")) {
                             hasError = true;
@@ -414,7 +414,8 @@ export class SyntaxCheckerVisitor implements Visitor {
     formatArguments(checkerStack: Array<RiscToken>, state: RiscSyntaxState, action: SyntaxTableEntry): void {
         if ( !action.number ) { return; }
         switch ( state ) {
-            case RiscSyntaxState.IMM_LOAD_NUM: {
+            case RiscSyntaxState.IMM_LOAD_NUM: 
+            case RiscSyntaxState.IMM_LOAD_LABEL: {
                 const token = checkerStack.at(-action.number);
                 this.formatRegister( token ? token : BASE_RISC_TOKEN, [ RegisterFormat.COMMA ]);
                 break;
