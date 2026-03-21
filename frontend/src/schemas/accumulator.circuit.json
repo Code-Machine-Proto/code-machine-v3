@@ -1,0 +1,22 @@
+{
+  "id": "accumulator",
+  "viewBox": "0 0 700 450",
+  "components": [
+    { "id": "pc", "type": "register", "label": "PC", "x": 30, "y": 50, "width": 80, "height": 50 },
+    { "id": "inst_mem", "type": "memory", "label": "Memory", "x": 180, "y": 30, "width": 100, "height": 90 },
+    { "id": "ir", "type": "register", "label": "IR", "x": 350, "y": 50, "width": 80, "height": 50 },
+    { "id": "mux", "type": "multiplexer", "label": "MUX", "x": 160, "y": 200, "width": 60, "height": 80, "inputs": 2 },
+    { "id": "acc", "type": "register", "label": "ACC", "x": 500, "y": 200, "width": 80, "height": 50 },
+    { "id": "alu", "type": "alu", "label": "ALU", "x": 350, "y": 320, "width": 80, "height": 70 }
+  ],
+  "connections": [
+    { "from": "pc.out", "to": "inst_mem.addr", "signal": "pc_to_mem", "label": "" },
+    { "from": "inst_mem.data", "to": "ir.in", "signal": "mem_to_ir", "label": "" },
+    { "from": "ir.addr", "to": "mux.in0", "signal": "ir_addr", "label": "addr" },
+    { "from": "pc.out", "to": "mux.in1", "signal": "pc_to_mux", "label": "" },
+    { "from": "mux.out", "to": "inst_mem.addr", "signal": "mux_to_mem", "label": "" },
+    { "from": "inst_mem.data", "to": "alu.in1", "signal": "mem_to_alu", "label": "" },
+    { "from": "acc.out", "to": "alu.in0", "signal": "acc_to_alu", "label": "" },
+    { "from": "alu.out", "to": "acc.in", "signal": "alu_to_acc", "label": "" }
+  ]
+}
