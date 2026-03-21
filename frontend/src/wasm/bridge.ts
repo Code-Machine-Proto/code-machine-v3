@@ -5,7 +5,7 @@ let wasmModule: any = null;
 
 export async function initWasm(): Promise<void> {
   if (wasmModule) return;
-  const wasm = await import("../../simulator/pkg/codemachine_simulator");
+  const wasm = await import("codemachine-simulator");
   await wasm.default();
   wasmModule = wasm;
 }

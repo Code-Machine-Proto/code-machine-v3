@@ -10,6 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
+      "codemachine-simulator": resolve(__dirname, "../simulator/pkg/codemachine_simulator"),
     },
   },
   build: {
