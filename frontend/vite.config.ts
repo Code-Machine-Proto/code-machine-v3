@@ -13,6 +13,11 @@ export default defineConfig({
       "codemachine-simulator": resolve(__dirname, "../simulator/pkg/codemachine_simulator"),
     },
   },
+  server: {
+    fs: {
+      allow: [resolve(__dirname, ".."), resolve(__dirname)],
+    },
+  },
   build: {
     target: "esnext",
   },

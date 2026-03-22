@@ -1,22 +1,22 @@
 // frontend/src/wasm/bridge.ts
 import type { CompileResult, SimulationTrace } from "./types";
+import init, { compile, simulate } from "codemachine-simulator";
 
-let wasmModule: any = null;
+let initialized = false;
 
 export async function initWasm(): Promise<void> {
-  if (wasmModule) return;
-  const wasm = await import("codemachine-simulator");
-  await wasm.default();
-  wasmModule = wasm;
+  if (initialized) return;
+  await init();
+  initialized = true;
 }
 
 export function compileSource(source: string, processorId: number): CompileResult {
-  if (!wasmModule) throw new Error("WASM not initialized");
-  return wasmModule.compile(source, processorId) as CompileResult;
+  if (!initialized) throw new Error("WASM not initialized");
+  return compile(source, processorId) as CompileResult;
 }
 
 export function simulateProgram(program: Uint32Array | number[], processorId: number): SimulationTrace {
-  if (!wasmModule) throw new Error("WASM not initialized");
+  if (!initialized) throw new Error("WASM not initialized");
   const arr = program instanceof Uint32Array ? program : new Uint32Array(program);
-  return wasmModule.simulate(arr, processorId) as SimulationTrace;
+  return simulate(arr, processorId) as SimulationTrace;
 }

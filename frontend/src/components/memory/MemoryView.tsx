@@ -40,20 +40,20 @@ export default function MemoryView(props: Props) {
           class="text-xs text-main-500 uppercase font-semibold tracking-wider hover:text-main-400 flex items-center gap-1"
         >
           <span class="text-[10px]">{collapsed() ? "▶" : "▼"}</span>
-          Memory
+          Mémoire
         </button>
         <Show when={!collapsed()}>
           <button
             onClick={() => setDisplayHex((h) => !h)}
             class="text-xs text-main-600 hover:text-main-400 px-2 py-0.5 rounded border border-main-800"
           >
-            {displayHex() ? "HEX" : "DEC"}
+            {displayHex() ? "HEX" : "DÉC"}
           </button>
         </Show>
       </div>
       <Show when={!collapsed()}>
         <div class="flex-1 overflow-auto font-mono text-xs p-2">
-          <Show when={props.isCompiled()} fallback={<p class="text-main-600 text-center mt-4">Compile to view memory</p>}>
+          <Show when={props.isCompiled()} fallback={<p class="text-main-600 text-center mt-4">Compilez pour voir la mémoire</p>}>
             <table class="w-full">
               <thead>
                 <tr class="text-main-600">
