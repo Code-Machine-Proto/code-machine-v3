@@ -51,9 +51,9 @@ export default function RegisterBox(props: Props) {
       </foreignObject>
       <path
         d="M59 86C59 86.5523 59.4477 87 60 87C60.5523 87 61 86.5523 61 86H59ZM60 65L54.2265 75H65.7735L60 65ZM60 86H61V74H60H59V86H60Z"
-        class={props.isActivated ? "fill-main-500" : "fill-white"}
+        class={props.isActivated ? "fill-main-500" : "fill-main-300"}
       />
-      <text x={65} y={85} class="fill-white text-xs">{"wr_" + props.name.toLowerCase()}</text>
+      <text x={65} y={85} class="fill-main-300 text-xs">{"wr_" + props.name.toLowerCase()}</text>
     </svg>
   );
 }
