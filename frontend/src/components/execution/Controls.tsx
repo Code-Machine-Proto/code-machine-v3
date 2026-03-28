@@ -20,19 +20,24 @@ interface Props {
 
 export default function Controls(props: Props) {
   return (
-    <div class="flex items-center gap-3 px-4 py-2 bg-main-900/80">
+    <div class="flex items-center gap-3 px-4 py-1.5 bg-main-900">
       {/* Transport buttons */}
       <div class="flex items-center gap-1">
-        <ControlButton onClick={props.onGoToStart} disabled={() => !props.isCompiled()} title="Début">
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
+        <ControlButton onClick={props.onGoToStart} disabled={() => !props.isCompiled()} title="Debut">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
         </ControlButton>
-        <ControlButton onClick={props.onStepBackward} disabled={() => !props.isCompiled() || props.currentStep() <= 0} title="Pas précédent">
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
+        <ControlButton onClick={props.onStepBackward} disabled={() => !props.isCompiled() || props.currentStep() <= 0} title="Pas precedent">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6z"/></svg>
         </ControlButton>
         <button
           onClick={props.onTogglePlay}
           disabled={!props.isCompiled()}
-          class="w-9 h-9 flex items-center justify-center rounded-full bg-accent hover:bg-accent-light text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          class="w-9 h-9 flex items-center justify-center rounded-full transition-all duration-150 text-white disabled:opacity-25 disabled:cursor-not-allowed"
+          classList={{
+            "bg-accent hover:bg-accent-light": !props.isPlaying(),
+            "bg-amber-500 hover:bg-amber-400": props.isPlaying(),
+          }}
+          style={{ "box-shadow": props.isCompiled() ? "0 0 12px -2px rgba(59,130,246,0.3)" : "none" }}
           title={props.isPlaying() ? "Pause" : "Lecture"}
         >
           <Show when={props.isPlaying()} fallback={
@@ -42,49 +47,49 @@ export default function Controls(props: Props) {
           </Show>
         </button>
         <ControlButton onClick={props.onStepForward} disabled={() => !props.isCompiled() || props.currentStep() >= props.totalSteps() - 1} title="Pas suivant">
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2 0V6l6.5 6L8 18zM16 6v12h2V6h-2z"/></svg>
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M13 6v12l8.5-6z"/></svg>
         </ControlButton>
         <ControlButton onClick={props.onGoToEnd} disabled={() => !props.isCompiled()} title="Fin">
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6zm10 0V6h2v12z"/></svg>
         </ControlButton>
       </div>
 
       <Show when={props.isCompiled()}>
         {/* Timeline slider */}
-        <div class="flex items-center gap-2 flex-1 min-w-0">
+        <div class="flex items-center gap-2.5 flex-1 min-w-0">
           <input
             type="range"
             min="0"
             max={props.totalSteps() - 1}
             value={props.currentStep()}
             onInput={(e) => props.setCurrentStep(parseInt(e.currentTarget.value))}
-            class="flex-1 accent-accent h-1.5"
+            class="flex-1"
           />
-          <span class="text-xs text-main-400 font-mono shrink-0 tabular-nums">
-            {props.currentStep() + 1} / {props.totalSteps()}
+          <span class="text-xs text-main-500 font-mono shrink-0 tabular-nums">
+            {props.currentStep() + 1}<span class="text-main-700">/</span>{props.totalSteps()}
           </span>
         </div>
 
         {/* Phase badge */}
-        <div class="shrink-0 px-2.5 py-1 rounded bg-main-800 border border-main-700">
-          <span class="text-xs font-mono text-accent-light">{props.phase()}</span>
+        <div class="shrink-0 px-2.5 py-1 rounded-md bg-accent/10 border border-accent/20">
+          <span class="text-xs font-mono font-medium text-accent-light">{props.phase()}</span>
         </div>
 
         {/* Speed selector */}
         <select
           value={props.playbackSpeed()}
           onChange={(e) => props.setPlaybackSpeed(parseInt(e.currentTarget.value))}
-          class="shrink-0 bg-main-800 text-main-300 text-xs rounded px-2 py-1.5 border border-main-700 cursor-pointer"
+          class="shrink-0 bg-main-800 text-main-400 text-xs rounded-md px-2 py-1.5 border border-main-700/50 cursor-pointer transition-colors hover:border-main-600/50"
         >
           <option value="1000">Lent</option>
           <option value="500">Normal</option>
           <option value="200">Rapide</option>
-          <option value="50">Très rapide</option>
+          <option value="50">Tres rapide</option>
         </select>
       </Show>
 
       <Show when={!props.isCompiled()}>
-        <span class="text-xs text-main-600 ml-2">Compilez du code pour commencer la simulation</span>
+        <span class="text-xs text-main-600 ml-2 tracking-wide">Compilez du code pour commencer</span>
       </Show>
     </div>
   );
@@ -95,7 +100,7 @@ function ControlButton(props: { onClick: () => void; disabled: () => boolean; ti
     <button
       onClick={props.onClick}
       disabled={props.disabled()}
-      class="w-8 h-8 flex items-center justify-center rounded bg-main-800 hover:bg-main-700 text-main-400 hover:text-main-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+      class="btn-control w-8 h-8"
       title={props.title}
     >
       {props.children}
