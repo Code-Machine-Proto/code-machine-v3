@@ -127,7 +127,17 @@ pub fn compile(source: &str) -> CompileResult {
         match section {
             Section::Data => {
                 // Data section: label: val1,val2,...
-                let data_tokens = if let Token::LabelDef(_) = &tokens[0] {
+                let data_tokens = if let Token::LabelDef(ref name) = tokens[0] {
+                    // Register data label at current data offset
+                    if label_addresses.contains_key(name) {
+                        diagnostics.push(Diagnostic {
+                            line: line_idx,
+                            column: 0,
+                            message: format!("Duplicate label '{}'", name),
+                            severity: Severity::Error,
+                        });
+                    }
+                    label_addresses.insert(name.clone(), data_values.len());
                     &tokens[1..]
                 } else {
                     &tokens[..]
@@ -149,6 +159,14 @@ pub fn compile(source: &str) -> CompileResult {
                 };
 
                 if let Some(ref lbl) = label {
+                    if label_addresses.contains_key(lbl) {
+                        diagnostics.push(Diagnostic {
+                            line: line_idx,
+                            column: 0,
+                            message: format!("Duplicate label '{}'", lbl),
+                            severity: Severity::Error,
+                        });
+                    }
                     label_addresses.insert(lbl.clone(), current_address);
                 }
 

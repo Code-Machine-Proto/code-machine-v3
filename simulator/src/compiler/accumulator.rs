@@ -117,6 +117,14 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
 
         // Register label at current address
         if let Some(ref lbl) = label {
+            if label_addresses.contains_key(lbl) {
+                diagnostics.push(Diagnostic {
+                    line: line_idx,
+                    column: 0,
+                    message: format!("Duplicate label '{}'", lbl),
+                    severity: Severity::Error,
+                });
+            }
             label_addresses.insert(lbl.clone(), current_address);
         }
 
@@ -159,8 +167,18 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
         if let Token::Identifier(ref mnemonic) = rest_tokens[0] {
             let mnemonic_lower = mnemonic.to_lowercase();
             if let Some(&(opcode, has_operand)) = instruction_set.get(&mnemonic_lower) {
-                let operand = if has_operand && rest_tokens.len() > 1 {
-                    parse_operand(&rest_tokens[1..])
+                let operand = if has_operand {
+                    if rest_tokens.len() > 1 {
+                        parse_operand(&rest_tokens[1..])
+                    } else {
+                        diagnostics.push(Diagnostic {
+                            line: line_idx,
+                            column: 0,
+                            message: format!("'{}' requires an operand", mnemonic_lower),
+                            severity: Severity::Error,
+                        });
+                        None
+                    }
                 } else {
                     None
                 };
@@ -220,6 +238,14 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
                     }
                     None => 0,
                 };
+                if address > 0xFF {
+                    diagnostics.push(Diagnostic {
+                        line: *line_idx,
+                        column: 0,
+                        message: format!("Address {} exceeds 8-bit range (max 255)", address),
+                        severity: Severity::Warning,
+                    });
+                }
                 let word = (opcode << 8) | (address & 0xFF);
                 program.push(word);
             }

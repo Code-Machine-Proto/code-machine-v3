@@ -113,6 +113,9 @@ pub fn tokenize_line(line: &str, line_index: usize) -> (Vec<Token>, Vec<TokenSpa
             });
             if let Ok(n) = num_str.parse::<i32>() {
                 tokens.push(Token::Number(n));
+            } else {
+                // Overflow or malformed number — still push 0 so token count stays consistent
+                tokens.push(Token::Number(0));
             }
             continue;
         }
