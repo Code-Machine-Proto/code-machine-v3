@@ -6,8 +6,12 @@ import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { setDiagnostics as setEditorDiagnostics } from "@codemirror/lint";
 import type { Diagnostic } from "@/wasm/types";
 import { ProcessorId } from "@/wasm/types";
-import { codemachineTheme, codemachineHighlighting } from "./theme";
+import {
+  themeCompartment, highlightCompartment,
+  getThemeExtension, getHighlightExtension,
+} from "./theme";
 import { getLanguage } from "./languages";
+import { useTheme } from "@/stores/theme";
 
 interface Props {
   processorId: ProcessorId;
@@ -20,6 +24,7 @@ interface Props {
 export default function CodeEditor(props: Props) {
   let containerRef!: HTMLDivElement;
   let view: EditorView;
+  const { isDark } = useTheme();
 
   onMount(() => {
     const state = EditorState.create({
@@ -31,8 +36,8 @@ export default function CodeEditor(props: Props) {
         history(),
         keymap.of([...defaultKeymap, ...historyKeymap]),
         getLanguage(props.processorId),
-        codemachineTheme,
-        codemachineHighlighting,
+        themeCompartment.of(getThemeExtension(isDark())),
+        highlightCompartment.of(getHighlightExtension(isDark())),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
             props.onChange(update.state.doc.toString());
@@ -48,6 +53,18 @@ export default function CodeEditor(props: Props) {
     view = new EditorView({
       state,
       parent: containerRef,
+    });
+  });
+
+  // React to theme changes
+  createEffect(() => {
+    if (!view) return;
+    const dark = isDark();
+    view.dispatch({
+      effects: [
+        themeCompartment.reconfigure(getThemeExtension(dark)),
+        highlightCompartment.reconfigure(getHighlightExtension(dark)),
+      ],
     });
   });
 
@@ -68,13 +85,14 @@ export default function CodeEditor(props: Props) {
 
   return (
     <div class="flex flex-col h-full">
-      <div class="flex items-center justify-between px-3 py-2 bg-main-900 border-b border-main-800">
-        <span class="text-xs text-main-500 uppercase font-semibold tracking-wider">Code Editor</span>
+      <div class="panel-header gap-2">
+        <span class="panel-label shrink-0">Editeur</span>
         <button
           onClick={() => props.onCompile()}
-          class="px-3 py-1 text-xs bg-accent hover:bg-accent-light text-white rounded transition-colors"
+          class="px-2.5 py-1 text-[10px] font-medium bg-accent/90 hover:bg-accent text-white rounded-md transition-all shrink-0 glow-accent"
+          title="Ctrl+Enter"
         >
-          Compile & Run (Ctrl+Enter)
+          Compiler
         </button>
       </div>
       <div ref={containerRef} class="flex-1 overflow-auto" />
