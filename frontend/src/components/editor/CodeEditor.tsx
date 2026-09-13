@@ -124,6 +124,12 @@ export default function CodeEditor(props: Props) {
     const file = input.files?.[0];
     input.value = ""; // allow re-selecting the same file later
     if (!file || !view) return;
+    if (
+      view.state.doc.toString().trim().length > 0 &&
+      !window.confirm("Attention, vous etes sur le point d'ecraser le code actuel. Continuer ?")
+    ) {
+      return;
+    }
     const text = await file.text();
     view.dispatch({
       changes: { from: 0, to: view.state.doc.length, insert: text },
