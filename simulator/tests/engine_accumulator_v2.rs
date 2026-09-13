@@ -186,6 +186,18 @@ fn test_simulate_shr() {
 }
 
 #[test]
+fn test_simulate_shr_is_arithmetic() {
+    // shr must sign-extend (arithmetic shift), matching the hardware's SInt semantics
+    let source = "ld x\nshr\nstop\nx: -8";
+    let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert!(trace.halted);
+    let last = trace.steps.last().unwrap();
+    assert_eq!(*last.registers.get("ACC").unwrap(), -4);
+}
+
+#[test]
 fn test_simulate_br_unconditional() {
     let source = "br target\nld skipped\nstop\ntarget: ld hit\nstop\nskipped: 1\nhit: 9";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
@@ -286,4 +298,47 @@ fn test_simulate_max_cycles() {
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(!trace.halted);
     assert!(trace.steps.len() <= 1024);
+}
+
+fn read_example(name: &str) -> String {
+    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../code-examples/accumulateur-ma/").to_string() + name;
+    fs::read_to_string(&path).unwrap_or_else(|e| panic!("failed to read {}: {}", path, e))
+}
+
+#[test]
+fn test_example_testaccma() {
+    // TestAccMa.s self-checks all 18 v2-specific instructions (including adda/suba/lda/sta/lea)
+    // and leaves ACC = 1 (resultat) only if every sub-test passed.
+    let source = read_example("TestAccMa.s");
+    let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert!(trace.halted);
+    let last = trace.steps.last().unwrap();
+    assert_eq!(*last.registers.get("ACC").unwrap(), 1);
+}
+
+#[test]
+fn test_example_est_pair() {
+    // estPair.s checks whether n=4 is even by clearing its low bit; ACC = 1 means "even"
+    let source = read_example("estPair.s");
+    let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert!(trace.halted);
+    let last = trace.steps.last().unwrap();
+    assert_eq!(*last.registers.get("ACC").unwrap(), 1);
+}
+
+#[test]
+fn test_example_somme_carres() {
+    // sommeCarres.s walks addmem via MA (lea + adda + addx) to sum the squares 1..9 = 285.
+    // This also exercises multi-line (unlabeled continuation) .data declarations.
+    let source = read_example("sommeCarres.s");
+    let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert!(trace.halted);
+    let last = trace.steps.last().unwrap();
+    assert_eq!(last.memory[10], 285); // somme
 }
