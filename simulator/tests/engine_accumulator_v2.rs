@@ -424,12 +424,17 @@ fn test_example_est_pair() {
 #[test]
 fn test_example_somme_carres() {
     // sommeCarres.s walks addmem via MA (lea + adda + addx) to sum the squares 1..9 = 285.
-    // This also exercises multi-line (unlabeled continuation) .data declarations.
+    // This also exercises multi-line (unlabeled continuation) .data declarations: the
+    // addmem table is written as one value per line with no label on the continuation
+    // lines, so the compiler must still lay them out contiguously instead of skipping them.
     let source = read_example("sommeCarres.s");
     let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
     assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    // mem[10]=somme, mem[11]=indice, mem[12]=one, mem[13..22]=addmem (1,4,9,...,81)
+    assert_eq!(&compiled.program[13..22], &[1, 4, 9, 16, 25, 36, 49, 64, 81]);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
     assert_eq!(last.memory[10], 285); // somme
+    assert_eq!(&last.memory[13..22], &[1, 4, 9, 16, 25, 36, 49, 64, 81]); // addmem preserved
 }
