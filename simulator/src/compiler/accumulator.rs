@@ -73,6 +73,62 @@ enum Section {
     Data,
 }
 
+/// Parses numeric data values out of a (post-label) token slice, validating that any
+/// `[`/`]` array-literal brackets are balanced. Bracket state is threaded across calls
+/// so an array can legally span multiple source lines (e.g. `table: [\n1,\n2\n]`).
+fn parse_data_values(
+    tokens: &[Token],
+    line_idx: usize,
+    bracket_depth: &mut u32,
+    bracket_open_line: &mut Option<usize>,
+    diagnostics: &mut Vec<Diagnostic>,
+) -> Vec<i32> {
+    let mut values = Vec::new();
+    for token in tokens {
+        match token {
+            Token::Number(n) => values.push(*n),
+            Token::Comma => {}
+            Token::LBracket => {
+                if *bracket_depth > 0 {
+                    diagnostics.push(Diagnostic {
+                        line: line_idx,
+                        column: 0,
+                        message: "Unexpected nested '['".into(),
+                        severity: Severity::Error,
+                    });
+                } else {
+                    *bracket_depth += 1;
+                    *bracket_open_line = Some(line_idx);
+                }
+            }
+            Token::RBracket => {
+                if *bracket_depth == 0 {
+                    diagnostics.push(Diagnostic {
+                        line: line_idx,
+                        column: 0,
+                        message: "Unmatched ']'".into(),
+                        severity: Severity::Error,
+                    });
+                } else {
+                    *bracket_depth -= 1;
+                    *bracket_open_line = None;
+                }
+            }
+            Token::Identifier(name) => {
+                // Could be a label reference in data - not supported.
+                diagnostics.push(Diagnostic {
+                    line: line_idx,
+                    column: 0,
+                    message: format!("Label reference '{}' in data not supported", name),
+                    severity: Severity::Error,
+                });
+            }
+            _ => {}
+        }
+    }
+    values
+}
+
 pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
     let instruction_set = build_instruction_set(processor_id);
     let lines: Vec<&str> = source.lines().collect();
@@ -85,6 +141,8 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
     let mut label_addresses: HashMap<String, usize> = HashMap::new();
     let mut current_address: usize = 0;
     let mut section = Section::Text;
+    let mut bracket_depth: u32 = 0;
+    let mut bracket_open_line: Option<usize> = None;
 
     for (line_idx, line) in lines.iter().enumerate() {
         let trimmed = line.trim();
@@ -151,22 +209,13 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
         // Inside an explicit .data section, every line (labeled or not) is data,
         // so multi-value declarations can continue across lines without repeating the label.
         if section == Section::Data {
-            let mut values = Vec::new();
-            for token in rest_tokens {
-                match token {
-                    Token::Number(n) => values.push(*n),
-                    Token::Comma => {}
-                    Token::Identifier(name) => {
-                        diagnostics.push(Diagnostic {
-                            line: line_idx,
-                            column: 0,
-                            message: format!("Label reference '{}' in data not supported", name),
-                            severity: Severity::Error,
-                        });
-                    }
-                    _ => {}
-                }
-            }
+            let values = parse_data_values(
+                rest_tokens,
+                line_idx,
+                &mut bracket_depth,
+                &mut bracket_open_line,
+                &mut diagnostics,
+            );
             let count = values.len();
             parsed_lines.push((line_idx, label, ParsedLine::Data(values)));
             current_address += count;
@@ -175,25 +224,13 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
 
         // Check if remaining tokens are data values (after a label def)
         if label.is_some() && !matches!(&rest_tokens[0], Token::Identifier(_)) {
-            // Parse data values: number, comma, number, ...
-            let mut values = Vec::new();
-            for token in rest_tokens {
-                match token {
-                    Token::Number(n) => values.push(*n),
-                    Token::Comma => {}
-                    Token::Identifier(name) => {
-                        // Could be a label reference in data - treat as 0 for now
-                        // This is uncommon but handle gracefully
-                        diagnostics.push(Diagnostic {
-                            line: line_idx,
-                            column: 0,
-                            message: format!("Label reference '{}' in data not supported", name),
-                            severity: Severity::Error,
-                        });
-                    }
-                    _ => {}
-                }
-            }
+            let values = parse_data_values(
+                rest_tokens,
+                line_idx,
+                &mut bracket_depth,
+                &mut bracket_open_line,
+                &mut diagnostics,
+            );
             let count = values.len();
             parsed_lines.push((line_idx, label, ParsedLine::Data(values)));
             current_address += count;
@@ -239,6 +276,15 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
             // Already handled above, but just in case
             parsed_lines.push((line_idx, label, ParsedLine::Empty));
         }
+    }
+
+    if bracket_depth > 0 {
+        diagnostics.push(Diagnostic {
+            line: bracket_open_line.unwrap_or(0),
+            column: 0,
+            message: "Unclosed '[' in data section".into(),
+            severity: Severity::Error,
+        });
     }
 
     // Check for errors

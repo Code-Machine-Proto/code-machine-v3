@@ -10,6 +10,8 @@ pub enum Token {
     Identifier(String),
     Comma,
     Plus,
+    LBracket,
+    RBracket,
     Comment(String),
 }
 
@@ -62,6 +64,19 @@ pub fn tokenize_line(line: &str, line_index: usize) -> (Vec<Token>, Vec<TokenSpa
                 kind: TokenKind::Punctuation,
             });
             tokens.push(Token::Plus);
+            continue;
+        }
+
+        // Brackets (array literal syntax for data declarations)
+        if c == '[' || c == ']' {
+            chars.next();
+            spans.push(TokenSpan {
+                line: line_index,
+                start: i,
+                end: i + 1,
+                kind: TokenKind::Punctuation,
+            });
+            tokens.push(if c == '[' { Token::LBracket } else { Token::RBracket });
             continue;
         }
 
