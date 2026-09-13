@@ -401,11 +401,13 @@ pub fn compile(source: &str) -> CompileResult {
             diagnostics,
             tokens: all_spans,
             data_memory: None,
+            instruction_lines: Vec::new(),
         };
     }
 
     // Second pass: encode instructions
     let mut program: Vec<u32> = Vec::new();
+    let mut instruction_lines: Vec<usize> = Vec::new();
 
     for (line_idx, instr) in &parsed {
         let word = match instr {
@@ -464,6 +466,7 @@ pub fn compile(source: &str) -> CompileResult {
             }
         };
         program.push(word);
+        instruction_lines.push(*line_idx);
     }
 
     if !diagnostics.is_empty() {
@@ -473,6 +476,7 @@ pub fn compile(source: &str) -> CompileResult {
             diagnostics,
             tokens: all_spans,
             data_memory: None,
+            instruction_lines: Vec::new(),
         };
     }
 
@@ -488,5 +492,6 @@ pub fn compile(source: &str) -> CompileResult {
         diagnostics,
         tokens: all_spans,
         data_memory,
+        instruction_lines,
     }
 }

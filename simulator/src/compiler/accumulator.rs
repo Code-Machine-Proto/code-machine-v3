@@ -291,11 +291,13 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
             diagnostics,
             tokens: all_spans,
             data_memory: None,
+            instruction_lines: Vec::new(),
         };
     }
 
     // Second pass: resolve labels and emit program
     let mut program: Vec<u32> = Vec::new();
+    let mut instruction_lines: Vec<usize> = Vec::new();
 
     for (line_idx, _label, parsed) in &parsed_lines {
         match parsed {
@@ -327,10 +329,12 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
                 }
                 let word = (opcode << 8) | (address & 0xFF);
                 program.push(word);
+                instruction_lines.push(*line_idx);
             }
             ParsedLine::Data(values) => {
                 for v in values {
                     program.push(*v as u32);
+                    instruction_lines.push(*line_idx);
                 }
             }
             ParsedLine::Empty => {}
@@ -344,6 +348,7 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
             diagnostics,
             tokens: all_spans,
             data_memory: None,
+            instruction_lines: Vec::new(),
         };
     }
 
@@ -353,6 +358,7 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
         diagnostics,
         tokens: all_spans,
         data_memory: None,
+        instruction_lines,
     }
 }
 

@@ -55,6 +55,9 @@ pub struct CompileResult {
     pub diagnostics: Vec<Diagnostic>,
     pub tokens: Vec<TokenSpan>,
     pub data_memory: Option<Vec<i32>>,
+    /// Source line (0-indexed) that produced each word in `program`, so the frontend
+    /// can highlight the instruction currently under the program counter.
+    pub instruction_lines: Vec<usize>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

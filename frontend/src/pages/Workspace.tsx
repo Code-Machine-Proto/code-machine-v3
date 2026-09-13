@@ -215,6 +215,7 @@ export default function Workspace() {
             onChange={store.setCode}
             onCompile={handleCompile}
             diagnostics={store.diagnostics()}
+            activeLine={store.currentLine}
           />
 
           {/* Center: Circuit View */}
