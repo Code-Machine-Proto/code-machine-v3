@@ -392,7 +392,12 @@ fn test_example_somme_carres() {
 }
 
 fn read_example(name: &str) -> String {
-    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../code-examples/accumulateur-ma/").to_string() + name;
+    let path = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../code-examples/accumulateur-ma/"
+    )
+    .to_string()
+        + name;
     fs::read_to_string(&path).unwrap_or_else(|e| panic!("failed to read {}: {}", path, e))
 }
 
@@ -431,7 +436,10 @@ fn test_example_somme_carres() {
     let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
     assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
     // mem[10]=somme, mem[11]=indice, mem[12]=one, mem[13..22]=addmem (1,4,9,...,81)
-    assert_eq!(&compiled.program[13..22], &[1, 4, 9, 16, 25, 36, 49, 64, 81]);
+    assert_eq!(
+        &compiled.program[13..22],
+        &[1, 4, 9, 16, 25, 36, 49, 64, 81]
+    );
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
