@@ -38,13 +38,19 @@ enum ParsedInstruction {
     Alu2 { opcode: u32, rdst: u32, rsrc1: u32 },
     Load { rdst: u32, rsrc1: u32 },
     Store { rdst: u32, rsrc2: u32 },
-    Ldi { rdst: u32, imm: u32 },
+    Ldi { rdst: u32, imm: ImmSource },
     Branch { cond: u32, target: BranchTarget },
     Stop,
 }
 
 #[derive(Debug)]
 enum BranchTarget {
+    Literal(u32),
+    Label(String),
+}
+
+#[derive(Debug)]
+enum ImmSource {
     Literal(u32),
     Label(String),
 }
@@ -237,18 +243,20 @@ pub fn compile(source: &str) -> CompileResult {
                         });
                     }
                 } else if mnemonic == "ldi" {
-                    // ldi rdst,imm
+                    // ldi rdst,imm (imm may be a numeric literal or a label address)
                     if operands.len() >= 2 {
                         if let Some(rdst) = parse_register(operands[0]) {
-                            let imm = if let Token::Number(n) = operands[1] {
-                                (*n as u32) & 0xFFFF
-                            } else {
-                                diagnostics.push(Diagnostic {
-                                    line: line_idx, column: 0,
-                                    message: "ldi requires immediate value".into(),
-                                    severity: Severity::Error,
-                                });
-                                continue;
+                            let imm = match operands[1] {
+                                Token::Number(n) => ImmSource::Literal((*n as u32) & 0xFFFF),
+                                Token::Identifier(name) => ImmSource::Label(name.clone()),
+                                _ => {
+                                    diagnostics.push(Diagnostic {
+                                        line: line_idx, column: 0,
+                                        message: "ldi requires an immediate value or label".into(),
+                                        severity: Severity::Error,
+                                    });
+                                    continue;
+                                }
                             };
                             parsed.push((line_idx, ParsedInstruction::Ldi { rdst, imm }));
                             current_address += 1;
@@ -377,7 +385,23 @@ pub fn compile(source: &str) -> CompileResult {
                 (0x9 << 24) | (rdst << 8) | rsrc2
             }
             ParsedInstruction::Ldi { rdst, imm } => {
-                (0xA << 24) | (rdst << 16) | (imm & 0xFFFF)
+                let val = match imm {
+                    ImmSource::Literal(v) => *v,
+                    ImmSource::Label(name) => {
+                        if let Some(&a) = label_addresses.get(name) {
+                            (a as u32) & 0xFFFF
+                        } else {
+                            diagnostics.push(Diagnostic {
+                                line: *line_idx,
+                                column: 0,
+                                message: format!("Undefined label '{}'", name),
+                                severity: Severity::Error,
+                            });
+                            0
+                        }
+                    }
+                };
+                (0xA << 24) | (rdst << 16) | (val & 0xFFFF)
             }
             ParsedInstruction::Branch { cond, target } => {
                 let addr = match target {
