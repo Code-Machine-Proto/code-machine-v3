@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::types::{CycleState, Phase, SimulationTrace};
 
-const MAX_CYCLES: u32 = 1024;
+const MAX_CYCLES: u32 = 4096;
 const MEM_SIZE: usize = 256;
 
 fn init_memory(program: &[u32], data_memory: Option<&[i32]>) -> Vec<i32> {
