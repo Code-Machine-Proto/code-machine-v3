@@ -1,20 +1,17 @@
 // frontend/src/stores/simulation.ts
-import { createSignal, createEffect, onCleanup, batch } from "solid-js";
-import { compileSource, simulateProgram } from "@/wasm/bridge";
-import type { CycleState, CompileResult, Diagnostic } from "@/wasm/types";
-import { ProcessorId } from "@/wasm/types";
-import { loadCode, saveCode } from "./persistence";
+import { createSignal, createEffect, onCleanup, batch } from 'solid-js';
+import { compileSource, simulateProgram } from '@/wasm/bridge';
+import type { CycleState, CompileResult, Diagnostic } from '@/wasm/types';
+import { ProcessorId } from '@/wasm/types';
+import { loadCode, saveCode } from './persistence';
 
 // Fixed auto-play tick (the speed dropdown was replaced by the step-mode selector).
 const AUTO_PLAY_INTERVAL_MS = 400;
 
-export type StepMode = "regular" | "execution";
+export type StepMode = 'regular' | 'execution';
 
-// In "execution" mode, stepping skips the intermediate Fetch/Decode micro-steps
-// and only lands on steps that reflect a completed instruction (Execute), plus
-// the trace's bookend states (Start/End), which some engines emit.
 function isExecutionLanding(phase: string): boolean {
-  return phase !== "Fetch" && phase !== "Decode";
+  return phase !== 'Fetch' && phase !== 'Decode';
 }
 
 export function createSimulationStore(processorId: ProcessorId) {
@@ -25,8 +22,11 @@ export function createSimulationStore(processorId: ProcessorId) {
   const [isCompiled, setIsCompiled] = createSignal(false);
   const [isCompiling, setIsCompiling] = createSignal(false);
   const [diagnostics, setDiagnostics] = createSignal<Diagnostic[]>([]);
-  const [stepMode, setStepMode] = createSignal<StepMode>("regular");
+  const [stepMode, setStepMode] = createSignal<StepMode>('regular');
   const [instructionLines, setInstructionLines] = createSignal<number[]>([]);
+  const [lastCompiledCode, setLastCompiledCode] = createSignal<string | null>(
+    null,
+  );
 
   // Derived signals
   const currentCycle = () => steps()[currentStep()] ?? null;
@@ -34,7 +34,7 @@ export function createSimulationStore(processorId: ProcessorId) {
   const registers = () => currentCycle()?.registers ?? {};
   const memory = () => currentCycle()?.memory ?? [];
   const totalSteps = () => steps().length;
-  const phase = () => currentCycle()?.phase ?? "Fetch";
+  const phase = () => currentCycle()?.phase ?? 'Fetch';
   const stimulatedLineState = () => currentCycle()?.stimulated_line_state ?? -1;
   // Source line (0-indexed) of the instruction currently under the program counter,
   // so the editor can highlight it in sync with the circuit animation. Only a
@@ -45,12 +45,16 @@ export function createSimulationStore(processorId: ProcessorId) {
   const currentLine = () => {
     const all = steps();
     let i = currentStep();
-    while (i > 0 && all[i]?.phase !== "Fetch") i--;
-    const pc = all[i]?.registers["PC"];
+    while (i > 0 && all[i]?.phase !== 'Fetch') i--;
+    const pc = all[i]?.registers['PC'];
     const lines = instructionLines();
     if (pc === undefined || pc < 0 || pc >= lines.length) return null;
     return lines[pc];
   };
+  // True once a compile has happened at least once and the code has since
+  // been edited, so the compile status badge can prompt the user to recompile.
+  const isStale = () =>
+    lastCompiledCode() !== null && code() !== lastCompiledCode();
 
   // Debounced persistence
   let saveTimeout: ReturnType<typeof setTimeout>;
@@ -64,7 +68,7 @@ export function createSimulationStore(processorId: ProcessorId) {
   // Regular mode moves one step at a time; execution mode skips Fetch/Decode.
   function nextLanding(from: number): number | null {
     const all = steps();
-    if (stepMode() === "regular") {
+    if (stepMode() === 'regular') {
       return from < all.length - 1 ? from + 1 : null;
     }
     for (let i = from + 1; i < all.length; i++) {
@@ -75,7 +79,7 @@ export function createSimulationStore(processorId: ProcessorId) {
 
   function prevLanding(from: number): number | null {
     const all = steps();
-    if (stepMode() === "regular") {
+    if (stepMode() === 'regular') {
       return from > 0 ? from - 1 : null;
     }
     for (let i = from - 1; i >= 0; i--) {
@@ -111,7 +115,9 @@ export function createSimulationStore(processorId: ProcessorId) {
     });
 
     try {
-      const result: CompileResult = compileSource(code(), processorId);
+      const source = code();
+      const result: CompileResult = compileSource(source, processorId);
+      setLastCompiledCode(source);
       setDiagnostics(result.diagnostics);
 
       if (!result.success) {
@@ -154,28 +160,40 @@ export function createSimulationStore(processorId: ProcessorId) {
     setIsPlaying((p) => !p);
   }
 
-  // Switching into execution mode jumps straight to the first Execute step
-  // (step 3 for a normal Fetch/Decode/Execute instruction) instead of leaving
-  // the cursor sitting on a Fetch/Decode phase that mode no longer stops on.
   function changeStepMode(mode: StepMode) {
     setStepMode(mode);
-    if (mode === "execution") {
+    if (mode === 'execution') {
       const first = nextLanding(-1);
       if (first !== null) setCurrentStep(first);
     }
   }
 
   return {
-    code, setCode,
-    steps, currentStep, setCurrentStep,
-    isPlaying, isCompiled, isCompiling,
+    code,
+    setCode,
+    steps,
+    currentStep,
+    setCurrentStep,
+    isPlaying,
+    isCompiled,
+    isCompiling,
+    isStale,
     diagnostics,
-    stepMode, setStepMode: changeStepMode,
-    currentCycle, activeSignals, registers, memory,
-    totalSteps, phase, stimulatedLineState, currentLine,
+    stepMode,
+    setStepMode: changeStepMode,
+    currentCycle,
+    activeSignals,
+    registers,
+    memory,
+    totalSteps,
+    phase,
+    stimulatedLineState,
+    currentLine,
     compileAndRun,
-    stepForward, stepBackward,
-    goToStart, goToEnd,
+    stepForward,
+    stepBackward,
+    goToStart,
+    goToEnd,
     togglePlay,
   };
 }

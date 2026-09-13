@@ -1,8 +1,9 @@
 # CodeMachine v3
 
-Simulateur de chemin de donnees pour **INF1600** a Polytechnique Montreal. Permet d'ecrire de l'assembleur, de le compiler et de visualiser l'execution cycle par cycle sur le circuit du processeur.
+Cette application de simulation de processeur simple est utilisée dans le cadre du cours INF1600 à Polytechnique Montréal. Elle permet l'exécution de code en pseudo-assembleur sur trois architectures: à accumulateur, à accumulateur avec MA et le PolyRisc.
 
 <!-- Screenshot de la page d'accueil -->
+
 ![Page d'accueil](docs/screenshots/home.png)
 
 ---
@@ -19,11 +20,11 @@ Simulateur de chemin de donnees pour **INF1600** a Polytechnique Montreal. Perme
 
 ## Processeurs supportes
 
-| Processeur | Instructions | Registres |
-|---|---|---|
-| **Accumulateur** | 10 | ACC |
-| **Accumulateur + MA** | 21 | ACC, MA |
-| **PolyRisc** | 17 | 32 registres + drapeaux Z, N |
+| Processeur            | Instructions | Registres                    |
+| --------------------- | ------------ | ---------------------------- |
+| **Accumulateur**      | 10           | ACC                          |
+| **Accumulateur + MA** | 21           | ACC, MA                      |
+| **PolyRisc**          | 17           | 32 registres + drapeaux Z, N |
 
 ---
 
@@ -32,21 +33,25 @@ Simulateur de chemin de donnees pour **INF1600** a Polytechnique Montreal. Perme
 ### Espace de travail — Mode sombre
 
 <!-- Screenshot du workspace en mode sombre avec du code compile et le circuit actif -->
+
 ![Workspace sombre](docs/screenshots/workspace-dark.png)
 
 ### Espace de travail — Mode clair
 
 <!-- Screenshot du workspace en mode clair -->
+
 ![Workspace clair](docs/screenshots/workspace-light.png)
 
 ### Visualisation du circuit
 
 <!-- Screenshot en zoom sur le circuit avec des signaux actifs (fils rouges/verts) -->
+
 ![Circuit actif](docs/screenshots/circuit-detail.png)
 
 ### Reference d'instructions
 
 <!-- Screenshot du tiroir lateral d'instructions ouvert -->
+
 ![Instructions](docs/screenshots/instruction-drawer.png)
 
 ---
@@ -72,13 +77,13 @@ code-machine-v2/
 
 ### Stack technique
 
-| Couche | Technologie | Role |
-|---|---|---|
-| Simulation | **Rust** → **WebAssembly** | Compilation assembleur, execution cycle par cycle |
-| Interface | **SolidJS** + **TypeScript** | Rendu reactif, gestion d'etat |
-| Style | **Tailwind CSS v4** | Theme clair/sombre, composants responsifs |
-| Editeur | **CodeMirror 6** | Coloration syntaxique, diagnostics, raccourcis |
-| Bureau | **Electron** | Distribution multiplateforme (Windows, macOS, Linux) |
+| Couche     | Technologie                  | Role                                                 |
+| ---------- | ---------------------------- | ---------------------------------------------------- |
+| Simulation | **Rust** → **WebAssembly**   | Compilation assembleur, execution cycle par cycle    |
+| Interface  | **SolidJS** + **TypeScript** | Rendu reactif, gestion d'etat                        |
+| Style      | **Tailwind CSS v4**          | Theme clair/sombre, composants responsifs            |
+| Editeur    | **CodeMirror 6**             | Coloration syntaxique, diagnostics, raccourcis       |
+| Bureau     | **Electron**                 | Distribution multiplateforme (Windows, macOS, Linux) |
 
 ---
 
@@ -135,16 +140,16 @@ npm run test:watch # Mode surveillance
 
 ## Raccourcis clavier
 
-| Raccourci | Action |
-|---|---|
-| `Ctrl + Entree` | Compiler le code |
-| `Espace` | Lecture / pause |
-| `Fleche droite` | Cycle suivant |
-| `Fleche gauche` | Cycle precedent |
-| `Home` | Retour au debut |
-| `End` | Aller a la fin |
-| `Molette` | Zoom sur le circuit |
-| `Alt + clic` | Panoramique du circuit |
+| Raccourci       | Action                 |
+| --------------- | ---------------------- |
+| `Ctrl + Entree` | Compiler le code       |
+| `Espace`        | Lecture / pause        |
+| `Fleche droite` | Cycle suivant          |
+| `Fleche gauche` | Cycle precedent        |
+| `Home`          | Retour au debut        |
+| `End`           | Aller a la fin         |
+| `Molette`       | Zoom sur le circuit    |
+| `Alt + clic`    | Panoramique du circuit |
 
 ---
 
@@ -156,15 +161,15 @@ Les commits suivent le format :
 <type>(<portee>): <description courte>
 ```
 
-| Type | Usage |
-|---|---|
-| `feat` | Fonctionnalite ou ajout |
-| `fix` | Correction de bug |
-| `style` | Formatage, mise en page |
-| `refactor` | Reusinage du code |
-| `doc` | Documentation |
-| `test` | Ajout ou modification de tests |
-| `chore` | Maintenance, dependances |
+| Type       | Usage                          |
+| ---------- | ------------------------------ |
+| `feat`     | Fonctionnalite ou ajout        |
+| `fix`      | Correction de bug              |
+| `style`    | Formatage, mise en page        |
+| `refactor` | Reusinage du code              |
+| `doc`      | Documentation                  |
+| `test`     | Ajout ou modification de tests |
+| `chore`    | Maintenance, dependances       |
 
 ---
 
