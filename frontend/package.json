@@ -1,6 +1,8 @@
 {
   "name": "codemachine-v3",
   "version": "3.0.0",
+  "description": "Simulateur de processeurs",
+  "author": "Polymtl",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -34,9 +36,15 @@
     "vite-plugin-wasm": "^3.4.0",
     "vitest": "^3.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Code-Machine-Proto/code-machine-v3.git"
+  },
   "build": {
     "appId": "com.polymtl.codemachine",
     "productName": "CodeMachine",
+    "publish": null,
+    "icon": "build/icon.ico",
     "files": [
       "dist/**/*",
       "electron/**/*"
@@ -46,17 +54,35 @@
     },
     "win": {
       "target": [
-        { "target": "msi", "arch": ["x64", "arm64"] }
+        {
+          "target": "msi",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ]
     },
     "linux": {
       "target": [
-        { "target": "AppImage", "arch": ["x64", "arm64"] }
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ]
     },
     "mac": {
       "target": [
-        { "target": "dmg", "arch": ["x64", "arm64"] }
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ]
     }
   }
