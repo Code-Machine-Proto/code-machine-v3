@@ -85,6 +85,31 @@ fn test_compile_data_section() {
 }
 
 #[test]
+fn test_compile_data_section_bracket_array() {
+    let source = ".text\nld r1,(r2)\nstop\n.data\nmydata: [42, 100, 7]";
+    let result = compiler::compile(source, ProcessorId::PolyRisc);
+    assert!(result.success, "diagnostics: {:?}", result.diagnostics);
+    let dm = result.data_memory.unwrap();
+    assert_eq!(dm, vec![42, 100, 7]);
+}
+
+#[test]
+fn test_compile_data_section_unclosed_bracket_errors() {
+    let source = ".text\nld r1,(r2)\nstop\n.data\nmydata: [42, 100";
+    let result = compiler::compile(source, ProcessorId::PolyRisc);
+    assert!(!result.success);
+    assert!(result.diagnostics.iter().any(|d| d.message.contains("Unclosed '['")));
+}
+
+#[test]
+fn test_compile_data_section_unmatched_closing_bracket_errors() {
+    let source = ".text\nld r1,(r2)\nstop\n.data\nmydata: 42, 100]";
+    let result = compiler::compile(source, ProcessorId::PolyRisc);
+    assert!(!result.success);
+    assert!(result.diagnostics.iter().any(|d| d.message.contains("Unmatched ']'")));
+}
+
+#[test]
 fn test_compile_mv() {
     let source = ".text\nmv r1,r2";
     let result = compiler::compile(source, ProcessorId::PolyRisc);

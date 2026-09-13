@@ -98,6 +98,8 @@ pub fn compile(source: &str) -> CompileResult {
     let mut data_values: Vec<i32> = Vec::new();
     let mut current_address: usize = 0;
     let mut section = Section::Text;
+    let mut bracket_depth: u32 = 0;
+    let mut bracket_open_line: Option<usize> = None;
 
     for (line_idx, raw_line) in lines.iter().enumerate() {
         let line = strip_line_comment(raw_line).trim();
@@ -152,6 +154,32 @@ pub fn compile(source: &str) -> CompileResult {
                     match tok {
                         Token::Number(n) => data_values.push(*n),
                         Token::Comma => {}
+                        Token::LBracket => {
+                            if bracket_depth > 0 {
+                                diagnostics.push(Diagnostic {
+                                    line: line_idx,
+                                    column: 0,
+                                    message: "Unexpected nested '['".into(),
+                                    severity: Severity::Error,
+                                });
+                            } else {
+                                bracket_depth += 1;
+                                bracket_open_line = Some(line_idx);
+                            }
+                        }
+                        Token::RBracket => {
+                            if bracket_depth == 0 {
+                                diagnostics.push(Diagnostic {
+                                    line: line_idx,
+                                    column: 0,
+                                    message: "Unmatched ']'".into(),
+                                    severity: Severity::Error,
+                                });
+                            } else {
+                                bracket_depth -= 1;
+                                bracket_open_line = None;
+                            }
+                        }
                         _ => {}
                     }
                 }
@@ -355,6 +383,15 @@ pub fn compile(source: &str) -> CompileResult {
                 }
             }
         }
+    }
+
+    if bracket_depth > 0 {
+        diagnostics.push(Diagnostic {
+            line: bracket_open_line.unwrap_or(0),
+            column: 0,
+            message: "Unclosed '[' in data section".into(),
+            severity: Severity::Error,
+        });
     }
 
     if !diagnostics.is_empty() {

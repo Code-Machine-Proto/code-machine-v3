@@ -79,7 +79,6 @@ fn test_simulate_brnz_taken() {
     let trace = engine::simulate(&compiled.program, ProcessorId::Accumulator, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    // brnz taken means "ld two" is skipped, so ACC stays 1
     assert_eq!(*last.registers.get("ACC").unwrap(), 1);
 }
 
@@ -91,7 +90,6 @@ fn test_simulate_brnz_not_taken() {
     let trace = engine::simulate(&compiled.program, ProcessorId::Accumulator, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    // brnz not taken means "ld two" executes
     assert_eq!(*last.registers.get("ACC").unwrap(), 2);
 }
 
@@ -103,7 +101,6 @@ fn test_simulate_br_unconditional() {
     let trace = engine::simulate(&compiled.program, ProcessorId::Accumulator, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    // br always jumps to target, so the "ld skipped" in between never runs
     assert_eq!(*last.registers.get("ACC").unwrap(), 9);
 }
 
@@ -115,7 +112,6 @@ fn test_simulate_stop_halts_immediately() {
     let trace = engine::simulate(&compiled.program, ProcessorId::Accumulator, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    // stop halts before the following "ld x" ever executes
     assert_eq!(*last.registers.get("ACC").unwrap(), 0);
     assert_eq!(trace.steps.len(), 3); // fetch, decode, execute for the single stop
 }
@@ -127,7 +123,6 @@ fn test_simulate_nop() {
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::Accumulator, None);
     assert!(trace.halted);
-    // nop should not affect ACC and should just advance PC
     let after_nop_execute = &trace.steps[2];
     assert_eq!(*after_nop_execute.registers.get("ACC").unwrap(), 0);
     assert_eq!(*after_nop_execute.registers.get("PC").unwrap(), 1);
@@ -144,7 +139,6 @@ fn test_simulate_st() {
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
     assert_eq!(last.memory[4], 42);
-    // st must not clobber ACC
     assert_eq!(*last.registers.get("ACC").unwrap(), 42);
 }
 
@@ -180,13 +174,18 @@ fn test_simulate_stimulated_line_state() {
 }
 
 fn read_example(name: &str) -> String {
-    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../code-examples/accumulateur/").to_string() + name;
+    let path = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../code-examples/accumulateur/"
+    )
+    .to_string()
+        + name;
     fs::read_to_string(&path).unwrap_or_else(|e| panic!("failed to read {}: {}", path, e))
 }
 
 #[test]
 fn test_example_fibonacci() {
-    // fibonacci.s computes fib(10) and documents "ACC = 55 a la fin du programme"
+    // fibonacci.s computes fib(10) expects 55 in ACC at the end of the program
     let source = read_example("fibonacci.s");
     let compiled = compiler::compile(&source, ProcessorId::Accumulator);
     assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);

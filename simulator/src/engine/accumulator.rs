@@ -77,7 +77,7 @@ pub fn simulate_v1(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                 // Determine stimulated memory for decode
                 let stim_mem = match ir_op {
                     0 | 1 | 2 | 4 => ir_addr as i32, // add, sub, mul, ld read from addr
-                    3 => ir_addr as i32,               // st writes to addr
+                    3 => ir_addr as i32,             // st writes to addr
                     _ => -1,
                 };
 
@@ -298,13 +298,13 @@ pub fn simulate_v2(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                         stimulated_line_state = 2;
                     }
                     3 => {
-                        // adda
-                        acc = (acc as i32).wrapping_add(memory[addr]) as i16;
+                        // adda: MA <- MA + Mem[addr]
+                        ma = (ma as i32).wrapping_add(memory[addr]) as u16;
                         stimulated_line_state = 3;
                     }
                     4 => {
-                        // suba
-                        acc = (acc as i32).wrapping_sub(memory[addr]) as i16;
+                        // suba: MA <- MA - Mem[addr]
+                        ma = (ma as i32).wrapping_sub(memory[addr]) as u16;
                         stimulated_line_state = 3;
                     }
                     5 => {
@@ -328,13 +328,13 @@ pub fn simulate_v2(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                         stimulated_line_state = 6;
                     }
                     9 => {
-                        // lda
-                        acc = memory[addr] as i16;
+                        // lda: MA <- Mem[addr]
+                        ma = memory[addr] as u16;
                         stimulated_line_state = 8;
                     }
                     10 => {
-                        // sta
-                        memory[addr] = acc as i32;
+                        // sta: Mem[addr] <- MA
+                        memory[addr] = ma as i32;
                         stimulated_line_state = 10;
                     }
                     11 => {
@@ -351,16 +351,16 @@ pub fn simulate_v2(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                         // br
                         pc = addr as u16;
                         skip_pc_increment = true;
-                        stimulated_line_state = 12;
+                        stimulated_line_state = 13;
                     }
                     14 => {
                         // brz
                         if acc == 0 {
                             pc = addr as u16;
                             skip_pc_increment = true;
-                            stimulated_line_state = 12;
-                        } else {
                             stimulated_line_state = 13;
+                        } else {
+                            stimulated_line_state = 14;
                         }
                     }
                     15 => {
@@ -368,9 +368,9 @@ pub fn simulate_v2(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                         if acc != 0 {
                             pc = addr as u16;
                             skip_pc_increment = true;
-                            stimulated_line_state = 12;
-                        } else {
                             stimulated_line_state = 13;
+                        } else {
+                            stimulated_line_state = 14;
                         }
                     }
                     16 => {
@@ -379,26 +379,26 @@ pub fn simulate_v2(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                         stimulated_line_state = 5;
                     }
                     17 => {
-                        // shr
-                        acc = ((acc as u16) >> 1) as i16;
+                        // shr (arithmetic, sign-preserving to match the SInt hardware semantics)
+                        acc >>= 1;
                         stimulated_line_state = 5;
                     }
                     18 => {
                         // lea
                         ma = ir_addr as u16;
-                        stimulated_line_state = 13; // similar to nop
+                        stimulated_line_state = 12;
                     }
                     19 => {
                         // stop
                         halted = true;
-                        stimulated_line_state = 13;
+                        stimulated_line_state = 14;
                     }
                     20 => {
                         // nop
-                        stimulated_line_state = 13;
+                        stimulated_line_state = 14;
                     }
                     _ => {
-                        stimulated_line_state = 13;
+                        stimulated_line_state = 14;
                     }
                 }
 

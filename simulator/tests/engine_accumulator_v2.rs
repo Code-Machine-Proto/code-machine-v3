@@ -1,6 +1,7 @@
 use codemachine_simulator::compiler;
 use codemachine_simulator::engine;
 use codemachine_simulator::types::{Phase, ProcessorId};
+use std::fs;
 
 #[test]
 fn test_simulate_ld() {
@@ -22,7 +23,6 @@ fn test_simulate_st() {
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
     assert_eq!(last.memory[4], 42);
-    // st must not clobber ACC
     assert_eq!(*last.registers.get("ACC").unwrap(), 42);
 }
 
@@ -62,29 +62,28 @@ fn test_simulate_mul() {
 
 #[test]
 fn test_simulate_adda() {
-    let source = "ld x\nadda y\nstop\nx: 5\ny: 6";
+    let source = "lda x\nadda y\nstop\nx: 5\ny: 6";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    assert_eq!(*last.registers.get("ACC").unwrap(), 11);
+    assert_eq!(*last.registers.get("MA").unwrap(), 11);
 }
 
 #[test]
 fn test_simulate_suba() {
-    let source = "ld x\nsuba y\nstop\nx: 10\ny: 4";
+    let source = "lda x\nsuba y\nstop\nx: 10\ny: 4";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    assert_eq!(*last.registers.get("ACC").unwrap(), 6);
+    assert_eq!(*last.registers.get("MA").unwrap(), 6);
 }
 
 #[test]
 fn test_simulate_addx() {
-    // lea loads MA with the address of y, addx then adds Mem[MA] to ACC
     let source = "ld x\nlea y\naddx\nstop\nx: 5\ny: 6";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
@@ -113,12 +112,13 @@ fn test_simulate_lda() {
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    assert_eq!(*last.registers.get("ACC").unwrap(), 99);
+    assert_eq!(*last.registers.get("MA").unwrap(), 99);
+    assert_eq!(*last.registers.get("ACC").unwrap(), 0);
 }
 
 #[test]
 fn test_simulate_sta() {
-    let source = "ld x\nsta y\nstop\nx: 77\ny: 0";
+    let source = "lda x\nsta y\nstop\nx: 77\ny: 0";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -135,14 +135,54 @@ fn test_simulate_lea_sets_ma() {
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    // lea must not touch ACC, only MA
     assert_eq!(*last.registers.get("ACC").unwrap(), 0);
     assert_eq!(*last.registers.get("MA").unwrap(), 2); // address of label x
 }
 
 #[test]
+fn test_simulate_line_state_lea_is_distinct_from_nop() {
+    let source = "lea x\nstop\nx: 0";
+    let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    let execute_states: Vec<i32> = trace
+        .steps
+        .iter()
+        .filter(|s| s.phase == Phase::Execute)
+        .map(|s| s.stimulated_line_state)
+        .collect();
+    assert_eq!(execute_states, vec![12, 14]); // lea, stop
+}
+
+#[test]
+fn test_simulate_line_state_branch_taken_vs_untaken() {
+    let taken_source = "brz target\ntarget: stop"; // ACC starts at 0, so brz is taken
+    let taken = compiler::compile(taken_source, ProcessorId::AccumulatorMa);
+    assert!(taken.success);
+    let taken_trace = engine::simulate(&taken.program, ProcessorId::AccumulatorMa, None);
+    let taken_states: Vec<i32> = taken_trace
+        .steps
+        .iter()
+        .filter(|s| s.phase == Phase::Execute)
+        .map(|s| s.stimulated_line_state)
+        .collect();
+    assert_eq!(taken_states, vec![13, 14]); // brz (taken), stop
+
+    let untaken_source = "brnz target\nstop\ntarget: stop"; // ACC starts at 0, so brnz is not taken
+    let untaken = compiler::compile(untaken_source, ProcessorId::AccumulatorMa);
+    assert!(untaken.success);
+    let untaken_trace = engine::simulate(&untaken.program, ProcessorId::AccumulatorMa, None);
+    let untaken_states: Vec<i32> = untaken_trace
+        .steps
+        .iter()
+        .filter(|s| s.phase == Phase::Execute)
+        .map(|s| s.stimulated_line_state)
+        .collect();
+    assert_eq!(untaken_states, vec![14, 14]); // brnz (not taken), stop
+}
+
+#[test]
 fn test_simulate_ldi() {
-    // lea points MA at x, ldi then loads Mem[MA] indirectly
     let source = "lea x\nldi\nstop\nx: 55";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
@@ -186,6 +226,18 @@ fn test_simulate_shr() {
 }
 
 #[test]
+fn test_simulate_shr_is_arithmetic() {
+    // shr must sign-extend (arithmetic shift), matching the hardware's SInt semantics
+    let source = "ld x\nshr\nstop\nx: -8";
+    let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert!(trace.halted);
+    let last = trace.steps.last().unwrap();
+    assert_eq!(*last.registers.get("ACC").unwrap(), -4);
+}
+
+#[test]
 fn test_simulate_br_unconditional() {
     let source = "br target\nld skipped\nstop\ntarget: ld hit\nstop\nskipped: 1\nhit: 9";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
@@ -193,7 +245,6 @@ fn test_simulate_br_unconditional() {
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    // br always jumps to target, so "ld skipped" in between never runs
     assert_eq!(*last.registers.get("ACC").unwrap(), 9);
 }
 
@@ -286,4 +337,56 @@ fn test_simulate_max_cycles() {
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(!trace.halted);
     assert!(trace.steps.len() <= 1024);
+}
+
+fn read_example(name: &str) -> String {
+    let path = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../code-examples/accumulateur-ma/"
+    )
+    .to_string()
+        + name;
+    fs::read_to_string(&path).unwrap_or_else(|e| panic!("failed to read {}: {}", path, e))
+}
+
+#[test]
+fn test_example_testaccma() {
+    // TestAccMa.s self-checks all 18 v2-specific instructions (including adda/suba/lda/sta/lea)
+    // and leaves ACC = 1 (resultat) only if every sub-test passed.
+    let source = read_example("TestAccMa.s");
+    let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert!(trace.halted);
+    let last = trace.steps.last().unwrap();
+    assert_eq!(*last.registers.get("ACC").unwrap(), 1);
+}
+
+#[test]
+fn test_example_est_pair() {
+    // estPair.s checks whether n=4 is even by clearing its low bit; ACC = 1 means "even"
+    let source = read_example("estPair.s");
+    let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert!(trace.halted);
+    let last = trace.steps.last().unwrap();
+    assert_eq!(*last.registers.get("ACC").unwrap(), 1);
+}
+
+#[test]
+fn test_example_somme_carres() {
+    // sommeCarres.s expects sum of squares (1,4,9,...,81) to be 285.
+    let source = read_example("sommeCarres.s");
+    let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    assert_eq!(
+        &compiled.program[13..22],
+        &[1, 4, 9, 16, 25, 36, 49, 64, 81]
+    );
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert!(trace.halted);
+    let last = trace.steps.last().unwrap();
+    assert_eq!(last.memory[10], 285); // somme
+    assert_eq!(&last.memory[13..22], &[1, 4, 9, 16, 25, 36, 49, 64, 81]); // addmem preserved
 }
