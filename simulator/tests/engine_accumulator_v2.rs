@@ -1,6 +1,7 @@
 use codemachine_simulator::compiler;
 use codemachine_simulator::engine;
 use codemachine_simulator::types::{Phase, ProcessorId};
+use std::fs;
 
 #[test]
 fn test_simulate_ld() {
@@ -62,29 +63,28 @@ fn test_simulate_mul() {
 
 #[test]
 fn test_simulate_adda() {
-    let source = "ld x\nadda y\nstop\nx: 5\ny: 6";
+    let source = "lda x\nadda y\nstop\nx: 5\ny: 6";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    assert_eq!(*last.registers.get("ACC").unwrap(), 11);
+    assert_eq!(*last.registers.get("MA").unwrap(), 11);
 }
 
 #[test]
 fn test_simulate_suba() {
-    let source = "ld x\nsuba y\nstop\nx: 10\ny: 4";
+    let source = "lda x\nsuba y\nstop\nx: 10\ny: 4";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    assert_eq!(*last.registers.get("ACC").unwrap(), 6);
+    assert_eq!(*last.registers.get("MA").unwrap(), 6);
 }
 
 #[test]
 fn test_simulate_addx() {
-    // lea loads MA with the address of y, addx then adds Mem[MA] to ACC
     let source = "ld x\nlea y\naddx\nstop\nx: 5\ny: 6";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
@@ -113,12 +113,13 @@ fn test_simulate_lda() {
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    assert_eq!(*last.registers.get("ACC").unwrap(), 99);
+    assert_eq!(*last.registers.get("MA").unwrap(), 99);
+    assert_eq!(*last.registers.get("ACC").unwrap(), 0);
 }
 
 #[test]
 fn test_simulate_sta() {
-    let source = "ld x\nsta y\nstop\nx: 77\ny: 0";
+    let source = "lda x\nsta y\nstop\nx: 77\ny: 0";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -142,7 +143,6 @@ fn test_simulate_lea_sets_ma() {
 
 #[test]
 fn test_simulate_ldi() {
-    // lea points MA at x, ldi then loads Mem[MA] indirectly
     let source = "lea x\nldi\nstop\nx: 55";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
