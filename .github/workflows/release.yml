@@ -20,6 +20,8 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
+        env:
+          HUSKY: 0
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
