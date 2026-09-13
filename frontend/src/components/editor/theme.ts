@@ -22,7 +22,7 @@ export const darkTheme = EditorView.theme({
   ".cm-activeLine": { backgroundColor: "#1e293b44" },
   ".cm-line": { padding: "0 8px" },
   ".cm-active-exec-line": { backgroundColor: "#f59e0b26", borderLeft: "3px solid #f59e0b" },
-});
+}, { dark: true });
 
 export const lightTheme = EditorView.theme({
   "&": { backgroundColor: "#f8fafc", color: "#1e293b", ...baseFontConfig },
