@@ -23,7 +23,6 @@ fn test_simulate_st() {
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
     assert_eq!(last.memory[4], 42);
-    // st must not clobber ACC
     assert_eq!(*last.registers.get("ACC").unwrap(), 42);
 }
 
@@ -136,15 +135,12 @@ fn test_simulate_lea_sets_ma() {
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    // lea must not touch ACC, only MA
     assert_eq!(*last.registers.get("ACC").unwrap(), 0);
     assert_eq!(*last.registers.get("MA").unwrap(), 2); // address of label x
 }
 
 #[test]
 fn test_simulate_line_state_lea_is_distinct_from_nop() {
-    // Locks in the animation line-state numbering VisualWithMa.tsx depends on: lea has
-    // its own code (12), separate from nop/stop (14) and taken branches (13).
     let source = "lea x\nstop\nx: 0";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
@@ -249,7 +245,6 @@ fn test_simulate_br_unconditional() {
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    // br always jumps to target, so "ld skipped" in between never runs
     assert_eq!(*last.registers.get("ACC").unwrap(), 9);
 }
 
@@ -345,7 +340,12 @@ fn test_simulate_max_cycles() {
 }
 
 fn read_example(name: &str) -> String {
-    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../code-examples/accumulateur-ma/").to_string() + name;
+    let path = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../code-examples/accumulateur-ma/"
+    )
+    .to_string()
+        + name;
     fs::read_to_string(&path).unwrap_or_else(|e| panic!("failed to read {}: {}", path, e))
 }
 
@@ -376,15 +376,14 @@ fn test_example_est_pair() {
 
 #[test]
 fn test_example_somme_carres() {
-    // sommeCarres.s walks addmem via MA (lea + adda + addx) to sum the squares 1..9 = 285.
-    // This also exercises multi-line (unlabeled continuation) .data declarations: the
-    // addmem table is written as one value per line with no label on the continuation
-    // lines, so the compiler must still lay them out contiguously instead of skipping them.
+    // sommeCarres.s expects sum of squares (1,4,9,...,81) to be 285.
     let source = read_example("sommeCarres.s");
     let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
     assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
-    // mem[10]=somme, mem[11]=indice, mem[12]=one, mem[13..22]=addmem (1,4,9,...,81)
-    assert_eq!(&compiled.program[13..22], &[1, 4, 9, 16, 25, 36, 49, 64, 81]);
+    assert_eq!(
+        &compiled.program[13..22],
+        &[1, 4, 9, 16, 25, 36, 49, 64, 81]
+    );
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
