@@ -351,16 +351,16 @@ pub fn simulate_v2(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                         // br
                         pc = addr as u16;
                         skip_pc_increment = true;
-                        stimulated_line_state = 12;
+                        stimulated_line_state = 13;
                     }
                     14 => {
                         // brz
                         if acc == 0 {
                             pc = addr as u16;
                             skip_pc_increment = true;
-                            stimulated_line_state = 12;
-                        } else {
                             stimulated_line_state = 13;
+                        } else {
+                            stimulated_line_state = 14;
                         }
                     }
                     15 => {
@@ -368,9 +368,9 @@ pub fn simulate_v2(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                         if acc != 0 {
                             pc = addr as u16;
                             skip_pc_increment = true;
-                            stimulated_line_state = 12;
-                        } else {
                             stimulated_line_state = 13;
+                        } else {
+                            stimulated_line_state = 14;
                         }
                     }
                     16 => {
@@ -386,19 +386,19 @@ pub fn simulate_v2(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                     18 => {
                         // lea
                         ma = ir_addr as u16;
-                        stimulated_line_state = 13; // similar to nop
+                        stimulated_line_state = 12;
                     }
                     19 => {
                         // stop
                         halted = true;
-                        stimulated_line_state = 13;
+                        stimulated_line_state = 14;
                     }
                     20 => {
                         // nop
-                        stimulated_line_state = 13;
+                        stimulated_line_state = 14;
                     }
                     _ => {
-                        stimulated_line_state = 13;
+                        stimulated_line_state = 14;
                     }
                 }
 

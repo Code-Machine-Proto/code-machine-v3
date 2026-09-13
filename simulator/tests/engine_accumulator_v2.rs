@@ -142,6 +142,50 @@ fn test_simulate_lea_sets_ma() {
 }
 
 #[test]
+fn test_simulate_line_state_lea_is_distinct_from_nop() {
+    // Locks in the animation line-state numbering VisualWithMa.tsx depends on: lea has
+    // its own code (12), separate from nop/stop (14) and taken branches (13).
+    let source = "lea x\nstop\nx: 0";
+    let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    let execute_states: Vec<i32> = trace
+        .steps
+        .iter()
+        .filter(|s| s.phase == Phase::Execute)
+        .map(|s| s.stimulated_line_state)
+        .collect();
+    assert_eq!(execute_states, vec![12, 14]); // lea, stop
+}
+
+#[test]
+fn test_simulate_line_state_branch_taken_vs_untaken() {
+    let taken_source = "brz target\ntarget: stop"; // ACC starts at 0, so brz is taken
+    let taken = compiler::compile(taken_source, ProcessorId::AccumulatorMa);
+    assert!(taken.success);
+    let taken_trace = engine::simulate(&taken.program, ProcessorId::AccumulatorMa, None);
+    let taken_states: Vec<i32> = taken_trace
+        .steps
+        .iter()
+        .filter(|s| s.phase == Phase::Execute)
+        .map(|s| s.stimulated_line_state)
+        .collect();
+    assert_eq!(taken_states, vec![13, 14]); // brz (taken), stop
+
+    let untaken_source = "brnz target\nstop\ntarget: stop"; // ACC starts at 0, so brnz is not taken
+    let untaken = compiler::compile(untaken_source, ProcessorId::AccumulatorMa);
+    assert!(untaken.success);
+    let untaken_trace = engine::simulate(&untaken.program, ProcessorId::AccumulatorMa, None);
+    let untaken_states: Vec<i32> = untaken_trace
+        .steps
+        .iter()
+        .filter(|s| s.phase == Phase::Execute)
+        .map(|s| s.stimulated_line_state)
+        .collect();
+    assert_eq!(untaken_states, vec![14, 14]); // brnz (not taken), stop
+}
+
+#[test]
 fn test_simulate_ldi() {
     let source = "lea x\nldi\nstop\nx: 55";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);

@@ -5,7 +5,7 @@ import Multiplexer from "./parts/Multiplexer";
 import ObscureMemory from "./parts/ObscureMemory";
 
 // LineStateMa: -1 error, 0 fetch, 1 decode, 2 addSubMul, 3 addSubA, 4 addSubX,
-//   5 sh, 6 store, 7 load, 8 loadA, 9 loadI, 10 storeA, 11 storeI, 12 branching, 13 nop
+//   5 sh, 6 store, 7 load, 8 loadA, 9 loadI, 10 storeA, 11 storeI, 12 lea, 13 branching, 14 nop
 
 interface VisualProps {
   stimulatedLineState: number;
@@ -32,8 +32,9 @@ export default function VisualWithMa(props: VisualProps) {
   const loadI = () => ls() === 9;
   const storeA = () => ls() === 10;
   const storeI = () => ls() === 11;
-  const branching = () => ls() === 12;
-  const nop = () => ls() === 13 || addSubMul() || addSubA() || addSubX() || sh() || store() || load() || loadA() || loadI() || storeA() || storeI();
+  const lea = () => ls() === 12;
+  const branching = () => ls() === 13;
+  const nop = () => ls() === 14 || addSubMul() || addSubA() || addSubX() || sh() || store() || load() || loadA() || loadI() || storeA() || storeI() || lea();
   const addr = () => addSubMul() || addSubA() || store() || load() || loadA() || storeA();
 
   return (
@@ -94,8 +95,8 @@ export default function VisualWithMa(props: VisualProps) {
       />
       <use href="#mem-acc" class="circuit-wire"/>
       <path id="mem-ma"
-        d="M841 96C841.552 96 842 96.4477 842 97V276H892V271.227L902 277L892 282.773V278H841C840.448 278 840
-           277.552 840 277V98H617V156C617 156.552 616.552 157 616 157H586C585.448 157 585 156.552 585 156C585
+        d="M841 96C841.552 96 842 96.4477 842 97V256H892V251.227L902 257L892 262.773V258H841C840.448 258 840
+           257.552 840 257V98H617V156C617 156.552 616.552 157 616 157H586C585.448 157 585 156.552 585 156C585
            155.448 585.448 155 586 155H615V97C615 96.4477 615.448 96 616 96H841Z"
       />
       <use href="#mem-ma" class="circuit-wire"/>
@@ -246,6 +247,10 @@ export default function VisualWithMa(props: VisualProps) {
            120.001 1125 120.001H1154.98C1154.99 120.001 1154.99 120 1155 120Z"
       />
       <use href="#acc-control" class="circuit-wire"/>
+      <path id="mux3-ma"
+        d="M399 202C398.448 202 398 202.448 398 203C398 203.552 398.448 204 399 204H442V304H840V283C840 282 840 282 841 282H892V276.227L902 282L892 287.773V284H842V304C842 306 842 306 840 306H442C440 306 440 306 440 304V202H399Z"
+      />
+      <use href="#mux3-ma" class="circuit-wire"/>
 
       {/* === Bus labels === */}
       <Bus x={590} y={147} number={16}/>
@@ -270,7 +275,7 @@ export default function VisualWithMa(props: VisualProps) {
       <use href="#ir-mem" class={addr() ? "fill-red-500" : ""} />
       <use href="#ir-pc" class={branching() ? "fill-red-500" : ""} />
       <use href="#mux-acc" class={addSubMul() || addSubX() || sh() || load() || loadI() ? "fill-red-500" : ""} />
-      <use href="#mux-ma" class={addSubA() || loadA() ? "fill-red-500" : ""} />
+      <use href="#mux-ma" class={addSubA() || loadA() || lea() ? "fill-red-500" : ""} />
       <use href="#acc-alu" class={addSubMul() || addSubX() || sh() ? "fill-red-500" : ""} />
       <use href="#acc-mem" class={store() || storeI() ? "fill-red-500" : ""} />
       <use href="#ma-mem" class={storeA() ? "fill-red-500" : ""} />
@@ -280,6 +285,7 @@ export default function VisualWithMa(props: VisualProps) {
       <use href="#mux-alu" class={addSubMul() || addSubA() || addSubX() || sh() ? "fill-red-500" : ""} />
       <use href="#ir-control" class={decode() ? "fill-red-500" : ""} />
       <use href="#acc-control" class={decode() ? "fill-red-500" : ""} />
+      <use href="#mux3-ma" class={lea() ? "fill-red-500" : ""} />
 
       {/* === Components === */}
       <Multiplexer x={41} y={70} name="sel_pc_source" isActivated={branching() || nop()} />
@@ -287,7 +293,7 @@ export default function VisualWithMa(props: VisualProps) {
       <Multiplexer x={360} y={165} name="sel_mem_addr" isActivated={fetch() || addr() || loadI() || storeI() || addSubX()} />
       <Multiplexer x={669} y={200} name="alu_b_source" isActivated={addSubMul() || addSubA() || sh() || addSubX()} />
       <Multiplexer x={900} y={80} name="sel_acc_data" isActivated={addSubMul() || sh() || load() || loadI() || addSubX()} />
-      <Multiplexer x={900} y={215} name="sel_ma_source" isActivated={addSubA() || loadA()} />
+      <Multiplexer x={900} y={215} name="sel_ma_source" isActivated={addSubA() || loadA() || lea()} />
 
       <ALU x={755} y={123} isActivated={addSubMul() || addSubA() || sh() || addSubX()} />
 
@@ -312,6 +318,7 @@ export default function VisualWithMa(props: VisualProps) {
       <circle cx="635" cy="343" r="5" class={addSubA() || addSubX() || loadI() || storeI() ? "fill-red-500" : "fill-main-600"} />
       <circle cx="291" cy="110" r="5" class={fetch() || nop() ? "fill-red-500" : "fill-main-600"} />
       <circle cx="1155" cy="329" r="5" class={decode() || addSubMul() || addSubX() || sh() ? "fill-red-500" : "fill-main-600"} />
+      <circle cx="441" cy="203" r="5" class={addr() || fetch() || lea() || addSubX() || loadI() || storeI() ? "fill-red-500" : "fill-main-600"} />
 
       {/* Control Signal box */}
       <g>
