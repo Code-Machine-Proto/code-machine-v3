@@ -24,14 +24,14 @@ function createAssemblyLanguage(mnemonics: Set<string>) {
     },
     token(stream: StringStream) {
       // Comments
-      if (stream.match("//")) {
+      if (stream.match("//") || stream.match("#") || stream.match(";")) {
         stream.skipToEnd();
         return "comment";
       }
 
-      // Directives
+      // Directives (.text, .data)
       if (stream.match(/^\.\w+/)) {
-        return "keyword";
+        return "moduleKeyword";
       }
 
       // Label definition (word followed by colon)

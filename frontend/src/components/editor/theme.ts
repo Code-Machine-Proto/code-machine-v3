@@ -21,7 +21,8 @@ export const darkTheme = EditorView.theme({
   ".cm-activeLineGutter": { backgroundColor: "#1e293b", color: "#94a3b8" },
   ".cm-activeLine": { backgroundColor: "#1e293b44" },
   ".cm-line": { padding: "0 8px" },
-});
+  ".cm-active-exec-line": { backgroundColor: "#f59e0b26", borderLeft: "3px solid #f59e0b" },
+}, { dark: true });
 
 export const lightTheme = EditorView.theme({
   "&": { backgroundColor: "#f8fafc", color: "#1e293b", ...baseFontConfig },
@@ -32,11 +33,13 @@ export const lightTheme = EditorView.theme({
   ".cm-activeLineGutter": { backgroundColor: "#f1f5f9", color: "#64748b" },
   ".cm-activeLine": { backgroundColor: "#e2e8f044" },
   ".cm-line": { padding: "0 8px" },
+  ".cm-active-exec-line": { backgroundColor: "#fde68a80", borderLeft: "3px solid #b45309" },
 });
 
 export const darkHighlighting = syntaxHighlighting(
   HighlightStyle.define([
     { tag: tags.keyword, color: "#f472b6" },
+    { tag: tags.moduleKeyword, color: "#22d3ee" },
     { tag: tags.number, color: "#a78bfa" },
     { tag: tags.labelName, color: "#4ade80" },
     { tag: tags.comment, color: "#64748b", fontStyle: "italic" },
@@ -50,6 +53,7 @@ export const darkHighlighting = syntaxHighlighting(
 export const lightHighlighting = syntaxHighlighting(
   HighlightStyle.define([
     { tag: tags.keyword, color: "#db2777" },
+    { tag: tags.moduleKeyword, color: "#0e7490" },
     { tag: tags.number, color: "#7c3aed" },
     { tag: tags.labelName, color: "#16a34a" },
     { tag: tags.comment, color: "#94a3b8", fontStyle: "italic" },

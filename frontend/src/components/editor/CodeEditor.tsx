@@ -1,7 +1,10 @@
 // frontend/src/components/editor/CodeEditor.tsx
 import { onMount, onCleanup, createEffect } from "solid-js";
-import { EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter } from "@codemirror/view";
-import { EditorState } from "@codemirror/state";
+import {
+  EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter,
+  Decoration, type DecorationSet,
+} from "@codemirror/view";
+import { EditorState, StateField, StateEffect } from "@codemirror/state";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { setDiagnostics as setEditorDiagnostics } from "@codemirror/lint";
 import type { Diagnostic } from "@/wasm/types";
@@ -19,7 +22,35 @@ interface Props {
   onChange: (code: string) => void;
   onCompile: () => void;
   diagnostics: Diagnostic[];
+  /** 0-indexed source line of the instruction under the program counter, or null. */
+  activeLine?: () => number | null;
 }
+
+// Highlights the source line currently under the program counter during simulation.
+const setActiveLineEffect = StateEffect.define<number | null>();
+
+const activeLineField = StateField.define<DecorationSet>({
+  create() {
+    return Decoration.none;
+  },
+  update(decorations, tr) {
+    decorations = decorations.map(tr.changes);
+    for (const effect of tr.effects) {
+      if (!effect.is(setActiveLineEffect)) continue;
+      const lineNumber = effect.value;
+      if (lineNumber === null || lineNumber < 0 || lineNumber >= tr.state.doc.lines) {
+        decorations = Decoration.none;
+      } else {
+        const line = tr.state.doc.line(lineNumber + 1);
+        decorations = Decoration.set([
+          Decoration.line({ class: "cm-active-exec-line" }).range(line.from),
+        ]);
+      }
+    }
+    return decorations;
+  },
+  provide: (f) => EditorView.decorations.from(f),
+});
 
 export default function CodeEditor(props: Props) {
   let containerRef!: HTMLDivElement;
@@ -35,6 +66,7 @@ export default function CodeEditor(props: Props) {
         highlightActiveLineGutter(),
         history(),
         keymap.of([...defaultKeymap, ...historyKeymap]),
+        activeLineField,
         getLanguage(props.processorId),
         themeCompartment.of(getThemeExtension(isDark())),
         highlightCompartment.of(getHighlightExtension(isDark())),
@@ -66,6 +98,18 @@ export default function CodeEditor(props: Props) {
         highlightCompartment.reconfigure(getHighlightExtension(dark)),
       ],
     });
+  });
+
+  // Highlight (and scroll to) the instruction line under the program counter
+  createEffect(() => {
+    if (!view) return;
+    const line = props.activeLine?.() ?? null;
+    const effects: StateEffect<unknown>[] = [setActiveLineEffect.of(line)];
+    if (line !== null && line >= 0 && line < view.state.doc.lines) {
+      const lineInfo = view.state.doc.line(line + 1);
+      effects.push(EditorView.scrollIntoView(lineInfo.from, { y: "center" }));
+    }
+    view.dispatch({ effects });
   });
 
   // Push diagnostics to CodeMirror

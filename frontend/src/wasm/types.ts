@@ -38,6 +38,7 @@ export interface CompileResult {
   diagnostics: Diagnostic[];
   tokens: TokenSpan[];
   data_memory: number[] | null;
+  instruction_lines: number[];
 }
 
 export interface SimulationTrace {
