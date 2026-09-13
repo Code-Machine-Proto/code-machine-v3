@@ -1,5 +1,5 @@
 // frontend/src/components/editor/CodeEditor.tsx
-import { onMount, onCleanup, createEffect } from 'solid-js';
+import { onMount, onCleanup, createEffect, Show } from 'solid-js';
 import {
   EditorView,
   keymap,
@@ -29,6 +29,7 @@ interface Props {
   onChange: (code: string) => void;
   onCompile: () => void;
   diagnostics: Diagnostic[];
+  isCompiled: () => boolean;
   /** 0-indexed source line of the instruction under the program counter, or null. */
   activeLine?: () => number | null;
 }
@@ -125,36 +126,6 @@ const activeLineField = StateField.define<DecorationSet>({
   provide: (f) => EditorView.decorations.from(f),
 });
 
-// Highlights the source line currently under the program counter during simulation.
-const setActiveLineEffect = StateEffect.define<number | null>();
-
-const activeLineField = StateField.define<DecorationSet>({
-  create() {
-    return Decoration.none;
-  },
-  update(decorations, tr) {
-    decorations = decorations.map(tr.changes);
-    for (const effect of tr.effects) {
-      if (!effect.is(setActiveLineEffect)) continue;
-      const lineNumber = effect.value;
-      if (
-        lineNumber === null ||
-        lineNumber < 0 ||
-        lineNumber >= tr.state.doc.lines
-      ) {
-        decorations = Decoration.none;
-      } else {
-        const line = tr.state.doc.line(lineNumber + 1);
-        decorations = Decoration.set([
-          Decoration.line({ class: 'cm-active-exec-line' }).range(line.from),
-        ]);
-      }
-    }
-    return decorations;
-  },
-  provide: (f) => EditorView.decorations.from(f),
-});
-
 export default function CodeEditor(props: Props) {
   let containerRef!: HTMLDivElement;
   let fileInputRef!: HTMLInputElement;
@@ -170,6 +141,9 @@ export default function CodeEditor(props: Props) {
   };
 
   const handleLoadClick = () => fileInputRef.click();
+
+  const errorCount = () =>
+    props.diagnostics.filter((d) => d.severity === 'Error').length;
 
   const handleFileSelected = async (e: Event) => {
     const input = e.currentTarget as HTMLInputElement;
@@ -339,6 +313,66 @@ export default function CodeEditor(props: Props) {
           </svg>
           Compiler
         </button>
+        <span
+          class='flex items-center justify-center gap-1 min-w-5 h-5 px-1 rounded-full text-[10px] font-semibold shrink-0 transition-colors'
+          classList={{
+            'bg-main-800 text-main-600':
+              errorCount() === 0 && !props.isCompiled(),
+            'bg-red-500/15 text-red-400': errorCount() > 0,
+            'bg-emerald-500/15 text-emerald-400':
+              errorCount() === 0 && props.isCompiled(),
+          }}
+          title={
+            errorCount() > 0
+              ? `${errorCount()} erreur${errorCount() > 1 ? 's' : ''} de compilation`
+              : props.isCompiled()
+                ? 'Compilation reussie'
+                : 'SVP compiler pour commencer'
+          }
+        >
+          <Show
+            when={errorCount() > 0}
+            fallback={
+              <Show
+                when={props.isCompiled()}
+                fallback={
+                  <svg
+                    class='w-2 h-2 shrink-0'
+                    fill='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <circle cx='12' cy='12' r='10' />
+                  </svg>
+                }
+              >
+                <svg
+                  class='w-3.5 h-3.5 shrink-0'
+                  fill='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    fill-rule='evenodd'
+                    clip-rule='evenodd'
+                    d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z'
+                  />
+                </svg>
+              </Show>
+            }
+          >
+            <svg
+              class='w-3 h-3 shrink-0'
+              fill='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                fill-rule='evenodd'
+                clip-rule='evenodd'
+                d='M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z'
+              />
+            </svg>
+            {errorCount()}
+          </Show>
+        </span>
       </div>
       <div ref={containerRef} class='flex-1 overflow-auto' />
     </div>
