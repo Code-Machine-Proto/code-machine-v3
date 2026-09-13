@@ -106,6 +106,32 @@ const activeLineField = StateField.define<DecorationSet>({
   provide: (f) => EditorView.decorations.from(f),
 });
 
+// Highlights the source line currently under the program counter during simulation.
+const setActiveLineEffect = StateEffect.define<number | null>();
+
+const activeLineField = StateField.define<DecorationSet>({
+  create() {
+    return Decoration.none;
+  },
+  update(decorations, tr) {
+    decorations = decorations.map(tr.changes);
+    for (const effect of tr.effects) {
+      if (!effect.is(setActiveLineEffect)) continue;
+      const lineNumber = effect.value;
+      if (lineNumber === null || lineNumber < 0 || lineNumber >= tr.state.doc.lines) {
+        decorations = Decoration.none;
+      } else {
+        const line = tr.state.doc.line(lineNumber + 1);
+        decorations = Decoration.set([
+          Decoration.line({ class: "cm-active-exec-line" }).range(line.from),
+        ]);
+      }
+    }
+    return decorations;
+  },
+  provide: (f) => EditorView.decorations.from(f),
+});
+
 export default function CodeEditor(props: Props) {
   let containerRef!: HTMLDivElement;
   let fileInputRef!: HTMLInputElement;
