@@ -190,8 +190,8 @@ export default function Workspace() {
           isPlaying={store.isPlaying}
           isCompiled={store.isCompiled}
           phase={store.phase}
-          playbackSpeed={store.playbackSpeed}
-          setPlaybackSpeed={store.setPlaybackSpeed}
+          stepMode={store.stepMode}
+          setStepMode={store.setStepMode}
           onStepForward={store.stepForward}
           onStepBackward={store.stepBackward}
           onGoToStart={store.goToStart}
