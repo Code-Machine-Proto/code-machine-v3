@@ -23,6 +23,7 @@ export function createSimulationStore(processorId: ProcessorId) {
   const [currentStep, setCurrentStep] = createSignal(0);
   const [isPlaying, setIsPlaying] = createSignal(false);
   const [isCompiled, setIsCompiled] = createSignal(false);
+  const [isCompiling, setIsCompiling] = createSignal(false);
   const [diagnostics, setDiagnostics] = createSignal<Diagnostic[]>([]);
   const [stepMode, setStepMode] = createSignal<StepMode>("regular");
   const [instructionLines, setInstructionLines] = createSignal<number[]>([]);
@@ -99,25 +100,38 @@ export function createSimulationStore(processorId: ProcessorId) {
     onCleanup(() => clearInterval(id));
   });
 
-  function compileAndRun() {
-    const result: CompileResult = compileSource(code(), processorId);
-    setDiagnostics(result.diagnostics);
-
-    if (!result.success) {
-      setIsCompiled(false);
-      setSteps([]);
-      setInstructionLines([]);
-      return;
-    }
-
-    const trace = simulateProgram(result.program, processorId);
-    batch(() => {
-      setSteps(trace.steps);
-      setCurrentStep(0);
-      setIsCompiled(true);
-      setIsPlaying(false);
-      setInstructionLines(result.instruction_lines);
+  async function compileAndRun() {
+    setIsCompiling(true);
+    // Compiling/simulating is synchronous and typically finishes in well under
+    // a frame, so without yielding here the "compiling" indicator would never
+    // actually get painted before the work is already done. Two rAFs give the
+    // browser a real chance to render it first.
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
     });
+
+    try {
+      const result: CompileResult = compileSource(code(), processorId);
+      setDiagnostics(result.diagnostics);
+
+      if (!result.success) {
+        setIsCompiled(false);
+        setSteps([]);
+        setInstructionLines([]);
+        return;
+      }
+
+      const trace = simulateProgram(result.program, processorId);
+      batch(() => {
+        setSteps(trace.steps);
+        setCurrentStep(0);
+        setIsCompiled(true);
+        setIsPlaying(false);
+        setInstructionLines(result.instruction_lines);
+      });
+    } finally {
+      setIsCompiling(false);
+    }
   }
 
   function stepForward() {
@@ -154,7 +168,7 @@ export function createSimulationStore(processorId: ProcessorId) {
   return {
     code, setCode,
     steps, currentStep, setCurrentStep,
-    isPlaying, isCompiled,
+    isPlaying, isCompiled, isCompiling,
     diagnostics,
     stepMode, setStepMode: changeStepMode,
     currentCycle, activeSignals, registers, memory,
