@@ -386,3 +386,46 @@ fn test_example_somme_carres() {
     assert_eq!(last.memory[10], 285); // somme
     assert_eq!(&last.memory[13..22], &[1, 4, 9, 16, 25, 36, 49, 64, 81]); // addmem preserved
 }
+
+fn read_example(name: &str) -> String {
+    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../code-examples/accumulateur-ma/").to_string() + name;
+    fs::read_to_string(&path).unwrap_or_else(|e| panic!("failed to read {}: {}", path, e))
+}
+
+#[test]
+fn test_example_testaccma() {
+    // TestAccMa.s self-checks all 18 v2-specific instructions (including adda/suba/lda/sta/lea)
+    // and leaves ACC = 1 (resultat) only if every sub-test passed.
+    let source = read_example("TestAccMa.s");
+    let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert!(trace.halted);
+    let last = trace.steps.last().unwrap();
+    assert_eq!(*last.registers.get("ACC").unwrap(), 1);
+}
+
+#[test]
+fn test_example_est_pair() {
+    // estPair.s checks whether n=4 is even by clearing its low bit; ACC = 1 means "even"
+    let source = read_example("estPair.s");
+    let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert!(trace.halted);
+    let last = trace.steps.last().unwrap();
+    assert_eq!(*last.registers.get("ACC").unwrap(), 1);
+}
+
+#[test]
+fn test_example_somme_carres() {
+    // sommeCarres.s walks addmem via MA (lea + adda + addx) to sum the squares 1..9 = 285.
+    // This also exercises multi-line (unlabeled continuation) .data declarations.
+    let source = read_example("sommeCarres.s");
+    let compiled = compiler::compile(&source, ProcessorId::AccumulatorMa);
+    assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert!(trace.halted);
+    let last = trace.steps.last().unwrap();
+    assert_eq!(last.memory[10], 285); // somme
+}
