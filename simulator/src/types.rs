@@ -7,8 +7,6 @@ pub enum Phase {
     Fetch,
     Decode,
     Execute,
-    Start,
-    End,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

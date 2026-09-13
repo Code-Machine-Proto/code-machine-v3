@@ -215,7 +215,7 @@ fn test_simulate_stop_halts_immediately() {
     let last = trace.steps.last().unwrap();
     // stop halts before the following "ldi r1,5" ever executes
     assert_eq!(*last.registers.get("r1").unwrap_or(&0), 0);
-    assert_eq!(last.phase, Phase::End);
+    assert_eq!(last.phase, Phase::Execute);
 }
 
 #[test]
@@ -223,10 +223,9 @@ fn test_simulate_phases() {
     let source = ".text\nldi r1,1\nstop";
     let compiled = compiler::compile(source, ProcessorId::PolyRisc);
     let trace = engine::simulate(&compiled.program, ProcessorId::PolyRisc, None);
-    assert_eq!(trace.steps[0].phase, Phase::Start);
-    assert_eq!(trace.steps[1].phase, Phase::Fetch);
-    assert_eq!(trace.steps[2].phase, Phase::Decode);
-    assert_eq!(trace.steps[3].phase, Phase::Execute);
+    assert_eq!(trace.steps[0].phase, Phase::Fetch);
+    assert_eq!(trace.steps[1].phase, Phase::Decode);
+    assert_eq!(trace.steps[2].phase, Phase::Execute);
 }
 
 #[test]
