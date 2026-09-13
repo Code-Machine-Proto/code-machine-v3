@@ -108,17 +108,17 @@ pub fn simulate_v1(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                 match ir_op {
                     0 => {
                         // add
-                        acc = (acc as i32).wrapping_add(memory[addr] as i32) as i16;
+                        acc = (acc as i32).wrapping_add(memory[addr]) as i16;
                         stimulated_line_state = 4;
                     }
                     1 => {
                         // sub
-                        acc = (acc as i32).wrapping_sub(memory[addr] as i32) as i16;
+                        acc = (acc as i32).wrapping_sub(memory[addr]) as i16;
                         stimulated_line_state = 4;
                     }
                     2 => {
                         // mul
-                        acc = (acc as i32).wrapping_mul(memory[addr] as i32) as i16;
+                        acc = (acc as i32).wrapping_mul(memory[addr]) as i16;
                         stimulated_line_state = 4;
                     }
                     3 => {
@@ -284,37 +284,37 @@ pub fn simulate_v2(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                 match ir_op {
                     0 => {
                         // add
-                        acc = (acc as i32).wrapping_add(memory[addr] as i32) as i16;
+                        acc = (acc as i32).wrapping_add(memory[addr]) as i16;
                         stimulated_line_state = 2;
                     }
                     1 => {
                         // sub
-                        acc = (acc as i32).wrapping_sub(memory[addr] as i32) as i16;
+                        acc = (acc as i32).wrapping_sub(memory[addr]) as i16;
                         stimulated_line_state = 2;
                     }
                     2 => {
                         // mul
-                        acc = (acc as i32).wrapping_mul(memory[addr] as i32) as i16;
+                        acc = (acc as i32).wrapping_mul(memory[addr]) as i16;
                         stimulated_line_state = 2;
                     }
                     3 => {
                         // adda
-                        acc = (acc as i32).wrapping_add(memory[addr] as i32) as i16;
+                        acc = (acc as i32).wrapping_add(memory[addr]) as i16;
                         stimulated_line_state = 3;
                     }
                     4 => {
                         // suba
-                        acc = (acc as i32).wrapping_sub(memory[addr] as i32) as i16;
+                        acc = (acc as i32).wrapping_sub(memory[addr]) as i16;
                         stimulated_line_state = 3;
                     }
                     5 => {
                         // addx - uses Mem[MA]
-                        acc = (acc as i32).wrapping_add(memory[ma as usize] as i32) as i16;
+                        acc = (acc as i32).wrapping_add(memory[ma as usize]) as i16;
                         stimulated_line_state = 4;
                     }
                     6 => {
                         // subx - uses Mem[MA]
-                        acc = (acc as i32).wrapping_sub(memory[ma as usize] as i32) as i16;
+                        acc = (acc as i32).wrapping_sub(memory[ma as usize]) as i16;
                         stimulated_line_state = 4;
                     }
                     7 => {
