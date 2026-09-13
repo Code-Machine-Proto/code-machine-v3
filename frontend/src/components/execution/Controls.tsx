@@ -1,6 +1,7 @@
 // frontend/src/components/execution/Controls.tsx
 import type { Accessor, JSX, Setter } from "solid-js";
 import { Show } from "solid-js";
+import type { StepMode } from "@/stores/simulation";
 
 interface Props {
   currentStep: Accessor<number>;
@@ -8,8 +9,8 @@ interface Props {
   isPlaying: Accessor<boolean>;
   isCompiled: Accessor<boolean>;
   phase: Accessor<string>;
-  playbackSpeed: Accessor<number>;
-  setPlaybackSpeed: Setter<number>;
+  stepMode: Accessor<StepMode>;
+  setStepMode: (mode: StepMode) => void;
   onStepForward: () => void;
   onStepBackward: () => void;
   onGoToStart: () => void;
@@ -75,16 +76,15 @@ export default function Controls(props: Props) {
           <span class="text-xs font-mono font-medium text-accent-light">{props.phase()}</span>
         </div>
 
-        {/* Speed selector */}
+        {/* Step mode selector */}
         <select
-          value={props.playbackSpeed()}
-          onChange={(e) => props.setPlaybackSpeed(parseInt(e.currentTarget.value))}
+          value={props.stepMode()}
+          onChange={(e) => props.setStepMode(e.currentTarget.value as StepMode)}
           class="shrink-0 bg-main-800 text-main-400 text-xs rounded-md px-2 py-1.5 border border-main-700/50 cursor-pointer transition-colors hover:border-main-600/50"
+          title="Mode de deplacement"
         >
-          <option value="1000">Lent</option>
-          <option value="500">Normal</option>
-          <option value="200">Rapide</option>
-          <option value="50">Tres rapide</option>
+          <option value="regular">Normal</option>
+          <option value="execution">Execution</option>
         </select>
       </Show>
 

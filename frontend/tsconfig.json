@@ -13,7 +13,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "codemachine-simulator": ["../simulator/pkg/codemachine_simulator"]
     }
   },
   "include": ["src"]

@@ -39,24 +39,15 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
     let mut halted = false;
 
     enum FsmState {
-        Start,
         Fetch,
         Decode,
         Execute,
     }
 
-    let mut state = FsmState::Start;
+    let mut state = FsmState::Fetch;
 
     while cycle < MAX_CYCLES && !halted {
         match state {
-            FsmState::Start => {
-                pc = 0;
-                steps.push(make_cycle_state(
-                    cycle, Phase::Start, &regs, &memory, &inst_mem,
-                    pc, ir, flag_z, flag_n, 0, -1,
-                ));
-                state = FsmState::Fetch;
-            }
             FsmState::Fetch => {
                 ir = inst_mem[pc as usize];
 
@@ -181,16 +172,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     pc, ir, flag_z, flag_n, stimulated_line_state, -1,
                 ));
 
-                if halted {
-                    // Add End state
-                    cycle += 1;
-                    steps.push(make_cycle_state(
-                        cycle, Phase::End, &regs, &memory, &inst_mem,
-                        pc, ir, flag_z, flag_n, 8, -1,
-                    ));
-                } else {
-                    state = FsmState::Fetch;
-                }
+                state = FsmState::Fetch;
             }
         }
 
