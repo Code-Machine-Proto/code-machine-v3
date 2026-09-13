@@ -27,7 +27,7 @@ pub fn tokenize_line(line: &str, line_index: usize) -> (Vec<Token>, Vec<TokenSpa
         }
 
         // Comment
-        if c == ';' || c == '#' {
+        if c == ';' || c == '#' || (c == '/' && chars.clone().nth(1).is_some_and(|(_, ch)| ch == '/')) {
             let comment: String = chars.by_ref().map(|(_, ch)| ch).collect();
             spans.push(TokenSpan {
                 line: line_index,
