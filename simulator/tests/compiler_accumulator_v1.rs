@@ -28,6 +28,36 @@ fn test_compile_with_labels() {
 }
 
 #[test]
+fn test_compile_instruction_lines_maps_program_words_to_source_lines() {
+    let source = "ld x\nadd y\nst z\nstop\nx: 10\ny: 20\nz: 0";
+    let result = compiler::compile(source, ProcessorId::Accumulator);
+    assert!(result.success);
+    // program[0..=3] are the four instructions, one per source line 0..=3
+    assert_eq!(result.instruction_lines[0], 0); // ld x
+    assert_eq!(result.instruction_lines[1], 1); // add y
+    assert_eq!(result.instruction_lines[2], 2); // st z
+    assert_eq!(result.instruction_lines[3], 3); // stop
+    // program[4..=6] are the data words for x/y/z on lines 4..=6
+    assert_eq!(result.instruction_lines[4], 4); // x: 10
+    assert_eq!(result.instruction_lines[5], 5); // y: 20
+    assert_eq!(result.instruction_lines[6], 6); // z: 0
+    assert_eq!(result.instruction_lines.len(), result.program.len());
+}
+
+#[test]
+fn test_compile_instruction_lines_multiline_data_shares_label_line() {
+    let source = ".data\ntable: 1\n2\n3\n.text\nld table\nstop";
+    let result = compiler::compile(source, ProcessorId::Accumulator);
+    assert!(result.success);
+    // The 3 data words all originate from source line 1 ("table: 1"),
+    // since 2 and 3 are bare continuation lines with no label of their own.
+    assert_eq!(result.instruction_lines[0], 1);
+    assert_eq!(result.instruction_lines[1], 2);
+    assert_eq!(result.instruction_lines[2], 3);
+    assert_eq!(result.instruction_lines.len(), result.program.len());
+}
+
+#[test]
 fn test_compile_branch_instructions() {
     let source = "ld 5\nbrz loop\nstop\nloop: nop\nbr loop";
     let result = compiler::compile(source, ProcessorId::Accumulator);

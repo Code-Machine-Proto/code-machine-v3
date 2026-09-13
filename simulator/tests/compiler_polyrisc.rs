@@ -34,6 +34,16 @@ fn test_compile_store_memory() {
 }
 
 #[test]
+fn test_compile_instruction_lines_maps_program_words_to_source_lines() {
+    let source = ".text\nldi r1,10\nadd r2,r1,r1\nstop";
+    let result = compiler::compile(source, ProcessorId::PolyRisc);
+    assert!(result.success);
+    // line 0 is the ".text" directive, so instructions start on line 1
+    assert_eq!(result.instruction_lines, vec![1, 2, 3]);
+    assert_eq!(result.instruction_lines.len(), result.program.len());
+}
+
+#[test]
 fn test_compile_ldi() {
     let source = ".text\nldi r7,255";
     let result = compiler::compile(source, ProcessorId::PolyRisc);

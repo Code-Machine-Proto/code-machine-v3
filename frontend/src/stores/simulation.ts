@@ -13,6 +13,7 @@ export function createSimulationStore(processorId: ProcessorId) {
   const [isCompiled, setIsCompiled] = createSignal(false);
   const [diagnostics, setDiagnostics] = createSignal<Diagnostic[]>([]);
   const [playbackSpeed, setPlaybackSpeed] = createSignal(500);
+  const [instructionLines, setInstructionLines] = createSignal<number[]>([]);
 
   // Derived signals
   const currentCycle = () => steps()[currentStep()] ?? null;
@@ -22,6 +23,14 @@ export function createSimulationStore(processorId: ProcessorId) {
   const totalSteps = () => steps().length;
   const phase = () => currentCycle()?.phase ?? "Fetch";
   const stimulatedLineState = () => currentCycle()?.stimulated_line_state ?? -1;
+  // Source line (0-indexed) of the instruction currently under the program counter,
+  // so the editor can highlight it in sync with the circuit animation.
+  const currentLine = () => {
+    const pc = registers()["PC"];
+    const lines = instructionLines();
+    if (pc === undefined || pc < 0 || pc >= lines.length) return null;
+    return lines[pc];
+  };
 
   // Debounced persistence
   let saveTimeout: ReturnType<typeof setTimeout>;
@@ -51,6 +60,7 @@ export function createSimulationStore(processorId: ProcessorId) {
     if (!result.success) {
       setIsCompiled(false);
       setSteps([]);
+      setInstructionLines([]);
       return;
     }
 
@@ -60,6 +70,7 @@ export function createSimulationStore(processorId: ProcessorId) {
       setCurrentStep(0);
       setIsCompiled(true);
       setIsPlaying(false);
+      setInstructionLines(result.instruction_lines);
     });
   }
 
@@ -90,7 +101,7 @@ export function createSimulationStore(processorId: ProcessorId) {
     diagnostics,
     playbackSpeed, setPlaybackSpeed,
     currentCycle, activeSignals, registers, memory,
-    totalSteps, phase, stimulatedLineState,
+    totalSteps, phase, stimulatedLineState, currentLine,
     compileAndRun,
     stepForward, stepBackward,
     goToStart, goToEnd,
