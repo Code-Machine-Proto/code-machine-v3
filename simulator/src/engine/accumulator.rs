@@ -299,12 +299,12 @@ pub fn simulate_v2(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTr
                     }
                     3 => {
                         // adda: MA <- MA + Mem[addr]
-                        ma = (ma as i32).wrapping_add(memory[addr] as i32) as u16;
+                        ma = (ma as i32).wrapping_add(memory[addr]) as u16;
                         stimulated_line_state = 3;
                     }
                     4 => {
                         // suba: MA <- MA - Mem[addr]
-                        ma = (ma as i32).wrapping_sub(memory[addr] as i32) as u16;
+                        ma = (ma as i32).wrapping_sub(memory[addr]) as u16;
                         stimulated_line_state = 3;
                     }
                     5 => {
