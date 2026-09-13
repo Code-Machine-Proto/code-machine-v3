@@ -316,13 +316,13 @@ export default function VisualWithMa(props: VisualProps) {
       {/* Control Signal box */}
       <g>
         <rect x="291.5" y="363.5" width="873" height="37" rx="4" class="circuit-box-bg" stroke="#475569" stroke-width="2" />
-        <text text-anchor="middle" dominant-baseline="middle" x={728} y={382} class="text-xl font-semibold" class="circuit-label">Control Signal</text>
+        <text text-anchor="middle" dominant-baseline="middle" x={728} y={382} class="text-xl font-semibold circuit-label">Control Signal</text>
       </g>
 
       {/* +1 incrementer */}
       <g>
         <rect x="141.5" y="20.5" width="39" height="39" rx="4" class="circuit-box-bg" stroke="#475569" stroke-width="2" />
-        <text text-anchor="middle" dominant-baseline="middle" x={161} y={40} class="text-xl" class="circuit-label">+1</text>
+        <text text-anchor="middle" dominant-baseline="middle" x={161} y={40} class="text-xl circuit-label">+1</text>
       </g>
     </svg>
   );

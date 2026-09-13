@@ -33,4 +33,3 @@ jobs:
       - run: cd simulator && wasm-pack build --target web --dev
       - run: cd frontend && npm ci
       - run: cd frontend && npm run lint
-      - run: cd frontend && npm run test

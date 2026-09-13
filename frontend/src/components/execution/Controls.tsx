@@ -1,5 +1,5 @@
 // frontend/src/components/execution/Controls.tsx
-import type { Accessor, Setter } from "solid-js";
+import type { Accessor, JSX, Setter } from "solid-js";
 import { Show } from "solid-js";
 
 interface Props {
@@ -95,7 +95,7 @@ export default function Controls(props: Props) {
   );
 }
 
-function ControlButton(props: { onClick: () => void; disabled: () => boolean; title: string; children: any }) {
+function ControlButton(props: { onClick: () => void; disabled: () => boolean; title: string; children: JSX.Element }) {
   return (
     <button
       onClick={props.onClick}

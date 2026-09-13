@@ -283,13 +283,13 @@ export default function VisualPolyRisc(props: VisualProps) {
       {/* +1 incrementer */}
       <g>
         <rect x="134.5" y="82.5" width="39" height="39" rx="4" class="circuit-box-bg" stroke="#475569" stroke-width="2"/>
-        <text x={154} y={102} text-anchor="middle" dominant-baseline="middle" class="text-xl" class="circuit-label">+1</text>
+        <text x={154} y={102} text-anchor="middle" dominant-baseline="middle" class="text-xl circuit-label">+1</text>
       </g>
 
       {/* Control Signal box */}
       <g>
         <rect x="264.5" y="360.5" width="799" height="39" rx="4" class="circuit-box-bg" stroke="#475569" stroke-width="2"/>
-        <text x={664} y={380} text-anchor="middle" dominant-baseline="middle" class="text-xl font-semibold" class="circuit-label">Control Signal</text>
+        <text x={664} y={380} text-anchor="middle" dominant-baseline="middle" class="text-xl font-semibold circuit-label">Control Signal</text>
       </g>
     </svg>
   );
