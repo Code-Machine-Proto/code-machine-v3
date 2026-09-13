@@ -4,13 +4,13 @@
 
 <h1 style="font-size: 60px;">Guide CodeMachine</h1>
 
-**Version 26.2.0**
-10 mars 2026
+**Version 3.1.0**
+9 septembre 2026
 
 Geneviève Cyr
 GIGL | Polytechnique Montréal
 <br><br>
-_Ce document est protégé par les droits d’auteurs en vertu de la licence Creative Commons Attribution 4.0 International (CC BY 4.0). Vous êtes autorisé(e) à partager, copier, distribuer et communiquer au public ce document, à condition d’attribuer correctement la paternité en citant les auteurs originaux. Vous n’êtes pas autorisé(e) à utiliser ce document à des fins commerciales. Toute modification de ce document doit être clairement indiquée, et les nouvelles créations doivent être diffusées sous une licence similaire.
+_Ce document est distribué sous licence Creative Commons Attribution 4.0 International (CC BY 4.0). Vous êtes libre de le partager, copier, distribuer et adapter, y compris à des fins commerciales, à condition d'attribuer correctement la paternité en citant les auteurs originaux.
 N.B. Le masculin est utilisé pour alléger le texte._  
 <br>
 <br>
@@ -21,26 +21,11 @@ N.B. Le masculin est utilisé pour alléger le texte._
 
 # Installation
 
-## Installation de Java
-
-Avant de vous lancer à installer CodeMachine, vous devez vous assurer d'avoir installé **Java Runtime 8 (JRE 8)**.
-
-👉 Le JRE est suffisant puisqu’il permet d’**exécuter** des applications Java sans avoir besoin des outils de développement.  
-Vous pouvez télécharger la version la plus récente du **Java Runtime** (toutes plateformes) sur le site officiel :  
-[🔗 Télécharger Java Runtime 8](https://www.java.com/en/download/manual.jsp)
-
-<br>
-
-> ⚠️ Si vous tenez à installer le **JDK complet** (qui inclut le compilateur et l’environnement d’exécution), assurez-vous de choisir une **version 17 ou inférieure** (Windows, Linux ou macOS).  
-> Le JDK est nécessaire uniquement si vous comptez développer en Java, et non simplement exécuter CodeMachine.
-
-<br>
-
 ## Pour Windows
 
 1. Aller sur GitHub : [Page GitHub de CodeMachine](https://github.com/Code-Machine-Proto/code-machine-v2)
    <br>
-2. Choisir le relâche la plus récente (cliquer dessus)
+2. Choisir la version la plus récente (cliquer dessus)
    <p>
    <img src="guide-codemachine-images/Version.png" width="650">
    </p>
@@ -77,7 +62,7 @@ Vous pouvez télécharger la version la plus récente du **Java Runtime** (toute
 
 1. Aller sur GitHub : [Page GitHub de CodeMachine](https://github.com/Code-Machine-Proto/code-machine-v2)
    <br>
-2. Choisir le relâche la plus récente (cliquer dessus)
+2. Choisir la version la plus récente (cliquer dessus)
    <p>
    <img src="guide-codemachine-images/Version.png" width="650">
    </p>
@@ -94,7 +79,7 @@ Vous pouvez télécharger la version la plus récente du **Java Runtime** (toute
    <p>
    <img src="guide-codemachine-images/ExecuterMacA.jpg" width="650">
    </p>
-Sinon, vous pouvez aller **par le CLI**, changer les permissions et partir l’outils comme suit :
+Sinon, vous pouvez aller **par le CLI**, changer les permissions et partir l’outil comme suit :
    <p>
    <img src="guide-codemachine-images/ExecuterMacB.jpg" width="650">
    </p>
@@ -110,7 +95,7 @@ Si vous avez l'erreur suivante au moment de la compilation :
 <p>
    <img src="guide-codemachine-images/ExecPasAdmin.jpg" width="650">
 </p>
-Il faut repartir CodeMachine en tant qu'administrateur en utilisant le bouton contextuelle de la souris.
+Il faut repartir CodeMachine en tant qu'administrateur en utilisant le bouton contextuel de la souris.
 <p>
    <img src="guide-codemachine-images/PartirAdmin.png" width="250">
 </p>
@@ -121,7 +106,7 @@ Il faut repartir CodeMachine en tant qu'administrateur en utilisant le bouton co
 
 1. Aller sur GitHub : [Page GitHub de CodeMachine](https://github.com/Code-Machine-Proto/code-machine-v2)
 
-2. Choisir le relâche la plus récente (cliquer dessus)
+2. Choisir la version la plus récente (cliquer dessus)
    <p>
    <img src="guide-codemachine-images/Version.png" width="650">
    </p>
@@ -137,7 +122,7 @@ Il faut repartir CodeMachine en tant qu'administrateur en utilisant le bouton co
 
 1. Aller sur GitHub : [Page GitHub de CodeMachine](https://github.com/Code-Machine-Proto/code-machine-v2)
 
-2. Choisir le relâche la plus récente (cliquer dessus)
+2. Choisir la version la plus récente (cliquer dessus)
    <p>
    <img src="guide-codemachine-images/Version.png" width="650">
    </p>
@@ -173,7 +158,6 @@ Il faut repartir CodeMachine en tant qu'administrateur en utilisant le bouton co
    <img src="guide-codemachine-images/alias-mac.jpg" width="250">
    </p>
 
-
 <div style="page-break-after: always;"></div>
 
 # Guide d’utilisation de CodeMachine
@@ -182,7 +166,7 @@ Il faut repartir CodeMachine en tant qu'administrateur en utilisant le bouton co
 
 ### Version
 
-Vous pourrez toujours savoir quelle version vous utilisez en regardant la version à cause de « Code Machine ». Normalement, l’outils fonctionnel devrait avoir une version supérieure ou égale à 25.2.2. Cependant, vous devriez toujours prendre la dernière version sur GitHub et vous pouvez voir les commentaires des modifications faites sur les versions directement dans Git.
+Vous pourrez toujours savoir quelle version vous utilisez en regardant la version à cause de « Code Machine ». Normalement, l’outil fonctionnel devrait avoir une version supérieure ou égale à 25.2.2. Cependant, vous devriez toujours prendre la dernière version sur GitHub et vous pouvez voir les commentaires des modifications faites sur les versions directement dans Git.
 
 ### Architectures
 
@@ -205,64 +189,93 @@ Trois architectures sont disponibles dans CodeMachine : Accumulateur, Accumulat
 
 <div style="page-break-after: always;"></div>
 
-### Compilation
+### Menu du haut (Importer, Sauvegarder, Compiler)
 
-- Le dernier code entré dans chaque architecture devrait être mémorisé quand vous quittez l’architecture. Cependant, dès que vous quitté une architecture, en retournant dans n’importe quelle architecture, il faut recompiler. Pour savoir si le code est compilé, regardé le / en haut.
    <p>
-   <img src="guide-codemachine-images/CodeCompileOUNon.jpg" width="500">
+   <img src="guide-codemachine-images/Menu.png" width="300">
    </p>
 
-- Durant la compilation, le bouton « Compiler » aura un indicateur de chargement et le bouton sera inaccessible. Le temps de compilation pour les architectures « Accumulateur » sont relativement rapide. Pour le « PolyRisc », c’est plus long (cela peut prendre au-delà d’une minute pour plusieurs cycles)
+En haut de l’éditeur de code, un menu vous donne accès à trois actions :
+
+- **Icône de téléversement (↑)** : importe le code d’un fichier depuis votre ordinateur dans l’éditeur.
+- **Icône de téléchargement (↓)** : enregistre le code actuel de l’éditeur dans un fichier sur votre ordinateur.
+- ** ⚙️ Compiler** : Compile le programme
+
+> **ATTENTION : Importer un fichier ou effacer le code sont des actions irréversibles.** Une fenêtre d’avertissement vous demandera de confirmer avant de procéder :
+>
+> <p>
+> <img src="guide-codemachine-images/AvertissementEffacerCode.png" width="400">
+> </p>
+>
+> Cliquer sur « Ok » remplacera définitivement le contenu actuel de l’éditeur (par le fichier importé, ou par un éditeur vide). Assurez-vous d’avoir sauvegardé votre code au préalable (avec l’icône de téléchargement) si vous souhaitez le conserver.
+
+### Compilation
+
+- Le dernier code entré dans chaque architecture devrait être mémorisé quand vous quittez l’architecture. Cependant, dès que vous quittez une architecture, en retournant dans n’importe quelle architecture, il faut recompiler. Pour savoir si le code est compilé, regardez le / en haut.
+   <p>
+   <img src="guide-codemachine-images/CodePasCompile.png" width="50">
+   </p>
+- Cette icône apparaîtra lorsque le code est en train de se faire compiler. <p>
+  <img src="guide-codemachine-images/CodeCompile.png" width="50">
+   </p>
+- Une modification à un code compilé affichera cette icône pour indiquer qu'une modification a eu lieu et qu'il faut recompiler.
+    <p>
+   <img src="guide-codemachine-images/CodeModifie.png" width="50">
+   </p>
+- Si des erreurs de syntaxes sont présentes, cet icône apparaîtra et indiquera le nombre de celles-ci. <p>
+  <img src="guide-codemachine-images/CodeErreur.png" width="50">
+   </p>
+- Un code compilé avec succès et prêt à être exécuté affichera l'icône suivante : <p>
+  <img src="guide-codemachine-images/CodeOk.png" width="50">
+   </p>
 
 ### Affichage du nombre de cycles
 
-> **ATTENTION : CodeMachine est limité à 1024 cycles au total. Tout code qui donnera plus de 1024 cycles, seulement les 1024 premiers cycles seront exécutés.**
+> **ATTENTION : CodeMachine est limité à 4096 cycles au total. Tout code qui donnera plus de 4096 cycles, seulement les 4096 premiers cycles seront exécutés.**
 
-- Les cycles sont comptés à partir de 0, donc le nombre total de cycle (/nb) sera toujours égale au nombre de cycle -1. Pour toutes les architecture, chaque instruction prend 3 cycles (incluant l’instruction « nop ».
+- Les cycles sont comptés à partir de 1, donc le nombre total de cycle (/nb) sera toujours égale au nombre de cycle. Pour toutes les architectures, chaque instruction prend 3 cycles (incluant l’instruction « nop »).
 
 - Pour naviguer dans le code vous avez plusieurs options.
   1. Utiliser le « play » (triangle bleu simple) et le code sera exécuté automatiquement, étapes par étapes.
 
-  2. Utiliser les boutons « next step » ou « prévious step » (triangle bleu avec barre verticale), pour exécuter le code une étape à la fois.
+  2. Utiliser les boutons « next step » ou « previous step » (triangle bleu avec barre verticale), pour exécuter le code une étape à la fois.
 
-  3. Utiliser les boutons « goto end » ou « goto start » (double triangle bleu), pour aller directement à a fin ou au début du code.
+  3. Utiliser les boutons « goto end » ou « goto start » (double triangle bleu), pour aller directement à la fin ou au début du code.
 
   4. Décider exactement à quel cycle aller en entrant le nombre de cycle à la place du chiffre qui apparaît avant le « / »
   <p>
   <img src="guide-codemachine-images/PlayTime.png" width="500">
   </p>
 
-- Lorsque vous utiliser le mode « régulier », une étape correspond à un cycle. Donc chaque instruction passera par les étapes : « fetch », « decode », « execute » (3 cycles).
-   <p>
-   <img src="guide-codemachine-images/Regulier.png" width="150">
-   </p>
+- Lorsque vous utilisez le mode « régulier », une étape correspond à un cycle. Donc chaque instruction passera par les étapes : « fetch », « decode », « execute » (3 cycles).
 
-- Lorsque vous utiliser le mode « exécution », chaque étape correspond à une instruction. Ainsi, chaque étape passera d’une cycle « execute » d’une instruction à l’autre (par bon de 3 cycles).
+- Lorsque vous utilisez le mode « exécution », chaque étape correspond à une instruction. Ainsi, chaque étape passera d’un cycle « execute » d’une instruction à l’autre (par bond de 3 cycles).
    <p>
-   <img src="guide-codemachine-images/Execution.png" width="150">
+   <img src="guide-codemachine-images/Modes.png" width="150">
    </p>
 
 - Le cycle auquel vous êtes rendu est toujours affiché dans le nombre avant le « / ». Attention de penser additionner un à ce nombre pour savoir exactement à quel cycle vous êtes rendus (puisque les cycles sont comptés à partir de 0). Vous pouvez aussi, en tout temps, voir à quel stade d’exécution de l’instruction vous êtes dans le petit rectangle blanc : « fetch », « decode », « execute ».
    <p>
-   <img src="guide-codemachine-images/cycle_precis.png" width="500">
+   <img src="guide-codemachine-images/cycle_precis.png">
    </p>
 
 ### Surbrillance du code et erreur de syntaxes
 
-- Normalement, les instructions sont en _rouge_, les « déclarations » d’étiquettes en _mauve_ et les registres en _orange_ et les valeurs ou « utilisation » d’étiquettes sont en _blanc_ dans votre code.
+- Normalement, les instructions sont en _rouge_, les « déclarations » d’étiquettes en _vert_, les registres en _bleu_ et les valeurs sont en _mauve_ dans votre code.
    <p>
    <img src="guide-codemachine-images/surbrillance.png" width="200">
    </p>
 
-- Les erreurs de syntaxes devraient être soulignées en *rouge* et les "warnings" en *jaune* et tant que vous avez des soulignements rouges dans le code, vous ne pourrez pas accéder au bouton « Compiler » qui sera *rouge*.  Normalement, lorsque vous avez des soulignées dans le code, une fenêtre devrait apparaître et vous indique le type d'erreur précédé du numéro de la ligne qui contient une erreur.  
-   >**ATTENTION : Lorsqu'il y a une erreur dans une ligne de code, il se pourrait que la surbrillance des erreurs des lignes suivantes ne soient pas exactes.  Il est très important de régler les premières erreurs dans le code pour pouvoir continuer la correction des lignes suivantes**
-- Si vous compiler et qu’une erreur se produit (qui n’a pas été détecter par le « parser »), un message vous l’indiquera, mais vous devrez trouver sans aide le problème de votre côté.  
-   >**Ne vous gênez pas pour ouvrir des "issues" sur GitHub si ce genre de situation se produise pour qu'on puisse améliorer l'outils.**
+- Les erreurs de syntaxes devraient être soulignées en _rouge_ et les avertissements ("warnings") en _jaune_ et tant que vous avez des soulignements rouges dans le code, vous ne pourrez pas accéder au bouton « Compiler » qui sera _rouge_. Normalement, lorsque vous avez des soulignements dans le code, une fenêtre devrait apparaître et vous indiquer le type d'erreur précédé du numéro de la ligne qui contient une erreur.
+  > **ATTENTION : Lorsqu'il y a une erreur dans une ligne de code, il se pourrait que la surbrillance des erreurs des lignes suivantes ne soient pas exactes. Il est très important de régler les premières erreurs dans le code pour pouvoir continuer la correction des lignes suivantes**
+- Si vous compilez et qu’une erreur se produit (qui n’a pas été détectée par le « parser »), un message vous l’indiquera, mais vous devrez trouver sans aide le problème de votre côté.
+
+  > **Ne vous gênez pas pour ouvrir des "issues" sur GitHub si ce genre de situation se produise pour qu'on puisse améliorer l'outil.**
 
 - Les règles d’écriture du code sont données dans la section « Grammaire du code ».
 
 - Si votre code est trop long pour s’afficher au complet à l’écran, vous devez utiliser la roulette de la souris pour faire défiler le code. Il n’y a pas de barre de défilement.
-- Vous pouvez voir l'instruction en cours d'excecution par sa surbrillance.
+- Vous pouvez voir l'instruction en cours d'exécution par sa surbrillance.
 
 ### Organisation mémoire
 
@@ -273,10 +286,10 @@ Trois architectures sont disponibles dans CodeMachine : Accumulateur, Accumulat
 - **Ordre en mémoire:**
   1. Section `.text` (programme) → placée en premier en mémoire
   2. Section `.data` (données) → placée après le code
-  
 - **Les étiquettes** (comme `loop:`) ne sont **pas écrites en mémoire** - elles sont remplacées par l'adresse de l'instruction suivante lors de l'assemblage
 
 **Exemple:**
+
 ```
 .text              # Cette directive n'occupe pas de mémoire
 ld n               # Occupe de la mémoire (adresse 0)
@@ -292,65 +305,25 @@ one: 1             # Occupe de la mémoire (adresse 6)
 ```
 
 **Dans cet exemple:**
+
 - Les instructions (`.text`) occupent les adresses 0 à 4
 - Les données (`.data`) occupent les adresses 5 et 6
 - L'étiquette `loop:` est remplacée par l'adresse 1
 - Les directives `.text` et `.data` n'occupent aucun espace mémoire
 
-### Mode d’affichage graphique
-
-- Chaque architecture à 2 modes d’affichage graphique : mode « visuel » et mode « programmeur ». Contrôlable avec le bouton suivant :
-   <p>
-   <img src="guide-codemachine-images/ModesGraphique.png" width="400">
-   </p>
-
-- En mode « visuel », vous verrez le circuit matériel avec les différents blocs et les signaux qui sont actifs au cycle en cours seront en rouge.
-   <p>
-   <img src="guide-codemachine-images/ModeVisuel.png" width="600">
-   </p>
-
-- En mode « programmeur », vous verrez le contenu des registres, sans voir le circuit :
-   <p>
-   <img src="guide-codemachine-images/ModeProgrammeur.png" width="400">
-   </p>
-
-<div style="page-break-after: always;"></div>
-
 ## Affichage de la mémoire
 
-- Il est possible d’afficher ou masquer le contenu de la mémoire principale avec le bouton :
-   <p>
-   <img src="guide-codemachine-images/SelectAffichageMemoire.png" width="200">
+- La mémoire ainsi que le contenu des registres sont affichés à la droite du programme. Les valeurs ne sont valides qu'après avoir compilé le programme. <p>
+  <img src="guide-codemachine-images/MemoirePrincipale.png" width="200">
    </p>
 
-  Ce bouton est disponible en mode « visuel » ou en mode « programmeur » mais l’espace occupé par chaque partie sera adapté à l’espace d’écran disponible. À vous de trouver ce qui vous convient le mieux.
-
-- Le contenu de la mémoire ne s’affichera que lorsqu’un programme est compilé.
-
-- Pour les deux premières architectures, il n’y a qu’une mémoire qui contient les données et les instructions.
-   <p>
-   <img src="guide-codemachine-images/MemoirePrincipale.png" width="250">
-   </p>
-
-- Il est possible de choisir si les adresses et les données sont en décimales ou en hexadécimales avec les deux boutons dans le haut de la mémoire.
+- Il est possible de choisir si les adresses et les données sont en décimal ou en hexadécimal avec les deux boutons dans le haut de la mémoire.
 
 - Vous pouvez aussi choisir le « mode » d’affichage (1, 2 ou 4) qui vous mettra 1, 2 ou 4 adresses par ligne (selon votre préférence).
 
 - Vous remarquerez qu’il y a des adresses pour chaque ligne et chaque colonne. En fait l’adresse mémoire d’une valeur (exemple : 776) correspond à la somme de l’adresse de la ligne et de la colonne (exemple : 0x4+0x1 = 0x5 pour la donnée 776). Attention, dans CodeMachine les données sont TOUJOURS de 16 bits (2 octets) et ne sont pas accessibles par octet. Chaque adresse mémoire pointe sur une case mémoire d’une grandeur de 16 bits. Ce sont ces cases que vous voyez dans chaque rectangle.
 
 - Pour se promener dans la mémoire et faire défiler les adresses, il n’y a pas de barre de défilement, vous devez utiliser la roulette de la souris pour faire défiler la mémoire.
-
-- Pour le Polyrisc, l’affichage de la mémoire principale de données fonctionne de la même manière que les deux autres architectures. Cependant, le Polyrisc a aussi une « mémoire » de registres à usage général ainsi qu’une mémoire programme. Ces deux mémoires supplémentaires ne sont accessibles qu’en mode « programmeur » à l’aide de deux cases à cocher selon ce que vous voulez voir.
-   <p>
-   <img src="guide-codemachine-images/SelectAffichageAutreMemoire.png" width="400">
-   </p>
-
-- Le fonctionnement de l’affichage des 2 autres mémoires est exactement le même que pour la mémoire principale. Cependant, notez que la largeur des données de la mémoire d’instruction du Polyrisc est de 28 bits et non de 16 bits comme toutes les autres mémoires.
-
-- Vous pouvez donc, en more « programmeur » voir le contenu des 3 mémoires comme suit :
-   <p>
-   <img src="guide-codemachine-images/AutreMemoire.png" width="700">
-   </p>
 
 <div style="page-break-after: always;"></div>
 
@@ -366,11 +339,11 @@ one: 1             # Occupe de la mémoire (adresse 6)
 
 - La déclaration des étiquettes doit toujours mettre le « : » sans espace entre l’étiquette et le « : » (Ex : loop: et non loop : )
 
-- Les nombres entrés dans le code, comme valeur, doivent toujours êtres des nombres entiers (négatif ou non)
+- Les nombres entrés dans le code, comme valeur, doivent toujours être des nombres entiers (négatif ou non)
 
 - Chaque instruction doit être séparée par un « new line » (retour de charriot)
 
-- A part pour la déclaration d’étiquettes, il n’y a aucune dépendance aux espaces
+- À part pour la déclaration d’étiquettes, il n’y a aucune dépendance aux espaces
 
 - Les lignes vides à la fin du code ne sont pas problématiques.
 
@@ -387,7 +360,7 @@ Si vous avez des problèmes avec CodeMachine, vous pouvez les souligner aux dév
    <img src="guide-codemachine-images/IssuesGitHub.png" width="350">
    </p>
 
-2. Regarder si votre problème n’a pas été déjà entrée en lisant les « open » issues
+2. Regarder si votre problème n’a pas été déjà entré en lisant les « open » issues
    <p>
    <img src="guide-codemachine-images/OpenIssues.png" width="400">
    </p>
@@ -404,7 +377,7 @@ Si vous avez des problèmes avec CodeMachine, vous pouvez les souligner aux dév
 
 5. Dans chacun des cas, il y a un « template » de base qui vous guide dans l’information à entrer dans votre « issue » pour faciliter la compréhension du développeur. SVP, suivez ces instructions pour faciliter leur travail.
 
-Notez que vous avez accès au code (c’est « open source »), alors vous pouvez faire un clone et jouer dans le code à votre aise si vous le désirer. Vous avez aussi une manière de déployez votre version automatiquement (pour vous-même), mais nous ne supporterons pas le code, juste l’interface. De plus, les accès en écriture sont proscrits, seulement les développeurs pourront changer le code en cours.
+Notez que vous avez accès au code (c’est « open source »), alors vous pouvez faire un clone et jouer dans le code à votre aise si vous le désirez. Vous avez aussi une manière de déployer votre version automatiquement (pour vous-même), mais nous ne supporterons pas le code, juste l’interface. De plus, les accès en écriture sont proscrits, seulement les développeurs pourront changer le code en cours.
 
 <div style="page-break-after: always;"></div>
 
@@ -460,7 +433,7 @@ Notez que vous avez accès au code (c’est « open source »), alors vous pou
    <img src="guide-codemachine-images/ProcesseurAccMACodeMachine.png" width="800">
    </p>
    
-**Attention:** Une nouvelle instruction (lea) a été ajoutée dans le jeu d'instructions et n'est pas encore représentée dans le schéme de CodeMachine.  Voici ce qu'il manque et sera ajouté éventuellement dans l'interface graphique.
+**Attention:** Une nouvelle instruction (lea) a été ajoutée dans le jeu d'instructions et n'est pas encore représentée dans le schéma de CodeMachine.  Voici ce qu'il manque et sera ajouté éventuellement dans l'interface graphique.
    <p>
    <img src="guide-codemachine-images/Accumulateur-MA-Lea.png" width="800">
    </p>
@@ -478,28 +451,29 @@ Pour plus de détails, consultez [l'issue #123](https://github.com/Code-Machine-
 <div style="page-break-after: always;"></div>
 
 ## Instructions
-| Instruction | Encodage | Description |
-| --- | --- | --- |
-| add ADR | 0x00XX | ACC <-  ACC + Mémoire[ADR] |
-| sub ADR | 0x01XX | ACC <-  ACC - Mémoire[ADR] |
-| mul ADR | 0x02XX | ACC <-  ACC × Mémoire[ADR] |
-| adda ADR | 0x03XX | MA  <-  MA  + Mémoire[ADR] |
-| suba ADR | 0x04XX | MA  <-  MA  - Mémoire[ADR] |
-| addx | 0x05XX | ACC <-  ACC + Mémoire[MA] |
-| subx | 0x06XX | ACC <-  ACC - Mémoire[MA] |
-| ld ADR | 0x07XX | ACC <-  Mémoire[ADR] |
-| st ADR | 0x08XX | Mémoire[ADR] <-  ACC |
-| lda ADR | 0x09XX | MA  <-  Mémoire[ADR] |
-| sta ADR | 0x0AXX | Mémoire[ADR] <-  MA |
-| ldi | 0x0BXX | ACC <-  Mémoire[MA] |
-| sti | 0x0CXX | Mémoire[MA] <-  ACC |
-| br ADR | 0x0DXX | PC <-  ADR |
-| brz ADR | 0x0EXX | ACC = 0 ? PC <-  ADR : PC <-  PC + 1 |
-| brnz ADR | 0x0FXX | ACC != 0 ? PC <-  ADR : PC <-  PC + 1 |
-| shl | 0x10XX | ACC <-  ACC << 1 |
-| shr | 0x11XX | ACC <-  ACC >> 1 |
-| lea ADR | 0x12XX | MA <- ADR |
-| stop | 0x13XX | Arrêt du programme |
+
+| Instruction | Encodage | Description                         |
+| ----------- | -------- | ----------------------------------- |
+| add ADR     | 0x00XX   | ACC <- ACC + Mémoire[ADR]           |
+| sub ADR     | 0x01XX   | ACC <- ACC - Mémoire[ADR]           |
+| mul ADR     | 0x02XX   | ACC <- ACC × Mémoire[ADR]           |
+| adda ADR    | 0x03XX   | MA <- MA + Mémoire[ADR]             |
+| suba ADR    | 0x04XX   | MA <- MA - Mémoire[ADR]             |
+| addx        | 0x05XX   | ACC <- ACC + Mémoire[MA]            |
+| subx        | 0x06XX   | ACC <- ACC - Mémoire[MA]            |
+| ld ADR      | 0x07XX   | ACC <- Mémoire[ADR]                 |
+| st ADR      | 0x08XX   | Mémoire[ADR] <- ACC                 |
+| lda ADR     | 0x09XX   | MA <- Mémoire[ADR]                  |
+| sta ADR     | 0x0AXX   | Mémoire[ADR] <- MA                  |
+| ldi         | 0x0BXX   | ACC <- Mémoire[MA]                  |
+| sti         | 0x0CXX   | Mémoire[MA] <- ACC                  |
+| br ADR      | 0x0DXX   | PC <- ADR                           |
+| brz ADR     | 0x0EXX   | ACC = 0 ? PC <- ADR : PC <- PC + 1  |
+| brnz ADR    | 0x0FXX   | ACC != 0 ? PC <- ADR : PC <- PC + 1 |
+| shl         | 0x10XX   | ACC <- ACC << 1                     |
+| shr         | 0x11XX   | ACC <- ACC >> 1                     |
+| lea ADR     | 0x12XX   | MA <- ADR                           |
+| stop        | 0x13XX   | Arrêt du programme                  |
 
 ### Opérations ALU
 
@@ -564,6 +538,6 @@ Pour plus de détails, consultez [l'issue #123](https://github.com/Code-Machine-
 | Type d’opération         | Syntaxe assembleur |
 | ------------------------ | ------------------ |
 | Lecture de la mémoire    | ld rdst, (rsrc1)   |
-| Ecriture dans la mémoire | st (rsrc1), rsrc2  |
+| Écriture dans la mémoire | st (rsrc1), rsrc2  |
 | Chargement d’un immédiat | ldi rdst, imm      |
 | Arrêter l’exécution      | Stop               |

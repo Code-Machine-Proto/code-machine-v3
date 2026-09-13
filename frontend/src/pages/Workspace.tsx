@@ -218,6 +218,7 @@ export default function Workspace() {
             activeLine={store.currentLine}
             isCompiled={store.isCompiled}
             isCompiling={store.isCompiling}
+            isStale={store.isStale}
           />
 
           {/* Center: Circuit View */}
