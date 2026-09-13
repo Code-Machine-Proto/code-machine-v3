@@ -256,11 +256,7 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
                 } else {
                     None
                 };
-                parsed_lines.push((
-                    line_idx,
-                    label,
-                    ParsedLine::Instruction { opcode, operand },
-                ));
+                parsed_lines.push((line_idx, label, ParsedLine::Instruction { opcode, operand }));
                 current_address += 1;
             } else {
                 diagnostics.push(Diagnostic {
