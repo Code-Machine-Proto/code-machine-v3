@@ -67,6 +67,12 @@ enum Operand {
     LabelRef { name: String, offset: i32 },
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum Section {
+    Text,
+    Data,
+}
+
 pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
     let instruction_set = build_instruction_set(processor_id);
     let lines: Vec<&str> = source.lines().collect();
@@ -78,6 +84,7 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
     let mut parsed_lines: Vec<(usize, Option<String>, ParsedLine)> = Vec::new(); // (source_line, label, parsed)
     let mut label_addresses: HashMap<String, usize> = HashMap::new();
     let mut current_address: usize = 0;
+    let mut section = Section::Text;
 
     for (line_idx, line) in lines.iter().enumerate() {
         let trimmed = line.trim();
@@ -99,7 +106,12 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
         }
 
         // Check for directive
-        if matches!(&tokens[0], Token::Directive(_)) {
+        if let Token::Directive(ref dir) = tokens[0] {
+            match dir.as_str() {
+                ".text" => section = Section::Text,
+                ".data" => section = Section::Data,
+                _ => {}
+            }
             continue;
         }
 
@@ -133,6 +145,31 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
             // The label points to whatever comes next; don't emit anything
             // But we already registered the label at current_address
             parsed_lines.push((line_idx, label, ParsedLine::Empty));
+            continue;
+        }
+
+        // Inside an explicit .data section, every line (labeled or not) is data,
+        // so multi-value declarations can continue across lines without repeating the label.
+        if section == Section::Data {
+            let mut values = Vec::new();
+            for token in rest_tokens {
+                match token {
+                    Token::Number(n) => values.push(*n),
+                    Token::Comma => {}
+                    Token::Identifier(name) => {
+                        diagnostics.push(Diagnostic {
+                            line: line_idx,
+                            column: 0,
+                            message: format!("Label reference '{}' in data not supported", name),
+                            severity: Severity::Error,
+                        });
+                    }
+                    _ => {}
+                }
+            }
+            let count = values.len();
+            parsed_lines.push((line_idx, label, ParsedLine::Data(values)));
+            current_address += count;
             continue;
         }
 
