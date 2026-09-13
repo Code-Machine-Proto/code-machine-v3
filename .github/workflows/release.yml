@@ -48,12 +48,11 @@ jobs:
     needs: release
     if: needs.release.outputs.released == 'true'
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
-            arch_flag: --linux AppImage:x64
-          - os: ubuntu-24.04-arm
-            arch_flag: --linux AppImage:arm64
+            arch_flag: --linux AppImage:x64 AppImage:arm64
           - os: windows-latest
             arch_flag: ""
           - os: macos-latest
@@ -75,6 +74,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Attach installer to release
-        run: gh release upload "v${{ needs.release.outputs.version }}" frontend/release/* --clobber
+        shell: bash
+        run: find frontend/release -maxdepth 1 -type f \( -name "*.AppImage" -o -name "*.msi" -o -name "*.dmg" \) -print0 | xargs -0 -r gh release upload "v${{ needs.release.outputs.version }}" --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
