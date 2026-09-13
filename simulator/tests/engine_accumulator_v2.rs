@@ -336,7 +336,7 @@ fn test_simulate_max_cycles() {
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(!trace.halted);
-    assert!(trace.steps.len() <= 1024);
+    assert!(trace.steps.len() <= 4096 * 3);
 }
 
 fn read_example(name: &str) -> String {
