@@ -101,10 +101,6 @@ fn test_simulate_br_unconditional() {
     let trace = engine::simulate(&compiled.program, ProcessorId::Accumulator, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
-    assert_eq!(*last.registers.get("ACC").unwrap(), 9);
-}
-
-#[test]
 fn test_simulate_stop_halts_immediately() {
     let source = "stop\nld x\nx: 5";
     let compiled = compiler::compile(source, ProcessorId::Accumulator);

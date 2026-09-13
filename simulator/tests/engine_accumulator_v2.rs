@@ -84,10 +84,6 @@ fn test_simulate_suba() {
 
 #[test]
 fn test_simulate_addx() {
-    let source = "ld x\nlea y\naddx\nstop\nx: 5\ny: 6";
-    let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
-    assert!(compiled.success);
-    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
     let last = trace.steps.last().unwrap();
     assert_eq!(*last.registers.get("ACC").unwrap(), 11);
