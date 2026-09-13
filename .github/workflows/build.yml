@@ -1,8 +1,7 @@
 # .github/workflows/build.yml
 name: Build & Release
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   build:

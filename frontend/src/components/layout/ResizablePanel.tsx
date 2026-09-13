@@ -1,4 +1,4 @@
-import { createSignal, JSX } from "solid-js";
+import { createSignal, For, JSX } from "solid-js";
 
 interface Props {
   direction: "horizontal" | "vertical";
@@ -62,47 +62,49 @@ export default function ResizablePanel(props: Props) {
       class="flex h-full w-full"
       style={{ "flex-direction": isHorizontal() ? "row" : "column" }}
     >
-      {props.children.map((child, i) => (
-        <>
-          <div
-            style={{
-              [isHorizontal() ? "width" : "height"]: `${sizes()[i]}%`,
-              "min-width": isHorizontal() ? `${minSizes()[i]}px` : undefined,
-              "min-height": !isHorizontal() ? `${minSizes()[i]}px` : undefined,
-              overflow: "hidden",
-            }}
-            class="flex flex-col"
-          >
-            {child}
-          </div>
-          {i < props.children.length - 1 && (
+      <For each={props.children}>
+        {(child, i) => (
+          <>
             <div
-              class={`shrink-0 relative group ${
-                isHorizontal() ? "w-0" : "h-0"
-              }`}
+              style={{
+                [isHorizontal() ? "width" : "height"]: `${sizes()[i()]}%`,
+                "min-width": isHorizontal() ? `${minSizes()[i()]}px` : undefined,
+                "min-height": !isHorizontal() ? `${minSizes()[i()]}px` : undefined,
+                overflow: "hidden",
+              }}
+              class="flex flex-col"
             >
-              {/* Visible line */}
-              <div
-                class={`absolute transition-all duration-150 ${
-                  isHorizontal()
-                    ? "w-px h-full left-0 top-0 bg-main-700/60 group-hover:bg-accent/60 group-hover:w-0.5"
-                    : "h-px w-full top-0 left-0 bg-main-700/60 group-hover:bg-accent/60 group-hover:h-0.5"
-                }`}
-              />
-              {/* Wider invisible hit area */}
-              <div
-                class={`absolute ${
-                  isHorizontal()
-                    ? "w-3 h-full -left-1.5 top-0 cursor-col-resize"
-                    : "h-3 w-full -top-1.5 left-0 cursor-row-resize"
-                }`}
-                onMouseDown={(e) => startResize(i, e)}
-                onWheel={(e) => e.stopPropagation()}
-              />
+              {child}
             </div>
-          )}
-        </>
-      ))}
+            {i() < props.children.length - 1 && (
+              <div
+                class={`shrink-0 relative group ${
+                  isHorizontal() ? "w-0" : "h-0"
+                }`}
+              >
+                {/* Visible line */}
+                <div
+                  class={`absolute transition-all duration-150 ${
+                    isHorizontal()
+                      ? "w-px h-full left-0 top-0 bg-main-700/60 group-hover:bg-accent/60 group-hover:w-0.5"
+                      : "h-px w-full top-0 left-0 bg-main-700/60 group-hover:bg-accent/60 group-hover:h-0.5"
+                  }`}
+                />
+                {/* Wider invisible hit area */}
+                <div
+                  class={`absolute ${
+                    isHorizontal()
+                      ? "w-3 h-full -left-1.5 top-0 cursor-col-resize"
+                      : "h-3 w-full -top-1.5 left-0 cursor-row-resize"
+                  }`}
+                  onMouseDown={(e) => startResize(i(), e)}
+                  onWheel={(e) => e.stopPropagation()}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </For>
     </div>
   );
 }

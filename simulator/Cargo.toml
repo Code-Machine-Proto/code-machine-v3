@@ -2,6 +2,9 @@
 name = "codemachine-simulator"
 version = "0.1.0"
 edition = "2021"
+description = "Simulateur de processeurs"
+repository = "https://github.com/Code-Machine-Proto/code-machine-v3.git"
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib", "rlib"]

@@ -219,13 +219,13 @@ export default function VisualAccumulator(props: VisualProps) {
       {/* +1 incrementer box */}
       <g>
         <rect x="119.5" y="48.5" width="39" height="39" rx="4" class="circuit-box-bg" stroke="#475569" stroke-width="2" />
-        <text x="139" y="68" text-anchor="middle" dominant-baseline="middle" class="text-xl" class="circuit-label">+1</text>
+        <text x="139" y="68" text-anchor="middle" dominant-baseline="middle" class="text-xl circuit-label">+1</text>
       </g>
 
       {/* Control Signal box */}
       <g>
         <rect x="314.5" y="382.5" width="572" height="59" rx="4" class="circuit-box-bg" stroke="#475569" stroke-width="2"/>
-        <text x="600.5" y="412" class="text-xl font-semibold" class="circuit-label" text-anchor="middle" dominant-baseline="middle">Control Signal</text>
+        <text x="600.5" y="412" class="text-xl font-semibold circuit-label" text-anchor="middle" dominant-baseline="middle">Control Signal</text>
       </g>
 
       <rect x="1071.5" y="382.5" width="59" height="59" rx="4" class="circuit-box-bg" stroke="#475569" stroke-width="2"/>
