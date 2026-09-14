@@ -294,8 +294,10 @@ export default function Workspace() {
             <div class="flex-1 min-h-0 overflow-hidden">
               <MemoryView
                 memory={store.memory}
+                instructionMemory={store.instructionMemory}
                 stimulatedMemory={stimulatedMemory}
                 isCompiled={store.isCompiled}
+                processorId={processorId()}
               />
             </div>
           </div>

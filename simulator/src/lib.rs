@@ -60,11 +60,12 @@ pub fn compile(source: &str, processor_id: u8) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub fn simulate(program: &[u32], processor_id: u8) -> Result<JsValue, JsValue> {
+pub fn simulate(program: &[u32], processor_id: u8, data_memory: &[i32]) -> Result<JsValue, JsValue> {
     console_log!(
-        "[wasm] simulate() called: processor_id={} program_len={}",
+        "[wasm] simulate() called: processor_id={} program_len={} data_memory_len={}",
         processor_id,
-        program.len()
+        program.len(),
+        data_memory.len()
     );
     let pid = match types::ProcessorId::from_u8(processor_id) {
         Some(pid) => pid,
@@ -73,7 +74,8 @@ pub fn simulate(program: &[u32], processor_id: u8) -> Result<JsValue, JsValue> {
             return Err(JsValue::from_str("Invalid processor ID"));
         }
     };
-    let result = engine::simulate(program, pid, None);
+    let data_memory = if data_memory.is_empty() { None } else { Some(data_memory) };
+    let result = engine::simulate(program, pid, data_memory);
     console_log!(
         "[wasm] simulate() done: halted={} steps={} error={:?}",
         result.halted,
