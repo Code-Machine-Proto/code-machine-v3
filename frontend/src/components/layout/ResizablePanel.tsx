@@ -4,6 +4,10 @@ interface Props {
   direction: "horizontal" | "vertical";
   initialSizes: number[];
   minSizes?: number[];
+  /** Per-child collapse flags (aligned by index). Collapsed children shrink to `collapsedSize` and no longer participate in the resizable proportions; the rest grow to fill the freed space. */
+  collapsed?: boolean[];
+  /** Fixed size (px) a collapsed child renders at. Defaults to 36. */
+  collapsedSize?: number;
   children: JSX.Element[];
 }
 
@@ -12,6 +16,8 @@ export default function ResizablePanel(props: Props) {
   let containerRef!: HTMLDivElement;
 
   const minSizes = () => props.minSizes ?? props.initialSizes.map(() => 50);
+  const isCollapsed = (i: number) => props.collapsed?.[i] ?? false;
+  const collapsedSize = () => props.collapsedSize ?? 36;
 
   const startResize = (index: number, e: MouseEvent) => {
     e.preventDefault();
@@ -66,12 +72,19 @@ export default function ResizablePanel(props: Props) {
         {(child, i) => (
           <>
             <div
-              style={{
-                [isHorizontal() ? "width" : "height"]: `${sizes()[i()]}%`,
-                "min-width": isHorizontal() ? `${minSizes()[i()]}px` : undefined,
-                "min-height": !isHorizontal() ? `${minSizes()[i()]}px` : undefined,
-                overflow: "hidden",
-              }}
+              style={
+                isCollapsed(i())
+                  ? {
+                      flex: `0 0 ${collapsedSize()}px`,
+                      overflow: "hidden",
+                    }
+                  : {
+                      flex: `${sizes()[i()]} 1 0%`,
+                      "min-width": isHorizontal() ? `${minSizes()[i()]}px` : undefined,
+                      "min-height": !isHorizontal() ? `${minSizes()[i()]}px` : undefined,
+                      overflow: "hidden",
+                    }
+              }
               class="flex flex-col"
             >
               {child}
@@ -90,16 +103,18 @@ export default function ResizablePanel(props: Props) {
                       : "h-px w-full top-0 left-0 bg-main-700/60 group-hover:bg-accent/60 group-hover:h-0.5"
                   }`}
                 />
-                {/* Wider invisible hit area */}
-                <div
-                  class={`absolute ${
-                    isHorizontal()
-                      ? "w-3 h-full -left-1.5 top-0 cursor-col-resize"
-                      : "h-3 w-full -top-1.5 left-0 cursor-row-resize"
-                  }`}
-                  onMouseDown={(e) => startResize(i(), e)}
-                  onWheel={(e) => e.stopPropagation()}
-                />
+                {/* Wider invisible hit area (disabled while either side is collapsed — a fixed collapsed size isn't draggable) */}
+                {!isCollapsed(i()) && !isCollapsed(i() + 1) && (
+                  <div
+                    class={`absolute ${
+                      isHorizontal()
+                        ? "w-3 h-full -left-1.5 top-0 cursor-col-resize"
+                        : "h-3 w-full -top-1.5 left-0 cursor-row-resize"
+                    }`}
+                    onMouseDown={(e) => startResize(i(), e)}
+                    onWheel={(e) => e.stopPropagation()}
+                  />
+                )}
               </div>
             )}
           </>

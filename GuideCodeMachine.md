@@ -189,6 +189,26 @@ Trois architectures sont disponibles dans CodeMachine : Accumulateur, Accumulat
 
 <div style="page-break-after: always;"></div>
 
+### Masquer/Afficher les panneaux
+
+Pour maximiser l’espace disponible selon vos besoins, plusieurs panneaux de l’interface peuvent être réduits (masqués) ou agrandis (rétablis) à l’aide d’une petite flèche cliquable située à côté de leur titre.
+
+- **L’éditeur de code** (panneau de gauche) peut être réduit en cliquant sur la flèche à côté du titre « Éditeur ». Une fois réduit, il se replie sur le bord gauche sous la forme d’une bande verticale, et le circuit prend toute la place ainsi libérée.
+   <p>
+   <img src="guide-codemachine-images/PannelSwitch.png">
+   </p>
+
+- **Le panneau de droite** (Registres et Mémoire) peut être réduit de la même façon, en cliquant sur la flèche à côté du titre « Registres ». Il se replie alors sur le bord droit.
+
+- À l’intérieur du panneau de droite, les sections **Registres** et **Mémoire** peuvent aussi être réduites indépendamment l’une de l’autre, toujours avec la même flèche à côté de leur titre respectif. Réduire l’une des deux sections donne automatiquement plus d’espace à l’autre.
+   <p>
+   <img src="guide-codemachine-images/RegistresMemoireReduits.png" width="650">
+   </p>
+
+Pour rétablir un panneau réduit, il suffit de cliquer à nouveau sur la flèche (ou sur la bande verticale portant son nom, dans le cas de l’éditeur ou du panneau de droite au complet).
+
+<div style="page-break-after: always;"></div>
+
 ### Menu du haut (Importer, Sauvegarder, Compiler)
 
    <p>
