@@ -24,10 +24,15 @@ function mapToObject(val: unknown): Record<string, number> {
   return (val as Record<string, number>) ?? {};
 }
 
-export function simulateProgram(program: Uint32Array | number[], processorId: number): SimulationTrace {
+export function simulateProgram(
+  program: Uint32Array | number[],
+  processorId: number,
+  dataMemory: Int32Array | number[] = [],
+): SimulationTrace {
   if (!initialized) throw new Error("WASM not initialized");
   const arr = program instanceof Uint32Array ? program : new Uint32Array(program);
-  const trace = simulate(arr, processorId) as SimulationTrace;
+  const dataArr = dataMemory instanceof Int32Array ? dataMemory : new Int32Array(dataMemory);
+  const trace = simulate(arr, processorId, dataArr) as SimulationTrace;
   // serde_wasm_bindgen may serialize HashMap as JS Map — normalize to plain objects
   for (const step of trace.steps) {
     step.registers = mapToObject(step.registers);

@@ -33,6 +33,7 @@ export function createSimulationStore(processorId: ProcessorId) {
   const activeSignals = () => currentCycle()?.active_signals ?? [];
   const registers = () => currentCycle()?.registers ?? {};
   const memory = () => currentCycle()?.memory ?? [];
+  const instructionMemory = () => currentCycle()?.instruction_memory ?? [];
   const totalSteps = () => steps().length;
   const phase = () => currentCycle()?.phase ?? 'Fetch';
   const stimulatedLineState = () => currentCycle()?.stimulated_line_state ?? -1;
@@ -127,7 +128,7 @@ export function createSimulationStore(processorId: ProcessorId) {
         return;
       }
 
-      const trace = simulateProgram(result.program, processorId);
+      const trace = simulateProgram(result.program, processorId, result.data_memory ?? []);
       batch(() => {
         setSteps(trace.steps);
         setCurrentStep(0);
@@ -185,6 +186,7 @@ export function createSimulationStore(processorId: ProcessorId) {
     activeSignals,
     registers,
     memory,
+    instructionMemory,
     totalSteps,
     phase,
     stimulatedLineState,

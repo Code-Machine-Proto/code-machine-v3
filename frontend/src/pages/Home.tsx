@@ -119,7 +119,7 @@ export default function Home() {
             Code<span class='text-accent'>Machine</span>
           </h1>
           <p class='text-main-600 text-sm tracking-wide'>
-            Simulateur de chemin de donnees — INF1600
+            Simulateur de chemin de données — INF1600
           </p>
         </div>
 

@@ -320,7 +320,7 @@ export default function VisualPolyRisc(props: VisualProps) {
       />
 
       <ObscureMemory
-        name="Mémoire d'instructions"
+        name={["Mémoire", "d'instructions"]}
         class='fill-green-700'
         x={313}
         y={70}
@@ -380,7 +380,7 @@ export default function VisualPolyRisc(props: VisualProps) {
         </text>
       </ObscureMemory>
       <ObscureMemory
-        name='Mémoire de données'
+        name={['Mémoire', 'de données']}
         class='fill-green-500'
         x={1101}
         y={70}
