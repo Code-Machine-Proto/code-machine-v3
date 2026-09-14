@@ -4,7 +4,7 @@ Cette application de simulation de processeur simple est utilisée dans le cadre
 
 <!-- Screenshot de la page d'accueil -->
 
-![Page d'accueil](docs/screenshots/home.png)
+![Page d'accueil](docs/assets/screenshots/home.png)
 
 ---
 
@@ -34,25 +34,25 @@ Cette application de simulation de processeur simple est utilisée dans le cadre
 
 <!-- Screenshot du workspace en mode sombre avec du code compile et le circuit actif -->
 
-![Workspace sombre](docs/screenshots/workspace-dark.png)
+![Workspace sombre](docs/assets/screenshots/workspace-dark.png)
 
 ### Espace de travail — Mode clair
 
 <!-- Screenshot du workspace en mode clair -->
 
-![Workspace clair](docs/screenshots/workspace-light.png)
+![Workspace clair](docs/assets/screenshots/workspace-light.png)
 
 ### Visualisation du circuit
 
 <!-- Screenshot en zoom sur le circuit avec des signaux actifs (fils rouges/verts) -->
 
-![Circuit actif](docs/screenshots/circuit-detail.png)
+![Circuit actif](docs/assets/screenshots/circuit-detail.png)
 
 ### Reference d'instructions
 
 <!-- Screenshot du tiroir lateral d'instructions ouvert -->
 
-![Instructions](docs/screenshots/instruction-drawer.png)
+![Instructions](docs/assets/screenshots/instruction-drawer.png)
 
 ---
 

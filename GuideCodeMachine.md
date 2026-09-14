@@ -1,5 +1,5 @@
 <p align="right">
-  <img src="guide-codemachine-images/Polymtl.jpeg" alt="Description" width="200">
+  <img src="docs/assets/guide/Polymtl.jpeg" alt="Description" width="200">
 </p>
 
 <h1 style="font-size: 60px;">Guide CodeMachine</h1>
@@ -27,12 +27,12 @@ N.B. Le masculin est utilisé pour alléger le texte._
    <br>
 2. Choisir la version la plus récente (cliquer dessus)
    <p>
-   <img src="guide-codemachine-images/Version.png" width="650">
+   <img src="docs/assets/guide/Version.png" width="650">
    </p>
 <div style="page-break-after: always;"></div>
 3. Choisir la bonne architecture (celle correspondant à votre ordinateur) et cliquer dessus pour la télécharger
    <p>
-   <img src="guide-codemachine-images/architecture_windows.jpg" width="650">
+   <img src="docs/assets/guide/architecture_windows.jpg" width="650">
    </p>
 
 4. Dans téléchargement, double-cliquer pour partir l’installation.
@@ -40,12 +40,12 @@ N.B. Le masculin est utilisé pour alléger le texte._
 
 5. Cliquer sur Information complémentaires
    <p>
-   <img src="guide-codemachine-images/InfoComplement.png"  width="350">
+   <img src="docs/assets/guide/InfoComplement.png"  width="350">
    </p>
 <div style="page-break-after: always;"></div>
 6. Choisir exécuter quand même
    <p>
-   <img src="guide-codemachine-images/Executer.png"  width="350">
+   <img src="docs/assets/guide/Executer.png"  width="350">
    </p>
 
 7. Suivre les étapes d’installations
@@ -53,7 +53,7 @@ N.B. Le masculin est utilisé pour alléger le texte._
 
 8. Vous trouverez CodeMachine dans la barre de recherche
    <p>
-   <img src="guide-codemachine-images/CodeMachineSearch.png"  width="350">
+   <img src="docs/assets/guide/CodeMachineSearch.png"  width="350">
    </p>
 
 <div style="page-break-after: always;"></div>
@@ -64,12 +64,12 @@ N.B. Le masculin est utilisé pour alléger le texte._
    <br>
 2. Choisir la version la plus récente (cliquer dessus)
    <p>
-   <img src="guide-codemachine-images/Version.png" width="650">
+   <img src="docs/assets/guide/Version.png" width="650">
    </p>
 
 3. Choisir la bonne architecture (celle correspondant à votre ordinateur) et cliquer dessus pour la télécharger
    <p>
-   <img src="guide-codemachine-images/architecture_linux.jpg" width="650">
+   <img src="docs/assets/guide/architecture_linux.jpg" width="650">
    </p>
 
 4. Dans téléchargement, double-cliquer pour partir l’installation.
@@ -77,11 +77,11 @@ N.B. Le masculin est utilisé pour alléger le texte._
 
 5. Ensuite, vous avez deux options, soit aller dans téléchargement et s’assurer que le fichier est exécutable, puis **double-cliquer pour partir CodeMachine (aucune installation requise)**.
    <p>
-   <img src="guide-codemachine-images/ExecuterMacA.jpg" width="650">
+   <img src="docs/assets/guide/ExecuterMacA.jpg" width="650">
    </p>
 Sinon, vous pouvez aller **par le CLI**, changer les permissions et partir l’outil comme suit :
    <p>
-   <img src="guide-codemachine-images/ExecuterMacB.jpg" width="650">
+   <img src="docs/assets/guide/ExecuterMacB.jpg" width="650">
    </p>
 
 _Notez que vous pouvez déplacer le .AppImage à l’endroit que vous préférez pour faciliter son accès. Cependant, vous devrez, dans tous les cas, permettre son exécution en changeant ses permissions._
@@ -93,11 +93,11 @@ _Notez que vous pouvez déplacer le .AppImage à l’endroit que vous préférez
 Si vous avez l'erreur suivante au moment de la compilation :
 
 <p>
-   <img src="guide-codemachine-images/ExecPasAdmin.jpg" width="650">
+   <img src="docs/assets/guide/ExecPasAdmin.jpg" width="650">
 </p>
 Il faut repartir CodeMachine en tant qu'administrateur en utilisant le bouton contextuel de la souris.
 <p>
-   <img src="guide-codemachine-images/PartirAdmin.png" width="250">
+   <img src="docs/assets/guide/PartirAdmin.png" width="250">
 </p>
 
 <div style="page-break-after: always;"></div>
@@ -108,12 +108,12 @@ Il faut repartir CodeMachine en tant qu'administrateur en utilisant le bouton co
 
 2. Choisir la version la plus récente (cliquer dessus)
    <p>
-   <img src="guide-codemachine-images/Version.png" width="650">
+   <img src="docs/assets/guide/Version.png" width="650">
    </p>
 
 3. Choisir l'installeur pour Mac (le même pour toutes les architectures)
    <p>
-   <img src="guide-codemachine-images/mac-github.jpg" width="650">
+   <img src="docs/assets/guide/mac-github.jpg" width="650">
    </p>
 
 4. Dans téléchargement, double-cliquer pour partir l'installation et compléter une installation selon le format dmg
@@ -124,38 +124,38 @@ Il faut repartir CodeMachine en tant qu'administrateur en utilisant le bouton co
 
 2. Choisir la version la plus récente (cliquer dessus)
    <p>
-   <img src="guide-codemachine-images/Version.png" width="650">
+   <img src="docs/assets/guide/Version.png" width="650">
    </p>
 
 3. Choisir l'installeur pour Mac (le même pour toutes les architectures)
    <p>
-   <img src="guide-codemachine-images/mac-github.jpg" width="650">
+   <img src="docs/assets/guide/mac-github.jpg" width="650">
    </p>
 
 4. Dans téléchargement, double-cliquer pour partir l'installation et compléter une installation selon le format dmg
 
 5. Enlever les drapeaux de quarantaine mis par Apple
    <p>
-   <img src="guide-codemachine-images/shell-unquarantine.jpg" width="650">
+   <img src="docs/assets/guide/shell-unquarantine.jpg" width="650">
    </p>
 
 6. Trouver l'application dans le Finder et afficher le contenu du paquet
    <p>
-   <img src="guide-codemachine-images/paquet-mac.jpg" width="250">
+   <img src="docs/assets/guide/paquet-mac.jpg" width="250">
    </p>
 
 7. Naviguer Contents > MacOS
    <p>
-   <img src="guide-codemachine-images/contents-mac.jpg" width="150">
+   <img src="docs/assets/guide/contents-mac.jpg" width="150">
    </p>
    ---
    <p>
-   <img src="guide-codemachine-images/chemin-exec.jpg" width="250">
+   <img src="docs/assets/guide/chemin-exec.jpg" width="250">
    </p>
 
 8. Double-cliquer sur l'exécutable nommé CodeMachine pour le partir en mode administrateur, créer un alias pour mettre sur votre bureau est fortement recommandé
    <p>
-   <img src="guide-codemachine-images/alias-mac.jpg" width="250">
+   <img src="docs/assets/guide/alias-mac.jpg" width="250">
    </p>
 
 <div style="page-break-after: always;"></div>
@@ -173,7 +173,7 @@ Vous pourrez toujours savoir quelle version vous utilisez en regardant la versio
 Trois architectures sont disponibles dans CodeMachine : Accumulateur, Accumulateur-MA et PolyRisc. Vous pouvez choisir l’architecture en cliquant sur le gros bouton.
 
    <p>
-   <img src="guide-codemachine-images/CodeMachineArchitectures.png" width="450">
+   <img src="docs/assets/guide/CodeMachineArchitectures.png" width="450">
    </p>
 
 ### Raccourcis
@@ -184,7 +184,7 @@ Trois architectures sont disponibles dans CodeMachine : Accumulateur, Accumulat
 - Lorsque vous écrivez le code, vous pouvez utiliser « ctrl-Z » et « ctrl-y » pour annuler ou répéter une frappe.
 - Pour revenir au menu principal (donc quitter une architecture pour aller dans un autre), appuyer sur la flèche blanche ou directement sur Code Machine.
    <p>
-   <img src="guide-codemachine-images/RetourArriere.png" width="450">
+   <img src="docs/assets/guide/RetourArriere.png" width="450">
    </p>
 
 <div style="page-break-after: always;"></div>
@@ -195,14 +195,14 @@ Pour maximiser l’espace disponible selon vos besoins, plusieurs panneaux de l�
 
 - **L’éditeur de code** (panneau de gauche) peut être réduit en cliquant sur la flèche à côté du titre « Éditeur ». Une fois réduit, il se replie sur le bord gauche sous la forme d’une bande verticale, et le circuit prend toute la place ainsi libérée.
    <p>
-   <img src="guide-codemachine-images/PannelSwitch.png">
+   <img src="docs/assets/guide/PannelSwitch.png">
    </p>
 
 - **Le panneau de droite** (Registres et Mémoire) peut être réduit de la même façon, en cliquant sur la flèche à côté du titre « Registres ». Il se replie alors sur le bord droit.
 
 - À l’intérieur du panneau de droite, les sections **Registres** et **Mémoire** peuvent aussi être réduites indépendamment l’une de l’autre, toujours avec la même flèche à côté de leur titre respectif. Réduire l’une des deux sections donne automatiquement plus d’espace à l’autre.
    <p>
-   <img src="guide-codemachine-images/RegistresMemoireReduits.png" width="650">
+   <img src="docs/assets/guide/RegistresMemoireReduits.png" width="650">
    </p>
 
 Pour rétablir un panneau réduit, il suffit de cliquer à nouveau sur la flèche (ou sur la bande verticale portant son nom, dans le cas de l’éditeur ou du panneau de droite au complet).
@@ -212,7 +212,7 @@ Pour rétablir un panneau réduit, il suffit de cliquer à nouveau sur la flèch
 ### Menu du haut (Importer, Sauvegarder, Compiler)
 
    <p>
-   <img src="guide-codemachine-images/Menu.png" width="300">
+   <img src="docs/assets/guide/Menu.png" width="300">
    </p>
 
 En haut de l’éditeur de code, un menu vous donne accès à trois actions :
@@ -224,7 +224,7 @@ En haut de l’éditeur de code, un menu vous donne accès à trois actions :
 > **ATTENTION : Importer un fichier ou effacer le code sont des actions irréversibles.** Une fenêtre d’avertissement vous demandera de confirmer avant de procéder :
 >
 > <p>
-> <img src="guide-codemachine-images/AvertissementEffacerCode.png" width="400">
+> <img src="docs/assets/guide/AvertissementEffacerCode.png" width="400">
 > </p>
 >
 > Cliquer sur « Ok » remplacera définitivement le contenu actuel de l’éditeur (par le fichier importé, ou par un éditeur vide). Assurez-vous d’avoir sauvegardé votre code au préalable (avec l’icône de téléchargement) si vous souhaitez le conserver.
@@ -233,20 +233,20 @@ En haut de l’éditeur de code, un menu vous donne accès à trois actions :
 
 - Le dernier code entré dans chaque architecture devrait être mémorisé quand vous quittez l’architecture. Cependant, dès que vous quittez une architecture, en retournant dans n’importe quelle architecture, il faut recompiler. Pour savoir si le code est compilé, regardez le / en haut.
    <p>
-   <img src="guide-codemachine-images/CodePasCompile.png" width="50">
+   <img src="docs/assets/guide/CodePasCompile.png" width="50">
    </p>
 - Cette icône apparaîtra lorsque le code est en train de se faire compiler. <p>
-  <img src="guide-codemachine-images/CodeCompile.png" width="50">
+  <img src="docs/assets/guide/CodeCompile.png" width="50">
    </p>
 - Une modification à un code compilé affichera cette icône pour indiquer qu'une modification a eu lieu et qu'il faut recompiler.
     <p>
-   <img src="guide-codemachine-images/CodeModifie.png" width="50">
+   <img src="docs/assets/guide/CodeModifie.png" width="50">
    </p>
 - Si des erreurs de syntaxes sont présentes, cet icône apparaîtra et indiquera le nombre de celles-ci. <p>
-  <img src="guide-codemachine-images/CodeErreur.png" width="50">
+  <img src="docs/assets/guide/CodeErreur.png" width="50">
    </p>
 - Un code compilé avec succès et prêt à être exécuté affichera l'icône suivante : <p>
-  <img src="guide-codemachine-images/CodeOk.png" width="50">
+  <img src="docs/assets/guide/CodeOk.png" width="50">
    </p>
 
 ### Affichage du nombre de cycles
@@ -264,26 +264,26 @@ En haut de l’éditeur de code, un menu vous donne accès à trois actions :
 
   4. Décider exactement à quel cycle aller en entrant le nombre de cycle à la place du chiffre qui apparaît avant le « / »
   <p>
-  <img src="guide-codemachine-images/PlayTime.png" width="500">
+  <img src="docs/assets/guide/PlayTime.png" width="500">
   </p>
 
 - Lorsque vous utilisez le mode « régulier », une étape correspond à un cycle. Donc chaque instruction passera par les étapes : « fetch », « decode », « execute » (3 cycles).
 
 - Lorsque vous utilisez le mode « exécution », chaque étape correspond à une instruction. Ainsi, chaque étape passera d’un cycle « execute » d’une instruction à l’autre (par bond de 3 cycles).
    <p>
-   <img src="guide-codemachine-images/Modes.png" width="150">
+   <img src="docs/assets/guide/Modes.png" width="150">
    </p>
 
 - Le cycle auquel vous êtes rendu est toujours affiché dans le nombre avant le « / ». Attention de penser additionner un à ce nombre pour savoir exactement à quel cycle vous êtes rendus (puisque les cycles sont comptés à partir de 0). Vous pouvez aussi, en tout temps, voir à quel stade d’exécution de l’instruction vous êtes dans le petit rectangle blanc : « fetch », « decode », « execute ».
    <p>
-   <img src="guide-codemachine-images/cycle_precis.png">
+   <img src="docs/assets/guide/cycle_precis.png">
    </p>
 
 ### Surbrillance du code et erreur de syntaxes
 
 - Normalement, les instructions sont en _rouge_, les « déclarations » d’étiquettes en _vert_, les registres en _bleu_ et les valeurs sont en _mauve_ dans votre code.
    <p>
-   <img src="guide-codemachine-images/surbrillance.png" width="200">
+   <img src="docs/assets/guide/surbrillance.png" width="200">
    </p>
 
 - Les erreurs de syntaxes devraient être soulignées en _rouge_ et les avertissements ("warnings") en _jaune_ et tant que vous avez des soulignements rouges dans le code, vous ne pourrez pas accéder au bouton « Compiler » qui sera _rouge_. Normalement, lorsque vous avez des soulignements dans le code, une fenêtre devrait apparaître et vous indiquer le type d'erreur précédé du numéro de la ligne qui contient une erreur.
@@ -334,7 +334,7 @@ one: 1             # Occupe de la mémoire (adresse 6)
 ## Affichage de la mémoire
 
 - La mémoire ainsi que le contenu des registres sont affichés à la droite du programme. Les valeurs ne sont valides qu'après avoir compilé le programme. <p>
-  <img src="guide-codemachine-images/MemoirePrincipale.png" width="200">
+  <img src="docs/assets/guide/MemoirePrincipale.png" width="200">
    </p>
 
 - Il est possible de choisir si les adresses et les données sont en décimal ou en hexadécimal avec les deux boutons dans le haut de la mémoire.
@@ -377,22 +377,22 @@ Si vous avez des problèmes avec CodeMachine, vous pouvez les souligner aux dév
 
 1. Vous devez d’abord aller dans « Issues » :
    <p>
-   <img src="guide-codemachine-images/IssuesGitHub.png" width="350">
+   <img src="docs/assets/guide/IssuesGitHub.png" width="350">
    </p>
 
 2. Regarder si votre problème n’a pas été déjà entré en lisant les « open » issues
    <p>
-   <img src="guide-codemachine-images/OpenIssues.png" width="400">
+   <img src="docs/assets/guide/OpenIssues.png" width="400">
    </p>
 
 3. Aller dans « New Issue »
    <p>
-   <img src="guide-codemachine-images/NewIssues.png" width="100">
+   <img src="docs/assets/guide/NewIssues.png" width="100">
    </p>
 
 4. Choisir « bug » si c’est un problème avec ce qui est déjà implanté ou « nouvelle fonctionnalité » si vous avez une demande de modifications de CodeMachine (dans sa fonctionnalité).
    <p>
-   <img src="guide-codemachine-images/SelectIssuesType.png" width="500">
+   <img src="docs/assets/guide/SelectIssuesType.png" width="500">
    </p>
 
 5. Dans chacun des cas, il y a un « template » de base qui vous guide dans l’information à entrer dans votre « issue » pour faciliter la compréhension du développeur. SVP, suivez ces instructions pour faciliter leur travail.
@@ -408,13 +408,13 @@ Notez que vous avez accès au code (c’est « open source »), alors vous pou
 ### CodeMachine
 
    <p>
-   <img src="guide-codemachine-images/ProcesseurAccCodeMachine.png" width="800">
+   <img src="docs/assets/guide/ProcesseurAccCodeMachine.png" width="800">
    </p>
 
 ### Détaillé
 
    <p>
-   <img src="guide-codemachine-images/ProcesseurAccDetails.png" width="800">
+   <img src="docs/assets/guide/ProcesseurAccDetails.png" width="800">
    </p>
 
 <div style="page-break-after: always;"></div>
@@ -450,12 +450,12 @@ Notez que vous avez accès au code (c’est « open source »), alors vous pou
 ### CodeMachine
 
    <p>
-   <img src="guide-codemachine-images/ProcesseurAccMACodeMachine.png" width="800">
+   <img src="docs/assets/guide/ProcesseurAccMACodeMachine.png" width="800">
    </p>
    
 **Attention:** Une nouvelle instruction (lea) a été ajoutée dans le jeu d'instructions et n'est pas encore représentée dans le schéma de CodeMachine.  Voici ce qu'il manque et sera ajouté éventuellement dans l'interface graphique.
    <p>
-   <img src="guide-codemachine-images/Accumulateur-MA-Lea.png" width="800">
+   <img src="docs/assets/guide/Accumulateur-MA-Lea.png" width="800">
    </p>
 
 Pour plus de détails, consultez [l'issue #123](https://github.com/Code-Machine-Proto/code-machine-v2/issues/123) sur GitHub.
@@ -465,7 +465,7 @@ Pour plus de détails, consultez [l'issue #123](https://github.com/Code-Machine-
 ### Détaillé
 
    <p>
-   <img src="guide-codemachine-images/ProcesseurAccMADetails.png" width="800">
+   <img src="docs/assets/guide/ProcesseurAccMADetails.png" width="800">
    </p>
 
 <div style="page-break-after: always;"></div>
@@ -514,13 +514,13 @@ Pour plus de détails, consultez [l'issue #123](https://github.com/Code-Machine-
 ### CodeMachine
 
    <p>
-   <img src="guide-codemachine-images/PolyRiscCodeMachine.png" width="800">
+   <img src="docs/assets/guide/PolyRiscCodeMachine.png" width="800">
    </p>
 
 ### Détaillé
 
    <p>
-   <img src="guide-codemachine-images/PolyRiscDetails.png" width="850">
+   <img src="docs/assets/guide/PolyRiscDetails.png" width="850">
    </p>
 
 <div style="page-break-after: always;"></div>
@@ -528,7 +528,7 @@ Pour plus de détails, consultez [l'issue #123](https://github.com/Code-Machine-
 ## Instructions
 
    <p>
-   <img src="guide-codemachine-images/InstructionsPolyRiscDispoSurWord.png" width="850">
+   <img src="docs/assets/guide/InstructionsPolyRiscDispoSurWord.png" width="850">
    </p>
 
 ### Format des types d'instruction
