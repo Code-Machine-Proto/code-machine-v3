@@ -103,7 +103,7 @@ export default function MemoryView(props: Props) {
                   'text-[10px] px-1.5 py-0.5': !wide(),
                 }}
               >
-                {wide() ? 'Donnees' : 'Don.'}
+                {wide() ? 'Données' : 'Don.'}
               </button>
               <button
                 onClick={() => setActiveTab('instructions')}
@@ -174,7 +174,10 @@ export default function MemoryView(props: Props) {
       </div>
 
       {/* Content */}
-      <div class='flex-1 overflow-auto p-1.5' classList={{ hidden: props.collapsed }}>
+      <div
+        class='flex-1 overflow-auto p-1.5'
+        classList={{ hidden: props.collapsed }}
+      >
         <Show
           when={props.isCompiled()}
           fallback={
