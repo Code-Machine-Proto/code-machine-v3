@@ -3,6 +3,12 @@ import ALU from "./parts/ALU";
 import Bus from "./parts/Bus";
 import Multiplexer from "./parts/Multiplexer";
 import ObscureMemory from "./parts/ObscureMemory";
+import {
+  getActiveAccumulatorMaWires,
+  getActiveAccumulatorMaJunctions,
+  type AccumulatorMaWireId,
+  type AccumulatorMaJunctionId,
+} from "./lineState";
 
 // LineStateMa: -1 error, 0 fetch, 1 decode, 2 addSubMul, 3 addSubA, 4 addSubX,
 //   5 sh, 6 store, 7 load, 8 loadA, 9 loadI, 10 storeA, 11 storeI, 12 lea, 13 branching, 14 nop
@@ -21,7 +27,6 @@ export default function VisualWithMa(props: VisualProps) {
   const maVal = () => props.registers["MA"] ?? 0;
 
   const fetch = () => ls() === 0;
-  const decode = () => ls() === 1;
   const addSubMul = () => ls() === 2;
   const addSubA = () => ls() === 3;
   const addSubX = () => ls() === 4;
@@ -36,6 +41,10 @@ export default function VisualWithMa(props: VisualProps) {
   const branching = () => ls() === 13;
   const nop = () => ls() === 14 || addSubMul() || addSubA() || addSubX() || sh() || store() || load() || loadA() || loadI() || storeA() || storeI() || lea();
   const addr = () => addSubMul() || addSubA() || store() || load() || loadA() || storeA();
+  const activeWires = () => getActiveAccumulatorMaWires(ls());
+  const wireClass = (id: AccumulatorMaWireId) => (activeWires().has(id) ? "fill-red-500" : "");
+  const activeJunctions = () => getActiveAccumulatorMaJunctions(ls());
+  const junctionClass = (id: AccumulatorMaJunctionId) => (activeJunctions().has(id) ? "fill-red-500" : "fill-main-600");
 
   return (
     <svg viewBox="0 0 1175 401" class="w-full h-full" style="max-height: 100%; max-width: 100%;" preserveAspectRatio="xMidYMid meet" fill="none">
@@ -262,30 +271,30 @@ export default function VisualWithMa(props: VisualProps) {
       <Bus x={1130} y={112} number={16}/>
 
       {/* === Active wire overlays === */}
-      <use href="#mux-pc" class={branching() || nop() ? "fill-red-500" : ""} />
-      <use href="#pc-mux" class={fetch() ? "fill-red-500" : ""} />
-      <use href="#inc" class={nop() ? "fill-red-500" : ""} />
-      <use href="#mux3-mem" class={fetch() || addr() || addSubX() || loadI() || storeI() ? "fill-red-500" : ""} />
-      <use href="#mem-alu" class={addSubMul() || addSubA() || addSubX() ? "fill-red-500" : ""} />
-      <use href="#mem-ir" class={fetch() ? "fill-red-500" : ""} />
-      <use href="#mem-acc" class={load() || loadI() ? "fill-red-500" : ""} />
-      <use href="#mem-ma" class={loadA() ? "fill-red-500" : ""} />
-      <use href="#alu-acc" class={addSubMul() || addSubX() || sh() ? "fill-red-500" : ""} />
-      <use href="#alu-ma" class={addSubA() ? "fill-red-500" : ""} />
-      <use href="#ir-mem" class={addr() ? "fill-red-500" : ""} />
-      <use href="#ir-pc" class={branching() ? "fill-red-500" : ""} />
-      <use href="#mux-acc" class={addSubMul() || addSubX() || sh() || load() || loadI() ? "fill-red-500" : ""} />
-      <use href="#mux-ma" class={addSubA() || loadA() || lea() ? "fill-red-500" : ""} />
-      <use href="#acc-alu" class={addSubMul() || addSubX() || sh() ? "fill-red-500" : ""} />
-      <use href="#acc-mem" class={store() || storeI() ? "fill-red-500" : ""} />
-      <use href="#ma-mem" class={storeA() ? "fill-red-500" : ""} />
-      <use href="#ma-addr" class={addSubX() || loadI() || storeI() ? "fill-red-500" : ""} />
-      <use href="#ma-alu" class={addSubA() ? "fill-red-500" : ""} />
-      <use href="#mux-mem" class={store() || storeA() || storeI() ? "fill-red-500" : ""} />
-      <use href="#mux-alu" class={addSubMul() || addSubA() || addSubX() || sh() ? "fill-red-500" : ""} />
-      <use href="#ir-control" class={decode() ? "fill-red-500" : ""} />
-      <use href="#acc-control" class={decode() ? "fill-red-500" : ""} />
-      <use href="#mux3-ma" class={lea() ? "fill-red-500" : ""} />
+      <use href="#mux-pc" class={wireClass("mux-pc")} />
+      <use href="#pc-mux" class={wireClass("pc-mux")} />
+      <use href="#inc" class={wireClass("inc")} />
+      <use href="#mux3-mem" class={wireClass("mux3-mem")} />
+      <use href="#mem-alu" class={wireClass("mem-alu")} />
+      <use href="#mem-ir" class={wireClass("mem-ir")} />
+      <use href="#mem-acc" class={wireClass("mem-acc")} />
+      <use href="#mem-ma" class={wireClass("mem-ma")} />
+      <use href="#alu-acc" class={wireClass("alu-acc")} />
+      <use href="#alu-ma" class={wireClass("alu-ma")} />
+      <use href="#ir-mem" class={wireClass("ir-mem")} />
+      <use href="#ir-pc" class={wireClass("ir-pc")} />
+      <use href="#mux-acc" class={wireClass("mux-acc")} />
+      <use href="#mux-ma" class={wireClass("mux-ma")} />
+      <use href="#acc-alu" class={wireClass("acc-alu")} />
+      <use href="#acc-mem" class={wireClass("acc-mem")} />
+      <use href="#ma-mem" class={wireClass("ma-mem")} />
+      <use href="#ma-addr" class={wireClass("ma-addr")} />
+      <use href="#ma-alu" class={wireClass("ma-alu")} />
+      <use href="#mux-mem" class={wireClass("mux-mem")} />
+      <use href="#mux-alu" class={wireClass("mux-alu")} />
+      <use href="#ir-control" class={wireClass("ir-control")} />
+      <use href="#acc-control" class={wireClass("acc-control")} />
+      <use href="#mux3-ma" class={wireClass("mux3-ma")} />
 
       {/* === Components === */}
       <Multiplexer x={41} y={70} name="sel_pc_source" isActivated={branching() || nop()} />
@@ -309,16 +318,16 @@ export default function VisualWithMa(props: VisualProps) {
       <RegisterBox name="MA" number={maVal()} x={1005} y={225} class="bg-amber-600/20 border border-amber-500 reg-bg-amber reg-text-amber" isActivated={addSubA() || loadA()} />
 
       {/* === Junction dots === */}
-      <circle cx="616" cy="156" r="5" class={fetch() || addSubMul() || addSubA() || addSubX() || load() || loadA() || loadI() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="841" cy="97" r="5" class={load() || loadA() || loadI() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="865" cy="195" r="5" class={addSubMul() || addSubA() || addSubX() || sh() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="1155" cy="121" r="5" class={decode() || addSubMul() || addSubX() || sh() || store() || storeI() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="302" cy="203" r="5" class={branching() || addr() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="1170" cy="257" r="5" class={addSubA() || addSubX() || loadI() || storeA() || storeI() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="635" cy="343" r="5" class={addSubA() || addSubX() || loadI() || storeI() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="291" cy="110" r="5" class={fetch() || nop() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="1155" cy="329" r="5" class={decode() || addSubMul() || addSubX() || sh() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="441" cy="203" r="5" class={addr() || fetch() || lea() || addSubX() || loadI() || storeI() ? "fill-red-500" : "fill-main-600"} />
+      <circle id="mem-out-junction" cx="616" cy="156" r="5" class={junctionClass("mem-out-junction")} />
+      <circle id="mem-acc-ma-junction" cx="841" cy="97" r="5" class={junctionClass("mem-acc-ma-junction")} />
+      <circle id="alu-out-junction" cx="865" cy="195" r="5" class={junctionClass("alu-out-junction")} />
+      <circle id="acc-in-junction" cx="1155" cy="121" r="5" class={junctionClass("acc-in-junction")} />
+      <circle id="ir-addr-junction" cx="302" cy="203" r="5" class={junctionClass("ir-addr-junction")} />
+      <circle id="ma-out-junction" cx="1170" cy="257" r="5" class={junctionClass("ma-out-junction")} />
+      <circle id="ma-addr-junction" cx="635" cy="343" r="5" class={junctionClass("ma-addr-junction")} />
+      <circle id="inc-pcmux-junction" cx="291" cy="110" r="5" class={junctionClass("inc-pcmux-junction")} />
+      <circle id="acc-alu-control-junction" cx="1155" cy="329" r="5" class={junctionClass("acc-alu-control-junction")} />
+      <circle id="addr-select-junction" cx="441" cy="203" r="5" class={junctionClass("addr-select-junction")} />
 
       {/* Control Signal box */}
       <g>

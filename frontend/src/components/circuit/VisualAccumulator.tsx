@@ -3,6 +3,12 @@ import ALU from "./parts/ALU";
 import Bus from "./parts/Bus";
 import Multiplexer from "./parts/Multiplexer";
 import ObscureMemory from "./parts/ObscureMemory";
+import {
+  getActiveAccumulatorWires,
+  getActiveAccumulatorJunctions,
+  type AccumulatorWireId,
+  type AccumulatorJunctionId,
+} from "./lineState";
 
 // LineStateAccumulator: -1 error, 0 fetch, 1 load, 2 store, 3 decode, 4 alu, 5 nop, 6 branching
 
@@ -21,11 +27,14 @@ export default function VisualAccumulator(props: VisualProps) {
   const fetch = () => ls() === 0;
   const load = () => ls() === 1;
   const store = () => ls() === 2;
-  const decode = () => ls() === 3;
   const alu = () => ls() === 4;
   const nop = () => ls() === 5;
   const branching = () => ls() === 6;
   const inc = () => nop() || load() || store() || alu();
+  const activeWires = () => getActiveAccumulatorWires(ls());
+  const wireClass = (id: AccumulatorWireId) => (activeWires().has(id) ? "fill-red-500" : "");
+  const activeJunctions = () => getActiveAccumulatorJunctions(ls());
+  const junctionClass = (id: AccumulatorJunctionId) => (activeJunctions().has(id) ? "fill-red-500" : "fill-main-600");
 
   return (
     <svg viewBox="0 0 1131 442" class="w-full h-full" style="max-height: 100%; max-width: 100%;" preserveAspectRatio="xMidYMid meet" fill="none">
@@ -176,22 +185,22 @@ export default function VisualAccumulator(props: VisualProps) {
       <Bus x={1075} y={187} number={16}/>
 
       {/* === Active wire overlays === */}
-      <use href="#pc-mux" class={fetch() ? "fill-red-500" : ""} />
-      <use href="#mux-mem" class={fetch() || load() || store() || alu() ? "fill-red-500" : ""} />
-      <use href="#mem-ir" class={fetch() ? "fill-red-500" : ""} />
-      <use href="#ir-control" class={decode() ? "fill-red-500" : ""} />
-      <use href="#mem-mux" class={load() ? "fill-red-500" : ""} />
-      <use href="#mux-acc" class={load() || alu() ? "fill-red-500" : ""} />
-      <use href="#ir-mux" class={load() || store() || alu() ? "fill-red-500" : ""} />
-      <use href="#acc-mem" class={store() ? "fill-red-500" : ""} />
-      <use href="#mem-alu" class={alu() ? "fill-red-500" : ""} />
-      <use href="#acc-alu" class={alu() ? "fill-red-500" : ""} />
-      <use href="#alu-mux" class={alu() ? "fill-red-500" : ""} />
-      <use href="#ir-mux-addr" class={branching() ? "fill-red-500" : ""} />
-      <use href="#mux-pc" class={branching() || inc() ? "fill-red-500" : ""} />
-      <use href="#inc" class={inc() ? "fill-red-500" : ""} />
-      <use href="#acc-control" class={decode() ? "fill-red-500" : ""} />
-      <use href="#internal-control" class={decode() ? "fill-red-500" : ""} />
+      <use href="#pc-mux" class={wireClass("pc-mux")} />
+      <use href="#mux-mem" class={wireClass("mux-mem")} />
+      <use href="#mem-ir" class={wireClass("mem-ir")} />
+      <use href="#ir-control" class={wireClass("ir-control")} />
+      <use href="#mem-mux" class={wireClass("mem-mux")} />
+      <use href="#mux-acc" class={wireClass("mux-acc")} />
+      <use href="#ir-mux" class={wireClass("ir-mux")} />
+      <use href="#acc-mem" class={wireClass("acc-mem")} />
+      <use href="#mem-alu" class={wireClass("mem-alu")} />
+      <use href="#acc-alu" class={wireClass("acc-alu")} />
+      <use href="#alu-mux" class={wireClass("alu-mux")} />
+      <use href="#ir-mux-addr" class={wireClass("ir-mux-addr")} />
+      <use href="#mux-pc" class={wireClass("mux-pc")} />
+      <use href="#inc" class={wireClass("inc")} />
+      <use href="#acc-control" class={wireClass("acc-control")} />
+      <use href="#internal-control" class={wireClass("internal-control")} />
 
       {/* === Components === */}
       <Multiplexer x={27} y={90} name="sel_jump_pc" isActivated={branching() || inc()} />
@@ -211,10 +220,10 @@ export default function VisualAccumulator(props: VisualProps) {
       <RegisterBox name="ACC" number={accVal()} class="bg-emerald-600/20 border border-emerald-500 reg-bg-emerald reg-text-emerald" x={940} y={160} defaultIsBase10={true} isActivated={load() || alu()} />
 
       {/* === Junction dots === */}
-      <circle cx="277" cy="137" r="5" class={fetch() || inc() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="1101" cy="333" r="5" class={alu() || decode() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="588" cy="174" r="5" class={fetch() || load() || alu() ? "fill-red-500" : "fill-main-600"} />
-      <circle cx="1101" cy="196" r="5" class={store() || alu() || decode() ? "fill-red-500" : "fill-main-600"} />
+      <circle id="inc-pcmux-junction" cx="277" cy="137" r="5" class={junctionClass("inc-pcmux-junction")} />
+      <circle id="acc-alu-control-junction" cx="1101" cy="333" r="5" class={junctionClass("acc-alu-control-junction")} />
+      <circle id="mem-out-junction" cx="588" cy="174" r="5" class={junctionClass("mem-out-junction")} />
+      <circle id="acc-in-junction" cx="1101" cy="196" r="5" class={junctionClass("acc-in-junction")} />
 
       {/* +1 incrementer box */}
       <g>
