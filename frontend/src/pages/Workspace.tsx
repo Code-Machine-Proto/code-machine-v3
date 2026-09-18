@@ -17,6 +17,7 @@ import CircuitRenderer from '@/components/circuit/CircuitRenderer';
 import MemoryView from '@/components/memory/MemoryView';
 import ResizablePanel from '@/components/layout/ResizablePanel';
 import { useTheme } from '@/stores/theme';
+import { useUiZoom } from '@/stores/uiZoom';
 import InstructionDrawer from '@/components/reference/InstructionDrawer';
 
 const processorLabels: Record<number, string> = {
@@ -31,6 +32,7 @@ export default function Workspace() {
   const processorId = createMemo(() => processorIdFromRoute(params.id));
 
   const { isDark, toggle: toggleTheme } = useTheme();
+  const { zoom, zoomIn, zoomOut, resetZoom, zoomBy, savePreset, isMin, isMax } = useUiZoom();
   const store = createSimulationStore(processorId());
   const [wasmReady, setWasmReady] = createSignal(false);
   const [wasmError, setWasmError] = createSignal<string | null>(null);
@@ -80,6 +82,36 @@ export default function Workspace() {
 
   onMount(() => document.addEventListener('keydown', handleKeyDown));
   onCleanup(() => document.removeEventListener('keydown', handleKeyDown));
+
+  // --- UI zoom shortcuts (mirrors browser ctrl+/ctrl-/ctrl+0/ctrl+wheel) ---
+  const handleZoomKeyDown = (e: KeyboardEvent) => {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    if (e.key === '=' || e.key === '+') {
+      e.preventDefault();
+      zoomIn();
+    } else if (e.key === '-') {
+      e.preventDefault();
+      zoomOut();
+    } else if (e.key === '0') {
+      e.preventDefault();
+      resetZoom();
+    }
+  };
+
+  const handleZoomWheel = (e: WheelEvent) => {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    e.preventDefault();
+    zoomBy(e.deltaY > 0 ? 0.9 : 1.1);
+  };
+
+  onMount(() => {
+    document.addEventListener('keydown', handleZoomKeyDown);
+    window.addEventListener('wheel', handleZoomWheel, { passive: false });
+  });
+  onCleanup(() => {
+    document.removeEventListener('keydown', handleZoomKeyDown);
+    window.removeEventListener('wheel', handleZoomWheel);
+  });
 
   const handleCompile = () => {
     if (!wasmReady()) return;
@@ -184,7 +216,7 @@ export default function Workspace() {
         <Show when={wasmReady()}>
           <div class='flex items-center gap-3 ml-auto'>
             <span class='text-main-700 text-[10px] hidden sm:inline font-mono'>
-              Espace=lecture Fleches=pas Home/End=debut/fin
+              Espace=lecture Fleches=pas Home/End=debut/fin Ctrl+/-=zoom
             </span>
             <div class='flex items-center gap-1.5'>
               <div class='w-1.5 h-1.5 rounded-full bg-green-500/70' />
@@ -194,6 +226,45 @@ export default function Workspace() {
             </div>
           </div>
         </Show>
+        <div class='flex items-center gap-1 ml-1'>
+          <button
+            onClick={zoomOut}
+            disabled={isMin()}
+            class='btn-control w-6 h-6 text-xs'
+            title='Zoom arriere (Ctrl -)'
+          >
+            −
+          </button>
+          <button
+            onClick={resetZoom}
+            class='text-[10px] text-main-500 hover:text-main-300 font-mono tabular-nums w-10 text-center transition-colors'
+            title='Reinitialiser le zoom (Ctrl 0)'
+          >
+            {Math.round(zoom() * 100)}%
+          </button>
+          <button
+            onClick={zoomIn}
+            disabled={isMax()}
+            class='btn-control w-6 h-6 text-xs'
+            title='Zoom avant (Ctrl +)'
+          >
+            +
+          </button>
+          <button
+            onClick={savePreset}
+            class='btn-control w-6 h-6 text-xs'
+            title='Enregistrer ce zoom comme reglage par defaut'
+          >
+            <svg class='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                stroke-width='2'
+                d='M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'
+              />
+            </svg>
+          </button>
+        </div>
         <button
           onClick={() => setInstructionsOpen(true)}
           class='btn-control h-7 px-2 ml-1 gap-1 text-[10px]'
