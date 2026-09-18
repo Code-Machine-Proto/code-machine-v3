@@ -1,7 +1,7 @@
-import { createSignal, For, JSX } from "solid-js";
+import { createSignal, For, JSX } from 'solid-js';
 
 interface Props {
-  direction: "horizontal" | "vertical";
+  direction: 'horizontal' | 'vertical';
   initialSizes: number[];
   minSizes?: number[];
   /** Per-child collapse flags (aligned by index). Collapsed children shrink to `collapsedSize` and no longer participate in the resizable proportions; the rest grow to fill the freed space. */
@@ -21,7 +21,7 @@ export default function ResizablePanel(props: Props) {
 
   const startResize = (index: number, e: MouseEvent) => {
     e.preventDefault();
-    const isHorizontal = props.direction === "horizontal";
+    const isHorizontal = props.direction === 'horizontal';
     const startPos = isHorizontal ? e.clientX : e.clientY;
     const startSizes = [...sizes()];
     const containerRect = containerRef.getBoundingClientRect();
@@ -48,41 +48,34 @@ export default function ResizablePanel(props: Props) {
     };
 
     const onUp = () => {
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onUp);
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
     };
 
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
-    document.body.style.cursor = isHorizontal ? "col-resize" : "row-resize";
-    document.body.style.userSelect = "none";
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.body.style.cursor = isHorizontal ? 'col-resize' : 'row-resize';
+    document.body.style.userSelect = 'none';
   };
 
-  const isHorizontal = () => props.direction === "horizontal";
+  const isHorizontal = () => props.direction === 'horizontal';
 
   return (
-    <div
-      ref={containerRef}
-      class="flex h-full w-full"
-      style={{ "flex-direction": isHorizontal() ? "row" : "column" }}
-    >
+    <div ref={containerRef} class="flex h-full w-full" style={{ 'flex-direction': isHorizontal() ? 'row' : 'column' }}>
       <For each={props.children}>
         {(child, i) => (
           <>
             <div
               style={
                 isCollapsed(i())
-                  ? {
-                      flex: `0 0 ${collapsedSize()}px`,
-                      overflow: "hidden",
-                    }
+                  ? { flex: `0 0 ${collapsedSize()}px`, overflow: 'hidden' }
                   : {
                       flex: `${sizes()[i()]} 1 0%`,
-                      "min-width": isHorizontal() ? `${minSizes()[i()]}px` : undefined,
-                      "min-height": !isHorizontal() ? `${minSizes()[i()]}px` : undefined,
-                      overflow: "hidden",
+                      'min-width': isHorizontal() ? `${minSizes()[i()]}px` : undefined,
+                      'min-height': !isHorizontal() ? `${minSizes()[i()]}px` : undefined,
+                      overflow: 'hidden',
                     }
               }
               class="flex flex-col"
@@ -90,17 +83,13 @@ export default function ResizablePanel(props: Props) {
               {child}
             </div>
             {i() < props.children.length - 1 && (
-              <div
-                class={`shrink-0 relative group ${
-                  isHorizontal() ? "w-0" : "h-0"
-                }`}
-              >
+              <div class={`shrink-0 relative group ${isHorizontal() ? 'w-0' : 'h-0'}`}>
                 {/* Visible line */}
                 <div
                   class={`absolute transition-all duration-150 ${
                     isHorizontal()
-                      ? "w-px h-full left-0 top-0 bg-main-700/60 group-hover:bg-accent/60 group-hover:w-0.5"
-                      : "h-px w-full top-0 left-0 bg-main-700/60 group-hover:bg-accent/60 group-hover:h-0.5"
+                      ? 'w-px h-full left-0 top-0 bg-main-700/60 group-hover:bg-accent/60 group-hover:w-0.5'
+                      : 'h-px w-full top-0 left-0 bg-main-700/60 group-hover:bg-accent/60 group-hover:h-0.5'
                   }`}
                 />
                 {/* Wider invisible hit area (disabled while either side is collapsed — a fixed collapsed size isn't draggable) */}
@@ -108,8 +97,8 @@ export default function ResizablePanel(props: Props) {
                   <div
                     class={`absolute ${
                       isHorizontal()
-                        ? "w-3 h-full -left-1.5 top-0 cursor-col-resize"
-                        : "h-3 w-full -top-1.5 left-0 cursor-row-resize"
+                        ? 'w-3 h-full -left-1.5 top-0 cursor-col-resize'
+                        : 'h-3 w-full -top-1.5 left-0 cursor-row-resize'
                     }`}
                     onMouseDown={(e) => startResize(i(), e)}
                     onWheel={(e) => e.stopPropagation()}

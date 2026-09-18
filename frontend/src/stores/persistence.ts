@@ -1,13 +1,13 @@
 // frontend/src/stores/persistence.ts
-import { ProcessorId } from "@/wasm/types";
+import { ProcessorId } from '@/wasm/types';
 
-const STORAGE_PREFIX = "codemachine_code_";
+const STORAGE_PREFIX = 'codemachine_code_';
 
 export function loadCode(processorId: ProcessorId): string {
   try {
-    return localStorage.getItem(`${STORAGE_PREFIX}${processorId}`) ?? "";
+    return localStorage.getItem(`${STORAGE_PREFIX}${processorId}`) ?? '';
   } catch {
-    return "";
+    return '';
   }
 }
 

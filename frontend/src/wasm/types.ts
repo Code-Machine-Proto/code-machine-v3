@@ -1,5 +1,5 @@
 // frontend/src/wasm/types.ts
-export type Phase = "Fetch" | "Decode" | "Execute";
+export type Phase = 'Fetch' | 'Decode' | 'Execute';
 
 export interface BusActivity {
   bus_name: string;
@@ -22,7 +22,7 @@ export interface Diagnostic {
   line: number;
   column: number;
   message: string;
-  severity: "Error" | "Warning";
+  severity: 'Error' | 'Warning';
 }
 
 export interface TokenSpan {
@@ -55,9 +55,13 @@ export enum ProcessorId {
 
 export function processorIdFromRoute(route: string | undefined): ProcessorId {
   switch (route) {
-    case "accumulator": return ProcessorId.Accumulator;
-    case "accumulator-ma": return ProcessorId.AccumulatorMa;
-    case "polyrisc": return ProcessorId.PolyRisc;
-    default: return ProcessorId.Accumulator;
+    case 'accumulator':
+      return ProcessorId.Accumulator;
+    case 'accumulator-ma':
+      return ProcessorId.AccumulatorMa;
+    case 'polyrisc':
+      return ProcessorId.PolyRisc;
+    default:
+      return ProcessorId.Accumulator;
   }
 }

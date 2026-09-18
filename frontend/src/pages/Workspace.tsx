@@ -1,13 +1,6 @@
 // frontend/src/pages/Workspace.tsx
 import { useParams, useNavigate } from '@solidjs/router';
-import {
-  onMount,
-  onCleanup,
-  Show,
-  createMemo,
-  createSignal,
-  For,
-} from 'solid-js';
+import { onMount, onCleanup, Show, createMemo, createSignal, For } from 'solid-js';
 import { initWasm } from '@/wasm/bridge';
 import { processorIdFromRoute, ProcessorId } from '@/wasm/types';
 import { createSimulationStore } from '@/stores/simulation';
@@ -168,157 +161,115 @@ export default function Workspace() {
     if (name === 'FlagZ' || name === 'FlagN') return value.toString();
     if (regHex()) {
       const unsigned = value < 0 ? value + 0x10000 : value;
-      return (
-        '0x' + (unsigned & 0xffff).toString(16).toUpperCase().padStart(4, '0')
-      );
+      return '0x' + (unsigned & 0xffff).toString(16).toUpperCase().padStart(4, '0');
     }
     return value.toString();
   };
 
   return (
-    <div class='flex flex-col h-screen overflow-hidden bg-main-950'>
+    <div class="flex flex-col h-screen overflow-hidden bg-main-950">
       {/* Header bar */}
-      <div class='h-10 shrink-0 flex items-center px-4 gap-3 border-b border-main-700/40 bg-main-900'>
+      <div class="h-10 shrink-0 flex items-center px-4 gap-3 border-b border-main-700/40 bg-main-900">
         <button
           onClick={() => navigate('/')}
-          class='text-main-600 hover:text-main-300 text-xs flex items-center gap-1 transition-colors'
+          class="text-main-600 hover:text-main-300 text-xs flex items-center gap-1 transition-colors"
         >
-          <svg
-            class='w-3.5 h-3.5'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-          >
-            <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              stroke-width='2'
-              d='M15 19l-7-7 7-7'
-            />
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
           Retour
         </button>
-        <div class='w-px h-4 bg-main-700/50' />
-        <span class='text-main-400 text-sm font-semibold tracking-wide'>
+        <div class="w-px h-4 bg-main-700/50" />
+        <span class="text-main-400 text-sm font-semibold tracking-wide">
           {processorLabels[processorId()] ?? params.id}
         </span>
 
         <Show when={wasmError()}>
-          <span class='text-red-400 text-xs ml-auto'>
-            Erreur WASM: {wasmError()}
-          </span>
+          <span class="text-red-400 text-xs ml-auto">Erreur WASM: {wasmError()}</span>
         </Show>
         <Show when={!wasmReady() && !wasmError()}>
-          <span class='text-main-600 text-xs ml-auto animate-pulse'>
-            Chargement...
-          </span>
+          <span class="text-main-600 text-xs ml-auto animate-pulse">Chargement...</span>
         </Show>
         <Show when={wasmReady()}>
-          <div class='flex items-center gap-3 ml-auto'>
-            <span class='text-main-700 text-[10px] hidden sm:inline font-mono'>
+          <div class="flex items-center gap-3 ml-auto">
+            <span class="text-main-700 text-[10px] hidden sm:inline font-mono">
               Espace=lecture Fleches=pas Home/End=debut/fin Ctrl+/-=zoom
             </span>
-            <div class='flex items-center gap-1.5'>
-              <div class='w-1.5 h-1.5 rounded-full bg-green-500/70' />
-              <span class='text-green-500/50 text-[10px] tracking-wide'>
-                Pret
-              </span>
+            <div class="flex items-center gap-1.5">
+              <div class="w-1.5 h-1.5 rounded-full bg-green-500/70" />
+              <span class="text-green-500/50 text-[10px] tracking-wide">Pret</span>
             </div>
           </div>
         </Show>
-        <div class='flex items-center gap-1 ml-1'>
+        <div class="flex items-center gap-1 ml-1">
           <button
             onClick={zoomOut}
             disabled={isMin()}
-            class='btn-control w-6 h-6 text-xs'
-            title='Zoom arriere (Ctrl -)'
+            class="btn-control w-6 h-6 text-xs"
+            title="Zoom arriere (Ctrl -)"
           >
             −
           </button>
           <button
             onClick={resetZoom}
-            class='text-[10px] text-main-500 hover:text-main-300 font-mono tabular-nums w-10 text-center transition-colors'
-            title='Reinitialiser le zoom (Ctrl 0)'
+            class="text-[10px] text-main-500 hover:text-main-300 font-mono tabular-nums w-10 text-center transition-colors"
+            title="Reinitialiser le zoom (Ctrl 0)"
           >
             {Math.round(zoom() * 100)}%
           </button>
-          <button
-            onClick={zoomIn}
-            disabled={isMax()}
-            class='btn-control w-6 h-6 text-xs'
-            title='Zoom avant (Ctrl +)'
-          >
+          <button onClick={zoomIn} disabled={isMax()} class="btn-control w-6 h-6 text-xs" title="Zoom avant (Ctrl +)">
             +
           </button>
           <button
             onClick={savePreset}
-            class='btn-control w-6 h-6 text-xs'
-            title='Enregistrer ce zoom comme reglage par defaut'
+            class="btn-control w-6 h-6 text-xs"
+            title="Enregistrer ce zoom comme reglage par defaut"
           >
-            <svg class='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                stroke-width='2'
-                d='M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
               />
             </svg>
           </button>
         </div>
         <button
           onClick={() => setInstructionsOpen(true)}
-          class='btn-control h-7 px-2 ml-1 gap-1 text-[10px]'
+          class="btn-control h-7 px-2 ml-1 gap-1 text-[10px]"
           title="Jeu d'instructions"
         >
-          <svg
-            class='w-3.5 h-3.5'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-          >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
-              stroke-linecap='round'
-              stroke-linejoin='round'
-              stroke-width='2'
-              d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <span class='hidden sm:inline'>Instructions</span>
+          <span class="hidden sm:inline">Instructions</span>
         </button>
-        <button
-          onClick={toggleTheme}
-          class='btn-control w-7 h-7'
-          title={isDark() ? 'Mode clair' : 'Mode sombre'}
-        >
+        <button onClick={toggleTheme} class="btn-control w-7 h-7" title={isDark() ? 'Mode clair' : 'Mode sombre'}>
           <Show
             when={isDark()}
             fallback={
-              <svg
-                class='w-3.5 h-3.5'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z'
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
                 />
               </svg>
             }
           >
-            <svg
-              class='w-3.5 h-3.5'
-              fill='none'
-              stroke='currentColor'
-              viewBox='0 0 24 24'
-            >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
-                stroke-width='2'
-                d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z'
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
               />
             </svg>
           </Show>
@@ -326,7 +277,7 @@ export default function Workspace() {
       </div>
 
       {/* Controls bar */}
-      <div class='shrink-0 border-b border-main-700/40'>
+      <div class="shrink-0 border-b border-main-700/40">
         <Controls
           currentStep={store.currentStep}
           totalSteps={store.totalSteps}
@@ -345,9 +296,9 @@ export default function Workspace() {
       </div>
 
       {/* Main content — resizable three-column layout */}
-      <div class='flex-1 min-h-0'>
+      <div class="flex-1 min-h-0">
         <ResizablePanel
-          direction='horizontal'
+          direction="horizontal"
           initialSizes={[25, 50, 25]}
           minSizes={[200, 300, 200]}
           collapsed={[editorCollapsed(), false, sidebarCollapsed()]}
@@ -376,26 +327,19 @@ export default function Workspace() {
           />
 
           {/* Right: Registers + Memory */}
-          <div ref={sidebarRef} class='flex flex-col h-full overflow-hidden'>
+          <div ref={sidebarRef} class="flex flex-col h-full overflow-hidden">
             <Show
               when={!sidebarCollapsed()}
               fallback={
                 <button
                   onClick={() => setSidebarCollapsed((c) => !c)}
-                  class='flex-1 flex flex-col items-center justify-start gap-2 pt-3 bg-main-900 hover:bg-main-800 text-main-500 hover:text-main-300 transition-colors'
-                  title='Afficher le panneau'
+                  class="flex-1 flex flex-col items-center justify-start gap-2 pt-3 bg-main-900 hover:bg-main-800 text-main-500 hover:text-main-300 transition-colors"
+                  title="Afficher le panneau"
                 >
-                  <svg
-                    class='w-3 h-3 shrink-0 rotate-180'
-                    fill='currentColor'
-                    viewBox='0 0 20 20'
-                  >
-                    <path d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' />
+                  <svg class="w-3 h-3 shrink-0 rotate-180" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                   </svg>
-                  <span
-                    class='text-[10px] tracking-widest'
-                    style={{ 'writing-mode': 'vertical-rl' }}
-                  >
+                  <span class="text-[10px] tracking-widest" style={{ 'writing-mode': 'vertical-rl' }}>
                     Registres et mémoire
                   </span>
                 </button>
@@ -404,63 +348,53 @@ export default function Workspace() {
               <>
                 {/* Registers */}
                 <div
-                  class='flex flex-col overflow-hidden'
+                  class="flex flex-col overflow-hidden"
                   classList={{
                     'border-b border-main-700/40': !regCollapsed(),
                     'shrink-0': !registersExpand(),
                     'flex-1 min-h-0': registersExpand(),
                   }}
                 >
-                  <div class='panel-header'>
+                  <div class="panel-header">
                     <button
                       onClick={() => setRegCollapsed((c) => !c)}
-                      class='panel-label flex items-center gap-1 hover:text-main-300 transition-colors'
-                      classList={{
-                        'text-xs': sidebarWide(),
-                        'text-[10px]': !sidebarWide(),
-                      }}
+                      class="panel-label flex items-center gap-1 hover:text-main-300 transition-colors"
+                      classList={{ 'text-xs': sidebarWide(), 'text-[10px]': !sidebarWide() }}
                     >
                       <svg
-                        class='w-2.5 h-2.5 transition-transform'
+                        class="w-2.5 h-2.5 transition-transform"
                         classList={{ '-rotate-90': regCollapsed() }}
-                        fill='currentColor'
-                        viewBox='0 0 20 20'
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
                       >
-                        <path d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' />
+                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                       </svg>
                       {sidebarWide() ? 'Registres' : 'Reg.'}
                     </button>
-                    <div class='flex items-center gap-1.5 ml-auto'>
+                    <div class="flex items-center gap-1.5 ml-auto">
                       <Show when={store.isCompiled()}>
                         <button
                           onClick={() => setRegHex((h) => !h)}
-                          class='text-main-500 hover:text-main-300 px-1.5 py-0.5 rounded-md border border-main-700/50 transition-colors'
-                          classList={{
-                            'text-xs': sidebarWide(),
-                            'text-[10px]': !sidebarWide(),
-                          }}
+                          class="text-main-500 hover:text-main-300 px-1.5 py-0.5 rounded-md border border-main-700/50 transition-colors"
+                          classList={{ 'text-xs': sidebarWide(), 'text-[10px]': !sidebarWide() }}
                         >
                           {regHex() ? 'HEX' : 'DEC'}
                         </button>
                       </Show>
                       <button
                         onClick={() => setSidebarCollapsed((c) => !c)}
-                        class='text-main-500 hover:text-main-300 transition-colors shrink-0'
-                        title='Masquer le panneau'
+                        class="text-main-500 hover:text-main-300 transition-colors shrink-0"
+                        title="Masquer le panneau"
                       >
-                        <svg
-                          class='w-2.5 h-2.5 rotate-90'
-                          fill='currentColor'
-                          viewBox='0 0 20 20'
-                        >
-                          <path d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' />
+                        <svg class="w-2.5 h-2.5 rotate-90" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                         </svg>
                       </button>
                     </div>
                   </div>
                   <Show when={!regCollapsed()}>
                     <div
-                      class='overflow-auto'
+                      class="overflow-auto"
                       classList={{
                         'p-3': sidebarWide(),
                         'p-2': !sidebarWide(),
@@ -471,49 +405,31 @@ export default function Workspace() {
                       <Show
                         when={store.isCompiled()}
                         fallback={
-                          <p class='text-main-600 text-xs text-center py-2'>
-                            Compilez pour voir les registres
-                          </p>
+                          <p class="text-main-600 text-xs text-center py-2">Compilez pour voir les registres</p>
                         }
                       >
                         <div
-                          classList={{
-                            'flex flex-col gap-1.5': sidebarWide(),
-                            'flex flex-col gap-1': !sidebarWide(),
-                          }}
+                          classList={{ 'flex flex-col gap-1.5': sidebarWide(), 'flex flex-col gap-1': !sidebarWide() }}
                         >
                           <For each={registerEntries()}>
                             {([name, value]) => {
-                              const color =
-                                regColors[name] ??
-                                'border-main-600 bg-main-800/50';
+                              const color = regColors[name] ?? 'border-main-600 bg-main-800/50';
                               return (
                                 <div
                                   class={`flex items-center justify-between rounded border ${color}`}
-                                  classList={{
-                                    'px-3 py-2': sidebarWide(),
-                                    'px-2 py-1': !sidebarWide(),
-                                  }}
+                                  classList={{ 'px-3 py-2': sidebarWide(), 'px-2 py-1': !sidebarWide() }}
                                 >
                                   <span
-                                    class='font-semibold text-main-300'
-                                    classList={{
-                                      'text-sm': sidebarWide(),
-                                      'text-[10px]': !sidebarWide(),
-                                    }}
+                                    class="font-semibold text-main-300"
+                                    classList={{ 'text-sm': sidebarWide(), 'text-[10px]': !sidebarWide() }}
                                   >
                                     {name}
                                   </span>
                                   <span
-                                    class='font-mono text-white'
-                                    classList={{
-                                      'text-sm': sidebarWide(),
-                                      'text-[10px]': !sidebarWide(),
-                                    }}
+                                    class="font-mono text-white"
+                                    classList={{ 'text-sm': sidebarWide(), 'text-[10px]': !sidebarWide() }}
                                   >
-                                    {typeof value === 'number'
-                                      ? formatReg(name, value)
-                                      : value}
+                                    {typeof value === 'number' ? formatReg(name, value) : value}
                                   </span>
                                 </div>
                               );
@@ -527,11 +443,8 @@ export default function Workspace() {
 
                 {/* Memory */}
                 <div
-                  class='overflow-hidden'
-                  classList={{
-                    'flex-1 min-h-0': !memCollapsed(),
-                    'shrink-0': memCollapsed(),
-                  }}
+                  class="overflow-hidden"
+                  classList={{ 'flex-1 min-h-0': !memCollapsed(), 'shrink-0': memCollapsed() }}
                 >
                   <MemoryView
                     memory={store.memory}
