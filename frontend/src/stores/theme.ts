@@ -1,19 +1,19 @@
-import { createSignal } from "solid-js";
+import { createSignal } from 'solid-js';
 
-const STORAGE_KEY = "codemachine-theme";
+const STORAGE_KEY = 'codemachine-theme';
 
-type Theme = "dark" | "light";
+type Theme = 'dark' | 'light';
 
 function getInitialTheme(): Theme {
   const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === "light" || stored === "dark") return stored;
-  return "dark";
+  if (stored === 'light' || stored === 'dark') return stored;
+  return 'dark';
 }
 
 const [theme, setThemeSignal] = createSignal<Theme>(getInitialTheme());
 
 function applyTheme(t: Theme) {
-  document.documentElement.setAttribute("data-theme", t);
+  document.documentElement.setAttribute('data-theme', t);
   localStorage.setItem(STORAGE_KEY, t);
 }
 
@@ -23,9 +23,9 @@ applyTheme(theme());
 export function useTheme() {
   return {
     theme,
-    isDark: () => theme() === "dark",
+    isDark: () => theme() === 'dark',
     toggle: () => {
-      const next = theme() === "dark" ? "light" : "dark";
+      const next = theme() === 'dark' ? 'light' : 'dark';
       setThemeSignal(next);
       applyTheme(next);
     },

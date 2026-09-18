@@ -1,6 +1,6 @@
-import { HashRouter, Route } from "@solidjs/router";
-import Home from "./pages/Home";
-import Workspace from "./pages/Workspace";
+import { HashRouter, Route } from '@solidjs/router';
+import Home from './pages/Home';
+import Workspace from './pages/Workspace';
 
 export default function App() {
   return (

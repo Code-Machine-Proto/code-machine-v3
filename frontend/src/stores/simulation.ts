@@ -24,9 +24,7 @@ export function createSimulationStore(processorId: ProcessorId) {
   const [diagnostics, setDiagnostics] = createSignal<Diagnostic[]>([]);
   const [stepMode, setStepMode] = createSignal<StepMode>('regular');
   const [instructionLines, setInstructionLines] = createSignal<number[]>([]);
-  const [lastCompiledCode, setLastCompiledCode] = createSignal<string | null>(
-    null,
-  );
+  const [lastCompiledCode, setLastCompiledCode] = createSignal<string | null>(null);
 
   // Derived signals
   const currentCycle = () => steps()[currentStep()] ?? null;
@@ -54,8 +52,7 @@ export function createSimulationStore(processorId: ProcessorId) {
   };
   // True once a compile has happened at least once and the code has since
   // been edited, so the compile status badge can prompt the user to recompile.
-  const isStale = () =>
-    lastCompiledCode() !== null && code() !== lastCompiledCode();
+  const isStale = () => lastCompiledCode() !== null && code() !== lastCompiledCode();
 
   // Debounced persistence
   let saveTimeout: ReturnType<typeof setTimeout>;

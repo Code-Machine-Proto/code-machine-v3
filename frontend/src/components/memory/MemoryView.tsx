@@ -27,9 +27,7 @@ export default function MemoryView(props: Props) {
   const hasMemoryTabs = () => props.processorId === ProcessorId.PolyRisc;
 
   const activeMemory = () =>
-    hasMemoryTabs() && activeTab() === 'instructions'
-      ? (props.instructionMemory?.() ?? [])
-      : props.memory();
+    hasMemoryTabs() && activeTab() === 'instructions' ? (props.instructionMemory?.() ?? []) : props.memory();
 
   let containerRef!: HTMLDivElement;
 
@@ -51,8 +49,7 @@ export default function MemoryView(props: Props) {
   };
 
   const formatAddr = (addr: number) => {
-    if (addrHex())
-      return '0x' + addr.toString(16).toUpperCase().padStart(2, '0');
+    if (addrHex()) return '0x' + addr.toString(16).toUpperCase().padStart(2, '0');
     return addr.toString();
   };
 
@@ -61,44 +58,40 @@ export default function MemoryView(props: Props) {
     const cols = columns();
     const result = [];
     for (let i = 0; i < mem.length; i += cols) {
-      result.push({
-        address: i,
-        values: mem.slice(i, i + cols),
-      });
+      result.push({ address: i, values: mem.slice(i, i + cols) });
     }
     return result;
   };
 
   return (
-    <div ref={containerRef} class='flex flex-col h-full'>
+    <div ref={containerRef} class="flex flex-col h-full">
       {/* Header */}
-      <div class='panel-header gap-2'>
-        <div class='flex items-center gap-2 shrink-0'>
+      <div class="panel-header gap-2">
+        <div class="flex items-center gap-2 shrink-0">
           <button
             onClick={() => props.onToggleCollapsed?.()}
-            class='panel-label flex items-center gap-1 shrink-0 hover:text-main-300 transition-colors'
+            class="panel-label flex items-center gap-1 shrink-0 hover:text-main-300 transition-colors"
             classList={{ 'text-xs': wide(), 'text-[10px]': !wide() }}
           >
             <svg
-              class='w-2.5 h-2.5 transition-transform'
+              class="w-2.5 h-2.5 transition-transform"
               classList={{ '-rotate-90': props.collapsed }}
-              fill='currentColor'
-              viewBox='0 0 20 20'
+              fill="currentColor"
+              viewBox="0 0 20 20"
             >
-              <path d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' />
+              <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg>
             {wide() ? 'Memoire' : 'Mem.'}
           </button>
           <Show when={hasMemoryTabs() && !props.collapsed}>
-            <div class='flex items-center rounded-md border border-main-700/50 overflow-hidden'>
+            <div class="flex items-center rounded-md border border-main-700/50 overflow-hidden">
               <button
                 onClick={() => setActiveTab('data')}
-                title='Données'
+                title="Données"
                 classList={{
                   'transition-colors': true,
                   'bg-main-700 text-main-300': activeTab() === 'data',
-                  'bg-main-800 text-main-500 hover:text-main-300':
-                    activeTab() !== 'data',
+                  'bg-main-800 text-main-500 hover:text-main-300': activeTab() !== 'data',
                   'text-xs px-2 py-0.5': wide(),
                   'text-[10px] px-1.5 py-0.5': !wide(),
                 }}
@@ -107,12 +100,11 @@ export default function MemoryView(props: Props) {
               </button>
               <button
                 onClick={() => setActiveTab('instructions')}
-                title='Instructions'
+                title="Instructions"
                 classList={{
                   'transition-colors': true,
                   'bg-main-700 text-main-300': activeTab() === 'instructions',
-                  'bg-main-800 text-main-500 hover:text-main-300':
-                    activeTab() !== 'instructions',
+                  'bg-main-800 text-main-500 hover:text-main-300': activeTab() !== 'instructions',
                   'text-xs px-2 py-0.5': wide(),
                   'text-[10px] px-1.5 py-0.5': !wide(),
                 }}
@@ -122,7 +114,7 @@ export default function MemoryView(props: Props) {
             </div>
           </Show>
         </div>
-        <div class='flex items-center gap-1 flex-wrap justify-end'>
+        <div class="flex items-center gap-1 flex-wrap justify-end">
           <select
             value={columns()}
             onChange={(e) => setColumns(parseInt(e.currentTarget.value))}
@@ -132,11 +124,7 @@ export default function MemoryView(props: Props) {
               'text-[10px] px-1 py-0.5': !wide(),
             }}
           >
-            <For each={COLUMN_OPTIONS}>
-              {(n) => (
-                <option value={n}>{wide() ? `${n} col` : `${n}c`}</option>
-              )}
-            </For>
+            <For each={COLUMN_OPTIONS}>{(n) => <option value={n}>{wide() ? `${n} col` : `${n}c`}</option>}</For>
           </select>
           <button
             onClick={() => setAddrHex((h) => !h)}
@@ -146,13 +134,7 @@ export default function MemoryView(props: Props) {
               'text-[10px] px-1 py-0.5': !wide(),
             }}
           >
-            {wide()
-              ? addrHex()
-                ? 'Addr: HEX'
-                : 'Addr: DEC'
-              : addrHex()
-                ? 'A:H'
-                : 'A:D'}
+            {wide() ? (addrHex() ? 'Addr: HEX' : 'Addr: DEC') : addrHex() ? 'A:H' : 'A:D'}
           </button>
           <button
             onClick={() => setDisplayHex((h) => !h)}
@@ -162,43 +144,26 @@ export default function MemoryView(props: Props) {
               'text-[10px] px-1 py-0.5': !wide(),
             }}
           >
-            {wide()
-              ? displayHex()
-                ? 'Val: HEX'
-                : 'Val: DEC'
-              : displayHex()
-                ? 'V:H'
-                : 'V:D'}
+            {wide() ? (displayHex() ? 'Val: HEX' : 'Val: DEC') : displayHex() ? 'V:H' : 'V:D'}
           </button>
         </div>
       </div>
 
       {/* Content */}
-      <div
-        class='flex-1 overflow-auto p-1.5'
-        classList={{ hidden: props.collapsed }}
-      >
+      <div class="flex-1 overflow-auto p-1.5" classList={{ hidden: props.collapsed }}>
         <Show
           when={props.isCompiled()}
-          fallback={
-            <p class='text-main-600 text-xs text-center mt-8'>
-              Compilez pour voir la memoire
-            </p>
-          }
+          fallback={<p class="text-main-600 text-xs text-center mt-8">Compilez pour voir la memoire</p>}
         >
           <table
-            class='w-full table-fixed border-collapse font-mono'
+            class="w-full table-fixed border-collapse font-mono"
             classList={{ 'text-xs': wide(), 'text-[10px]': !wide() }}
           >
             <thead>
               <tr>
-                <th class='text-main-600 text-right pr-1.5 py-0.5 font-normal w-10'></th>
+                <th class="text-main-600 text-right pr-1.5 py-0.5 font-normal w-10" />
                 <For each={Array.from({ length: columns() }, (_, i) => i)}>
-                  {(offset) => (
-                    <th class='text-main-600 text-center py-0.5 font-normal'>
-                      +{offset}
-                    </th>
-                  )}
+                  {(offset) => <th class="text-main-600 text-center py-0.5 font-normal">+{offset}</th>}
                 </For>
               </tr>
             </thead>
@@ -206,9 +171,7 @@ export default function MemoryView(props: Props) {
               <For each={rows()}>
                 {(row) => (
                   <tr>
-                    <td class='text-main-500 text-right pr-1.5 py-0.5 w-10 shrink-0'>
-                      {formatAddr(row.address)}
-                    </td>
+                    <td class="text-main-500 text-right pr-1.5 py-0.5 w-10 shrink-0">{formatAddr(row.address)}</td>
                     <For each={row.values}>
                       {(val, idx) => {
                         const addr = row.address + idx();
@@ -216,14 +179,13 @@ export default function MemoryView(props: Props) {
                         // instruction-fetch address (never a data access), so
                         // only apply it while that tab is the one showing.
                         const isStimulated = () =>
-                          (!hasMemoryTabs() ||
-                            activeTab() === 'instructions') &&
+                          (!hasMemoryTabs() || activeTab() === 'instructions') &&
                           addr === props.stimulatedMemory() &&
                           props.stimulatedMemory() >= 0;
                         return (
-                          <td class='text-center py-0.5 px-0.5 overflow-hidden'>
+                          <td class="text-center py-0.5 px-0.5 overflow-hidden">
                             <div
-                              class='rounded px-1 truncate transition-colors'
+                              class="rounded px-1 truncate transition-colors"
                               title={formatValue(val)}
                               classList={{
                                 'bg-main-800 text-main-400': !isStimulated(),
