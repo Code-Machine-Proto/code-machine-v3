@@ -55,21 +55,20 @@ export default function CircuitRenderer(props: Props) {
         <span class="panel-label">Circuit</span>
         <div class="flex items-center gap-1.5">
           <button
-            onClick={() => setZoom(z => Math.min(5, z * 1.2))}
-            class="btn-control w-6 h-6 text-xs"
-            title="Zoom avant"
-          >+</button>
-          <span class="text-[10px] text-main-600 font-mono tabular-nums w-10 text-center">{Math.round(zoom() * 100)}%</span>
-          <button
             onClick={() => setZoom(z => Math.max(0.3, z * 0.8))}
             class="btn-control w-6 h-6 text-xs"
             title="Zoom arriere"
           >-</button>
           <button
             onClick={resetView}
-            class="btn-control px-1.5 py-0.5 text-[10px]"
+            class="text-[10px] text-main-500 hover:text-main-300 font-mono tabular-nums w-10 text-center transition-colors"
             title="Reinitialiser la vue"
-          >Reset</button>
+          >{Math.round(zoom() * 100)}%</button>
+          <button
+            onClick={() => setZoom(z => Math.min(5, z * 1.2))}
+            class="btn-control w-6 h-6 text-xs"
+            title="Zoom avant"
+          >+</button>
         </div>
       </div>
       <div

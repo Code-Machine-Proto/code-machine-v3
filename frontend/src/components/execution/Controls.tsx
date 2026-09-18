@@ -22,6 +22,19 @@ interface Props {
 export default function Controls(props: Props) {
   return (
     <div class="flex items-center gap-3 px-4 py-1.5 bg-main-900">
+      <Show when={props.isCompiled()}>
+        {/* Step mode selector */}
+        <select
+          value={props.stepMode()}
+          onChange={(e) => props.setStepMode(e.currentTarget.value as StepMode)}
+          class="shrink-0 bg-main-800 text-main-400 text-xs rounded-md px-2 py-1.5 border border-main-700/50 cursor-pointer transition-colors hover:border-main-600/50"
+          title="Mode de deplacement"
+        >
+          <option value="regular">Normal</option>
+          <option value="execution">Execution</option>
+        </select>
+      </Show>
+
       {/* Transport buttons */}
       <div class="flex items-center gap-1">
         <ControlButton onClick={props.onGoToStart} disabled={() => !props.isCompiled()} title="Debut">
@@ -75,17 +88,6 @@ export default function Controls(props: Props) {
         <div class="shrink-0 px-2.5 py-1 rounded-md bg-accent/10 border border-accent/20">
           <span class="text-xs font-mono font-medium text-accent-light">{props.phase()}</span>
         </div>
-
-        {/* Step mode selector */}
-        <select
-          value={props.stepMode()}
-          onChange={(e) => props.setStepMode(e.currentTarget.value as StepMode)}
-          class="shrink-0 bg-main-800 text-main-400 text-xs rounded-md px-2 py-1.5 border border-main-700/50 cursor-pointer transition-colors hover:border-main-600/50"
-          title="Mode de deplacement"
-        >
-          <option value="regular">Normal</option>
-          <option value="execution">Execution</option>
-        </select>
       </Show>
 
       <Show when={!props.isCompiled()}>
