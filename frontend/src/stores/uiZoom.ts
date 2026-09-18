@@ -1,6 +1,6 @@
-import { createSignal } from "solid-js";
+import { createSignal } from 'solid-js';
 
-const STORAGE_KEY = "codemachine-ui-zoom-preset";
+const STORAGE_KEY = 'codemachine-ui-zoom-preset';
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 2;
 const DEFAULT_ZOOM = 1;

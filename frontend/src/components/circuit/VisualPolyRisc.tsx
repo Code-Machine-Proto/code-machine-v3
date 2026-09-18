@@ -1,14 +1,14 @@
-import RegisterBox, { REGISTER_12_BIT, REGISTER_28_BIT } from "./parts/RegisterBox";
-import ALU from "./parts/ALU";
-import Bus from "./parts/Bus";
-import Multiplexer from "./parts/Multiplexer";
-import ObscureMemory from "./parts/ObscureMemory";
+import RegisterBox, { REGISTER_12_BIT, REGISTER_28_BIT } from './parts/RegisterBox';
+import ALU from './parts/ALU';
+import Bus from './parts/Bus';
+import Multiplexer from './parts/Multiplexer';
+import ObscureMemory from './parts/ObscureMemory';
 import {
   getActivePolyRiscWires,
   getActivePolyRiscJunctions,
   type PolyRiscWireId,
   type PolyRiscJunctionId,
-} from "./lineState";
+} from './lineState';
 
 // LineStatePolyRisc: -1 error, 0 fetch, 1 decode, 2 opTwoReg, 3 opThreeReg,
 //   4 load, 5 store, 6 loadI, 7 branching, 8 nop
@@ -21,8 +21,8 @@ interface VisualProps {
 export default function VisualPolyRisc(props: VisualProps) {
   const ls = () => props.stimulatedLineState;
 
-  const pcVal = () => props.registers["PC"] ?? 0;
-  const irVal = () => props.registers["IR"] ?? 0;
+  const pcVal = () => props.registers['PC'] ?? 0;
+  const irVal = () => props.registers['IR'] ?? 0;
 
   const fetch = () => ls() === 0;
   const opTwoReg = () => ls() === 2;
@@ -33,15 +33,15 @@ export default function VisualPolyRisc(props: VisualProps) {
   const branching = () => ls() === 7;
   const nop = () => ls() === 8 || opTwoReg() || opThreeReg() || load() || store() || loadI();
   const activeWires = () => getActivePolyRiscWires(ls());
-  const wireClass = (id: PolyRiscWireId) => (activeWires().has(id) ? "fill-red-500" : "");
+  const wireClass = (id: PolyRiscWireId) => (activeWires().has(id) ? 'fill-red-500' : '');
   const activeJunctions = () => getActivePolyRiscJunctions(ls());
-  const junctionClass = (id: PolyRiscJunctionId) => (activeJunctions().has(id) ? "fill-red-500" : "fill-main-600");
+  const junctionClass = (id: PolyRiscJunctionId) => (activeJunctions().has(id) ? 'fill-red-500' : 'fill-main-600');
 
   return (
     <svg
       viewBox="0 0 1231 400"
       class="w-full h-full"
-      style="max-height: 100%; max-width: 100%;"
+      style={{ 'max-height': '100%', 'max-width': '100%' }}
       preserveAspectRatio="xMidYMid meet"
       fill="none"
     >
@@ -260,24 +260,24 @@ export default function VisualPolyRisc(props: VisualProps) {
       <Bus x={645} y={262} number={4} />
 
       {/* === Active wire overlays === */}
-      <use href="#mux-pc" class={wireClass("mux-pc")} />
-      <use href="#pc-inst" class={wireClass("pc-inst")} />
-      <use href="#inst-ir" class={wireClass("inst-ir")} />
-      <use href="#pc-mux" class={wireClass("pc-mux")} />
-      <use href="#mux-reg" class={wireClass("mux-reg")} />
-      <use href="#ir-reg" class={wireClass("ir-reg")} />
-      <use href="#ir-rdst" class={wireClass("ir-rdst")} />
-      <use href="#ir-rsrc1" class={wireClass("ir-rsrc1")} />
-      <use href="#ir-rsrc2" class={wireClass("ir-rsrc2")} />
-      <use href="#ir-pc" class={wireClass("ir-pc")} />
-      <use href="#reg-A" class={wireClass("reg-A")} />
-      <use href="#reg-B" class={wireClass("reg-B")} />
-      <use href="#alu-reg" class={wireClass("alu-reg")} />
-      <use href="#reg-data" class={wireClass("reg-data")} />
-      <use href="#reg-addr" class={wireClass("reg-addr")} />
-      <use href="#mem-reg" class={wireClass("mem-reg")} />
-      <use href="#ir-control1" class={wireClass("ir-control1")} />
-      <use href="#ir-control2" class={wireClass("ir-control2")} />
+      <use href="#mux-pc" class={wireClass('mux-pc')} />
+      <use href="#pc-inst" class={wireClass('pc-inst')} />
+      <use href="#inst-ir" class={wireClass('inst-ir')} />
+      <use href="#pc-mux" class={wireClass('pc-mux')} />
+      <use href="#mux-reg" class={wireClass('mux-reg')} />
+      <use href="#ir-reg" class={wireClass('ir-reg')} />
+      <use href="#ir-rdst" class={wireClass('ir-rdst')} />
+      <use href="#ir-rsrc1" class={wireClass('ir-rsrc1')} />
+      <use href="#ir-rsrc2" class={wireClass('ir-rsrc2')} />
+      <use href="#ir-pc" class={wireClass('ir-pc')} />
+      <use href="#reg-A" class={wireClass('reg-A')} />
+      <use href="#reg-B" class={wireClass('reg-B')} />
+      <use href="#alu-reg" class={wireClass('alu-reg')} />
+      <use href="#reg-data" class={wireClass('reg-data')} />
+      <use href="#reg-addr" class={wireClass('reg-addr')} />
+      <use href="#mem-reg" class={wireClass('mem-reg')} />
+      <use href="#ir-control1" class={wireClass('ir-control1')} />
+      <use href="#ir-control2" class={wireClass('ir-control2')} />
 
       {/* === Components === */}
       <Multiplexer name="do_branch" x={37} y={130} isActivated={branching() || nop()} />
@@ -285,7 +285,7 @@ export default function VisualPolyRisc(props: VisualProps) {
 
       <ALU x={920} y={100} hasNz={true} isActivated={opTwoReg() || opThreeReg()} />
 
-      <ObscureMemory name={["Mémoire", "d'instructions"]} class="fill-green-700" x={313} y={70}>
+      <ObscureMemory name={['Mémoire', "d'instructions"]} class="fill-green-700" x={313} y={70}>
         <text x={5} y={182} dominant-baseline="middle" fill="black">
           addr
         </text>
@@ -323,7 +323,7 @@ export default function VisualPolyRisc(props: VisualProps) {
         </text>
       </ObscureMemory>
       <ObscureMemory
-        name={["Mémoire", "de données"]}
+        name={['Mémoire', 'de données']}
         class="fill-green-500"
         x={1101}
         y={70}
@@ -362,9 +362,9 @@ export default function VisualPolyRisc(props: VisualProps) {
       />
 
       {/* === Junction dots === */}
-      <circle id="pc-mux-junction" cx="282" cy="170" r="5" class={junctionClass("pc-mux-junction")} />
-      <circle id="ir-out-junction" cx="616" cy="170" r="5" class={junctionClass("ir-out-junction")} />
-      <circle id="reg-b-data-junction" cx="880" cy="217" r="5" class={junctionClass("reg-b-data-junction")} />
+      <circle id="pc-mux-junction" cx="282" cy="170" r="5" class={junctionClass('pc-mux-junction')} />
+      <circle id="ir-out-junction" cx="616" cy="170" r="5" class={junctionClass('ir-out-junction')} />
+      <circle id="reg-b-data-junction" cx="880" cy="217" r="5" class={junctionClass('reg-b-data-junction')} />
 
       {/* +1 incrementer */}
       <g>

@@ -1,9 +1,9 @@
-import { Switch, Match, createSignal } from "solid-js";
-import type { Accessor } from "solid-js";
-import { ProcessorId } from "@/wasm/types";
-import VisualAccumulator from "./VisualAccumulator";
-import VisualWithMa from "./VisualWithMa";
-import VisualPolyRisc from "./VisualPolyRisc";
+import { Switch, Match, createSignal } from 'solid-js';
+import type { Accessor } from 'solid-js';
+import { ProcessorId } from '@/wasm/types';
+import VisualAccumulator from './VisualAccumulator';
+import VisualWithMa from './VisualWithMa';
+import VisualPolyRisc from './VisualPolyRisc';
 
 interface Props {
   processorId: ProcessorId;
@@ -21,7 +21,7 @@ export default function CircuitRenderer(props: Props) {
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    setZoom(z => Math.max(0.3, Math.min(5, z * delta)));
+    setZoom((z) => Math.max(0.3, Math.min(5, z * delta)));
   };
 
   const handleMouseDown = (e: MouseEvent) => {
@@ -37,7 +37,7 @@ export default function CircuitRenderer(props: Props) {
     const dx = e.clientX - lastPos.x;
     const dy = e.clientY - lastPos.y;
     lastPos = { x: e.clientX, y: e.clientY };
-    setPan(p => ({ x: p.x + dx, y: p.y + dy }));
+    setPan((p) => ({ x: p.x + dx, y: p.y + dy }));
   };
 
   const handleMouseUp = () => {
@@ -55,25 +55,31 @@ export default function CircuitRenderer(props: Props) {
         <span class="panel-label">Circuit</span>
         <div class="flex items-center gap-1.5">
           <button
-            onClick={() => setZoom(z => Math.max(0.3, z * 0.8))}
+            onClick={() => setZoom((z) => Math.max(0.3, z * 0.8))}
             class="btn-control w-6 h-6 text-xs"
             title="Zoom arriere"
-          >-</button>
+          >
+            -
+          </button>
           <button
             onClick={resetView}
             class="text-[10px] text-main-500 hover:text-main-300 font-mono tabular-nums w-10 text-center transition-colors"
             title="Reinitialiser la vue"
-          >{Math.round(zoom() * 100)}%</button>
+          >
+            {Math.round(zoom() * 100)}%
+          </button>
           <button
-            onClick={() => setZoom(z => Math.min(5, z * 1.2))}
+            onClick={() => setZoom((z) => Math.min(5, z * 1.2))}
             class="btn-control w-6 h-6 text-xs"
             title="Zoom avant"
-          >+</button>
+          >
+            +
+          </button>
         </div>
       </div>
       <div
         class="flex-1 overflow-hidden min-h-0 bg-grid-fine"
-        style={{ cursor: isPanning ? "grabbing" : "default" }}
+        style={{ cursor: isPanning ? 'grabbing' : 'default' }}
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -84,7 +90,7 @@ export default function CircuitRenderer(props: Props) {
           class="w-full h-full flex items-center justify-center"
           style={{
             transform: `translate(${pan().x}px, ${pan().y}px) scale(${zoom()})`,
-            "transform-origin": "center center",
+            'transform-origin': 'center center',
           }}
         >
           <Switch fallback={<p class="text-main-600">Selectionnez un processeur</p>}>

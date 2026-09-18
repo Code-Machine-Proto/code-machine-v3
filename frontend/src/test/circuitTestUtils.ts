@@ -1,7 +1,7 @@
-import { expect } from "vitest";
-import { compileSource, initWasm, simulateProgram } from "@/wasm/bridge";
-import type { CycleState } from "@/wasm/types";
-import type { ProcessorId } from "@/wasm/types";
+import { expect } from 'vitest';
+import { compileSource, initWasm, simulateProgram } from '@/wasm/bridge';
+import type { CycleState } from '@/wasm/types';
+import type { ProcessorId } from '@/wasm/types';
 
 export interface InstructionTriple {
   fetch: CycleState;
@@ -23,11 +23,7 @@ export function runInstructions(source: string, processorId: ProcessorId): Instr
 
   const triples: InstructionTriple[] = [];
   for (let i = 0; i + 2 < trace.steps.length; i += 3) {
-    triples.push({
-      fetch: trace.steps[i],
-      decode: trace.steps[i + 1],
-      execute: trace.steps[i + 2],
-    });
+    triples.push({ fetch: trace.steps[i], decode: trace.steps[i + 1], execute: trace.steps[i + 2] });
   }
   return triples;
 }
@@ -36,7 +32,7 @@ export function assertActiveWires<T extends string>(
   allWireIds: readonly T[],
   getActiveWires: (stimulatedLineState: number) => Set<T>,
   stimulatedLineState: number,
-  expected: T[],
+  expected: T[]
 ): void {
   const active = getActiveWires(stimulatedLineState);
   for (const id of allWireIds) {
