@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import solid from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
 import wasm from "vite-plugin-wasm";
@@ -21,5 +21,9 @@ export default defineConfig({
   },
   build: {
     target: "esnext",
+  },
+  test: {
+    environment: "node",
+    setupFiles: ["./src/test/setupWasmFetch.ts"],
   },
 });
