@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/Code-Machine-Proto/code-machine-v3/compare/v3.1.0...v3.1.1) (2026-09-21)
+
+
+### Bug Fixes
+
+* full page zoom and mode placement ([#26](https://github.com/Code-Machine-Proto/code-machine-v3/issues/26)) ([9cc61a2](https://github.com/Code-Machine-Proto/code-machine-v3/commit/9cc61a21e367148c7c6e96fbd05364d9f4ab7974))
+
 # [3.1.0](https://github.com/Code-Machine-Proto/code-machine-v3/compare/v3.0.0...v3.1.0) (2026-09-14)
 
 
