@@ -54,9 +54,9 @@ jobs:
           - os: ubuntu-latest
             arch_flag: --linux AppImage:x64 AppImage:arm64
           - os: windows-latest
-            arch_flag: ""
+            arch_flag: ''
           - os: macos-latest
-            arch_flag: ""
+            arch_flag: ''
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -70,7 +70,16 @@ jobs:
       - run: cd simulator && wasm-pack build --target web --release
       - run: cd frontend && npm ci
       - run: cd frontend && npm run build
-      - run: cd frontend && npx electron-builder ${{ matrix.arch_flag }}
+      - if: matrix.os != 'windows-latest'
+        run: cd frontend && npx electron-builder ${{ matrix.arch_flag }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - if: matrix.os == 'windows-latest'
+        run: cd frontend && npx electron-builder --win msi:x64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - if: matrix.os == 'windows-latest'
+        run: cd frontend && npx electron-builder --win msi:arm64
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Attach installer to release
