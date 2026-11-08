@@ -37,17 +37,17 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
     let mut cycle: u32 = 0;
     let mut halted = false;
 
-    enum FsmState {
+    enum CpuState {
         Fetch,
         Decode,
         Execute,
     }
 
-    let mut state = FsmState::Fetch;
+    let mut state = CpuState::Fetch;
 
     while cycle < MAX_CYCLES && !halted {
         match state {
-            FsmState::Fetch => {
+            CpuState::Fetch => {
                 let word = memory[pc as usize];
                 ir_op = ((word >> 8) & 0xFF) as u8;
                 ir_addr = (word & 0xFF) as u8;
@@ -70,9 +70,9 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     instruction_memory: None,
                 });
 
-                state = FsmState::Decode;
+                state = CpuState::Decode;
             }
-            FsmState::Decode => {
+            CpuState::Decode => {
                 let mut regs = HashMap::new();
                 regs.insert("PC".to_string(), pc as i32);
                 regs.insert("ACC".to_string(), acc as i32);
@@ -91,9 +91,9 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     instruction_memory: None,
                 });
 
-                state = FsmState::Execute;
+                state = CpuState::Execute;
             }
-            FsmState::Execute => {
+            CpuState::Execute => {
                 let addr = ir_addr as usize;
                 let mut skip_pc_increment = false;
                 let stimulated_line_state: i32;
@@ -241,7 +241,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     instruction_memory: None,
                 });
 
-                state = FsmState::Fetch;
+                state = CpuState::Fetch;
             }
         }
 
