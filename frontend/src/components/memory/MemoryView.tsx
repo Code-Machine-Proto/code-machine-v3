@@ -13,7 +13,7 @@ interface Props {
   onToggleCollapsed?: () => void;
 }
 
-const COLUMN_OPTIONS = [2, 4, 8, 16];
+const COLUMN_OPTIONS = [1, 2, 4, 8, 16];
 
 type MemoryTab = 'data' | 'instructions';
 
@@ -161,9 +161,13 @@ export default function MemoryView(props: Props) {
           >
             <thead>
               <tr>
-                <th class="text-main-600 text-right pr-1.5 py-0.5 font-normal w-10" />
+                <th class="sticky top-0 z-10 bg-main-900 w-10" />
                 <For each={Array.from({ length: columns() }, (_, i) => i)}>
-                  {(offset) => <th class="text-main-600 text-center py-0.5 font-normal">+{offset}</th>}
+                  {(offset) => (
+                    <th class="sticky top-0 z-10 bg-main-900 text-main-600 text-center py-0.5 font-normal">
+                      +{offset}
+                    </th>
+                  )}
                 </For>
               </tr>
             </thead>
