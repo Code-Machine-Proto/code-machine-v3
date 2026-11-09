@@ -52,16 +52,34 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                 ir = inst_mem[pc as usize];
 
                 steps.push(make_cycle_state(
-                    cycle, Phase::Fetch, &regs, &memory, &inst_mem,
-                    pc, ir, flag_z, flag_n, 0, pc as i32,
+                    cycle,
+                    Phase::Fetch,
+                    &regs,
+                    &memory,
+                    &inst_mem,
+                    pc,
+                    ir,
+                    flag_z,
+                    flag_n,
+                    0,
+                    pc as i32,
                 ));
 
                 state = FsmState::Decode;
             }
             FsmState::Decode => {
                 steps.push(make_cycle_state(
-                    cycle, Phase::Decode, &regs, &memory, &inst_mem,
-                    pc, ir, flag_z, flag_n, 1, -1,
+                    cycle,
+                    Phase::Decode,
+                    &regs,
+                    &memory,
+                    &inst_mem,
+                    pc,
+                    ir,
+                    flag_z,
+                    flag_n,
+                    1,
+                    -1,
                 ));
 
                 state = FsmState::Execute;
@@ -84,14 +102,14 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     let b = regs[rsrc2];
 
                     let result: i16 = match alu_op {
-                        0 => a.wrapping_add(b),          // add
-                        1 => a.wrapping_sub(b),          // sub
-                        2 => ((a as u16) >> 1) as i16,   // shr (logical)
-                        3 => ((a as u16) << 1) as i16,   // shl
-                        4 => !a,                          // not
-                        5 => a & b,                       // and
-                        6 => a | b,                       // or
-                        7 => a,                           // mv (pass-through)
+                        0 => a.wrapping_add(b),        // add
+                        1 => a.wrapping_sub(b),        // sub
+                        2 => ((a as u16) >> 1) as i16, // shr (logical)
+                        3 => ((a as u16) << 1) as i16, // shl
+                        4 => !a,                       // not
+                        5 => a & b,                    // and
+                        6 => a | b,                    // or
+                        7 => a,                        // mv (pass-through)
                         _ => 0,
                     };
 
@@ -136,11 +154,11 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                             let target = (ir & 0xFFF) as u16;
 
                             let taken = match cond_code {
-                                0 => true,        // always
-                                1 => flag_z,      // Z
-                                2 => !flag_z,     // !Z
-                                3 => flag_n,      // N
-                                4 => !flag_n,     // !N
+                                0 => true,    // always
+                                1 => flag_z,  // Z
+                                2 => !flag_z, // !Z
+                                3 => flag_n,  // N
+                                4 => !flag_n, // !N
                                 _ => false,
                             };
 
@@ -168,8 +186,17 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                 }
 
                 steps.push(make_cycle_state(
-                    cycle, Phase::Execute, &regs, &memory, &inst_mem,
-                    pc, ir, flag_z, flag_n, stimulated_line_state, -1,
+                    cycle,
+                    Phase::Execute,
+                    &regs,
+                    &memory,
+                    &inst_mem,
+                    pc,
+                    ir,
+                    flag_z,
+                    flag_n,
+                    stimulated_line_state,
+                    -1,
                 ));
 
                 state = FsmState::Fetch;
@@ -203,8 +230,8 @@ fn make_cycle_state(
     let mut reg_map = HashMap::new();
     reg_map.insert("PC".to_string(), pc as i32);
     reg_map.insert("IR".to_string(), ir as i32);
-    reg_map.insert("Z".to_string(), flag_z as i32);
-    reg_map.insert("N".to_string(), flag_n as i32);
+    reg_map.insert("FlagZ".to_string(), flag_z as i32);
+    reg_map.insert("FlagN".to_string(), flag_n as i32);
     for (i, &val) in regs.iter().enumerate().take(NUM_REGS) {
         reg_map.insert(format!("r{}", i), val as i32);
     }
