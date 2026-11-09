@@ -217,7 +217,8 @@ export default function VisualAccumulator(props: VisualProps) {
       <ObscureMemory
         name="Mémoire"
         controlName="wr_mem"
-        class="fill-amber-200"
+        class="fill-green-500"
+        color="emerald"
         x={422.5}
         y={40}
         hasControlSignal={true}
@@ -238,6 +239,7 @@ export default function VisualAccumulator(props: VisualProps) {
         name="PC"
         number={pcVal()}
         class="bg-blue-600/20 border border-blue-500 reg-bg-blue reg-text-blue"
+        color="blue"
         x={120}
         y={100}
         isActivated={inc() || branching()}
@@ -247,6 +249,7 @@ export default function VisualAccumulator(props: VisualProps) {
         name="IR"
         number={irVal()}
         class="bg-purple-600/20 border border-purple-500 reg-bg-purple reg-text-purple"
+        color="purple"
         x={120}
         y={220}
         isActivated={fetch()}
@@ -255,6 +258,7 @@ export default function VisualAccumulator(props: VisualProps) {
         name="ACC"
         number={accVal()}
         class="bg-emerald-600/20 border border-emerald-500 reg-bg-emerald reg-text-emerald"
+        color="emerald"
         x={940}
         y={160}
         defaultIsBase10={true}

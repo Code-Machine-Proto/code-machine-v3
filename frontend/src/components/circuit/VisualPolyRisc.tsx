@@ -285,7 +285,7 @@ export default function VisualPolyRisc(props: VisualProps) {
 
       <ALU x={920} y={100} hasNz={true} isActivated={opTwoReg() || opThreeReg()} />
 
-      <ObscureMemory name={['Mémoire', "d'instructions"]} class="fill-green-700" x={313} y={70}>
+      <ObscureMemory name={['Mémoire', "d'instructions"]} class="fill-green-700" x={313} y={70} color="emerald">
         <text x={5} y={182} dominant-baseline="middle" fill="black">
           addr
         </text>
@@ -297,6 +297,7 @@ export default function VisualPolyRisc(props: VisualProps) {
       <ObscureMemory
         name="Registres"
         class="fill-yellow-300"
+        color="amber"
         x={757}
         y={70}
         hasControlSignal={true}
@@ -325,6 +326,7 @@ export default function VisualPolyRisc(props: VisualProps) {
       <ObscureMemory
         name={['Mémoire', 'de données']}
         class="fill-green-500"
+        color="emerald"
         x={1101}
         y={70}
         hasControlSignal={true}
@@ -345,6 +347,7 @@ export default function VisualPolyRisc(props: VisualProps) {
       <RegisterBox
         name="PC"
         class="bg-blue-600/20 border border-blue-500 reg-bg-blue reg-text-blue"
+        color="blue"
         number={pcVal()}
         x={134.5}
         y={137.5}
@@ -354,6 +357,7 @@ export default function VisualPolyRisc(props: VisualProps) {
       <RegisterBox
         name="IR"
         class="bg-purple-600/20 border border-purple-500 reg-bg-purple reg-text-purple"
+        color="purple"
         number={irVal()}
         x={467.5}
         y={137.5}

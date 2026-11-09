@@ -1,11 +1,18 @@
 import { For, type JSX } from 'solid-js';
 
+type MemoryColor = 'amber' | 'emerald';
+
+const ACTIVE_COLORS: Record<MemoryColor, { stroke: string; arrow: string }> = {
+  amber: { stroke: '#f59e0b', arrow: 'fill-amber-400' },
+  emerald: { stroke: '#10b981', arrow: 'fill-emerald-400' },
+};
 interface Props {
   children?: JSX.Element;
   /** A single-line title, or multiple lines (rendered stacked, right-aligned) for longer titles that would otherwise overflow the box. */
   name: string | string[];
   controlName?: string;
   class: string;
+  color?: MemoryColor;
   x: number;
   y: number;
   isWritable?: boolean;
@@ -17,8 +24,9 @@ const TITLE_BASELINE_Y = 42;
 const TITLE_LINE_HEIGHT = 16;
 
 export default function ObscureMemory(props: Props) {
-  const borderColor = () => (props.isWritable ? '#f59e0b' : 'var(--color-main-700)');
-  const arrowClass = () => (props.isWritable ? 'fill-amber-400' : 'fill-main-600');
+  const activeColors = () => ACTIVE_COLORS[props.color ?? 'amber'];
+  const borderColor = () => (props.isWritable ? activeColors().stroke : 'var(--color-main-700)');
+  const arrowClass = () => (props.isWritable ? activeColors().arrow : 'fill-main-600');
   const titleLines = () => (Array.isArray(props.name) ? props.name : [props.name]);
 
   return (
