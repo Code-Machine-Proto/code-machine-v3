@@ -138,7 +138,7 @@ export default function Workspace() {
   const registerEntries = createMemo(() => {
     const regs = store.registers();
     return Object.entries(regs).sort(([a], [b]) => {
-      const order = ['PC', 'IR', 'ACC', 'MA', 'FlagZ', 'FlagN'];
+      const order = ['PC', 'IR', 'ACC', 'MA', 'FlagN', 'FlagZ'];
       const ai = order.indexOf(a);
       const bi = order.indexOf(b);
       if (ai >= 0 && bi >= 0) return ai - bi;
@@ -153,12 +153,13 @@ export default function Workspace() {
     IR: 'border-purple-500 bg-purple-500/10',
     ACC: 'border-emerald-500 bg-emerald-500/10',
     MA: 'border-amber-500 bg-amber-500/10',
-    FlagZ: 'border-rose-500 bg-rose-500/10',
+    PolyRiscReg: 'border-yellow-500 bg-yellow-500/10',
     FlagN: 'border-rose-500 bg-rose-500/10',
+    FlagZ: 'border-rose-500 bg-rose-500/10',
   };
 
   const formatReg = (name: string, value: number) => {
-    if (name === 'FlagZ' || name === 'FlagN') return value.toString();
+    if (name === 'FlagN' || name === 'FlagZ') return value.toString();
     if (regHex()) {
       const unsigned = value < 0 ? value + 0x10000 : value;
       return '0x' + (unsigned & 0xffff).toString(16).toUpperCase().padStart(4, '0');
@@ -413,7 +414,9 @@ export default function Workspace() {
                         >
                           <For each={registerEntries()}>
                             {([name, value]) => {
-                              const color = regColors[name] ?? 'border-main-600 bg-main-800/50';
+                              const color =
+                                regColors[name] ??
+                                (/^r/i.test(name) ? regColors.PolyRiscReg : 'border-main-600 bg-main-800/50');
                               return (
                                 <div
                                   class={`flex items-center justify-between rounded border ${color}`}
