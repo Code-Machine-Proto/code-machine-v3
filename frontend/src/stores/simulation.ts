@@ -157,15 +157,6 @@ export function createSimulationStore(processorId: ProcessorId) {
   function togglePlay() {
     setIsPlaying((p) => !p);
   }
-
-  function changeStepMode(mode: StepMode) {
-    setStepMode(mode);
-    if (mode === 'execution') {
-      const first = nextLanding(-1);
-      if (first !== null) setCurrentStep(first);
-    }
-  }
-
   return {
     code,
     setCode,
@@ -178,7 +169,7 @@ export function createSimulationStore(processorId: ProcessorId) {
     isStale,
     diagnostics,
     stepMode,
-    setStepMode: changeStepMode,
+    setStepMode,
     currentCycle,
     activeSignals,
     registers,
