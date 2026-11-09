@@ -361,6 +361,7 @@ export default function VisualWithMa(props: VisualProps) {
         name="Mémoire"
         controlName="wr_mem"
         class="fill-green-500"
+        color="emerald"
         x={491}
         y={40}
         hasControlSignal={true}
@@ -383,6 +384,7 @@ export default function VisualWithMa(props: VisualProps) {
         x={140}
         y={77}
         class="bg-blue-600/20 border border-blue-500 reg-bg-blue reg-text-blue"
+        color="blue"
         isActivated={branching() || nop()}
         registerSize={REGISTER_8_BIT}
       />
@@ -392,6 +394,7 @@ export default function VisualWithMa(props: VisualProps) {
         x={140}
         y={225}
         class="bg-purple-600/20 border border-purple-500 reg-bg-purple reg-text-purple"
+        color="purple"
         isActivated={fetch()}
       />
       <RegisterBox
@@ -400,6 +403,7 @@ export default function VisualWithMa(props: VisualProps) {
         x={1005}
         y={87}
         class="bg-emerald-600/20 border border-emerald-500 reg-bg-emerald reg-text-emerald"
+        color="emerald"
         defaultIsBase10={true}
         isActivated={addSubMul() || load() || loadI() || addSubX() || sh()}
       />
@@ -409,6 +413,7 @@ export default function VisualWithMa(props: VisualProps) {
         x={1005}
         y={225}
         class="bg-amber-600/20 border border-amber-500 reg-bg-amber reg-text-amber"
+        color="amber"
         isActivated={addSubA() || loadA()}
       />
 

@@ -1,15 +1,24 @@
 import { createSignal } from 'solid-js';
 
+type RegisterColor = 'blue' | 'purple' | 'emerald' | 'amber';
 interface Props {
   name: string;
   number: number;
   class: string;
+  color: RegisterColor;
   x: number;
   y: number;
   defaultIsBase10?: boolean;
   isActivated: boolean;
   registerSize?: number;
 }
+
+const ACTIVE_ARROW_CLASS: Record<RegisterColor, string> = {
+  blue: 'fill-blue-400',
+  purple: 'fill-purple-400',
+  emerald: 'fill-emerald-400',
+  amber: 'fill-amber-400',
+};
 
 const REGISTER_8_BIT = 2;
 const REGISTER_12_BIT = 3;
@@ -48,9 +57,9 @@ export default function RegisterBox(props: Props) {
       </foreignObject>
       <path
         d="M59 86C59 86.5523 59.4477 87 60 87C60.5523 87 61 86.5523 61 86H59ZM60 65L54.2265 75H65.7735L60 65ZM60 86H61V74H60H59V86H60Z"
-        class={props.isActivated ? 'fill-main-500' : 'fill-main-300'}
+        class={props.isActivated ? ACTIVE_ARROW_CLASS[props.color] : 'fill-main-600'}
       />
-      <text x={65} y={85} class="fill-main-300 text-xs">
+      <text x={65} y={85} class="text-xs circuit-label">
         {'wr_' + props.name.toLowerCase()}
       </text>
     </svg>
