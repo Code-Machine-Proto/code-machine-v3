@@ -190,12 +190,13 @@ export default function CodeEditor(props: Props) {
   createEffect(() => {
     if (!view) return;
     const line = props.activeLine?.() ?? null;
-    const effects: StateEffect<unknown>[] = [setActiveLineEffect.of(line)];
+    view.dispatch({ effects: [setActiveLineEffect.of(line)] });
     if (line !== null && line >= 0 && line < view.state.doc.lines) {
-      const lineInfo = view.state.doc.line(line + 1);
-      effects.push(EditorView.scrollIntoView(lineInfo.from, { y: 'center' }));
+      const block = view.lineBlockAt(view.state.doc.line(line + 1).from);
+      const scroller = view.scrollDOM;
+      const blockMiddle = block.top + view.documentPadding.top + block.height / 2;
+      scroller.scrollTop = Math.max(0, blockMiddle - scroller.clientHeight / 2);
     }
-    view.dispatch({ effects });
   });
 
   // Push diagnostics to CodeMirror
@@ -384,7 +385,7 @@ export default function CodeEditor(props: Props) {
           </span>
         </div>
       </Show>
-      <div ref={containerRef} class="flex-1 overflow-auto" classList={{ hidden: props.collapsed }} />
+      <div ref={containerRef} class="flex-1 min-h-0 overflow-hidden" classList={{ hidden: props.collapsed }} />
     </div>
   );
 }
