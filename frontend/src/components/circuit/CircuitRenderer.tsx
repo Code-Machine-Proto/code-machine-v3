@@ -1,4 +1,4 @@
-import { Switch, Match, createSignal } from 'solid-js';
+import { Switch, Match, createSignal, onCleanup, onMount } from 'solid-js';
 import type { Accessor } from 'solid-js';
 import { ProcessorId } from '@/wasm/types';
 import VisualAccumulator from './VisualAccumulator';
@@ -15,8 +15,22 @@ interface Props {
 export default function CircuitRenderer(props: Props) {
   const [zoom, setZoom] = createSignal(1);
   const [pan, setPan] = createSignal({ x: 0, y: 0 });
-  let isPanning = false;
+  const [isPanning, setIsPanning] = createSignal(false);
+  const [isAltHeld, setIsAltHeld] = createSignal(false);
   let lastPos = { x: 0, y: 0 };
+
+  onMount(() => {
+    const onKey = (e: KeyboardEvent) => setIsAltHeld(e.altKey);
+    const onBlur = () => setIsAltHeld(false);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('keyup', onKey);
+    window.addEventListener('blur', onBlur);
+    onCleanup(() => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('keyup', onKey);
+      window.removeEventListener('blur', onBlur);
+    });
+  });
 
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
@@ -27,13 +41,13 @@ export default function CircuitRenderer(props: Props) {
   const handleMouseDown = (e: MouseEvent) => {
     if (e.button === 1 || (e.button === 0 && e.altKey)) {
       e.preventDefault();
-      isPanning = true;
+      setIsPanning(true);
       lastPos = { x: e.clientX, y: e.clientY };
     }
   };
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!isPanning) return;
+    if (!isPanning()) return;
     const dx = e.clientX - lastPos.x;
     const dy = e.clientY - lastPos.y;
     lastPos = { x: e.clientX, y: e.clientY };
@@ -41,7 +55,7 @@ export default function CircuitRenderer(props: Props) {
   };
 
   const handleMouseUp = () => {
-    isPanning = false;
+    setIsPanning(false);
   };
 
   const resetView = () => {
@@ -79,7 +93,7 @@ export default function CircuitRenderer(props: Props) {
       </div>
       <div
         class="flex-1 overflow-hidden min-h-0 bg-grid-fine"
-        style={{ cursor: isPanning ? 'grabbing' : 'default' }}
+        style={{ cursor: isPanning() ? 'grabbing' : isAltHeld() ? 'grab' : 'default' }}
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
