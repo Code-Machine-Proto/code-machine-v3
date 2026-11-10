@@ -16,6 +16,7 @@ export interface CycleState {
   stimulated_line_state: number;
   stimulated_memory: number;
   stimulated_data_memory: number | null;
+  stimulated_registers: number[];
   instruction_memory: number[] | null;
 }
 

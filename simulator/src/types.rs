@@ -44,6 +44,7 @@ pub struct CycleState {
     pub stimulated_line_state: i32,
     pub stimulated_memory: i32,
     pub stimulated_data_memory: Option<i32>,
+    pub stimulated_registers: Vec<u8>,
     pub instruction_memory: Option<Vec<u32>>,
 }
 
@@ -54,8 +55,6 @@ pub struct CompileResult {
     pub diagnostics: Vec<Diagnostic>,
     pub tokens: Vec<TokenSpan>,
     pub data_memory: Option<Vec<i32>>,
-    /// Source line (0-indexed) that produced each word in `program`, so the frontend
-    /// can highlight the instruction currently under the program counter.
     pub instruction_lines: Vec<usize>,
 }
 
