@@ -43,6 +43,7 @@ pub struct CycleState {
     pub active_buses: Vec<BusActivity>,
     pub stimulated_line_state: i32,
     pub stimulated_memory: i32,
+    pub stimulated_data_memory: Option<i32>,
     pub instruction_memory: Option<Vec<u32>>,
 }
 
