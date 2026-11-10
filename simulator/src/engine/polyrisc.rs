@@ -64,6 +64,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     0,
                     pc as i32,
                     None,
+                    Vec::new(),
                 ));
 
                 state = FsmState::Decode;
@@ -82,6 +83,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     1,
                     -1,
                     None,
+                    Vec::new(),
                 ));
 
                 state = FsmState::Execute;
@@ -89,6 +91,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
             FsmState::Execute => {
                 let stimulated_line_state: i32;
                 let mut stimulated_data_memory = None;
+                let mut accessed_regs: Vec<u8> = Vec::new();
                 let mut next_pc = pc.wrapping_add(1) & 0xFFF;
                 let mut stop = false;
 
@@ -117,6 +120,11 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     };
 
                     regs[rdst] = result;
+                    accessed_regs.extend([rdst as u8, rsrc1 as u8]);
+                    // shr, shl, not and mv ignore rsrc2
+                    if matches!(alu_op, 0 | 1 | 5 | 6) {
+                        accessed_regs.push(rsrc2 as u8);
+                    }
                     flag_z = result == 0;
                     flag_n = result < 0;
 
@@ -134,6 +142,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                             let rsrc1 = ((ir >> 8) & 0x1F) as usize;
                             let addr = (regs[rsrc1] as u16 & 0xFF) as usize;
                             regs[rdst] = memory[addr] as i16;
+                            accessed_regs.extend([rdst as u8, rsrc1 as u8]);
                             stimulated_data_memory = Some(addr as i32);
                             stimulated_line_state = 4;
                         }
@@ -143,6 +152,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                             let rsrc2 = (ir & 0x1F) as usize;
                             let addr = (regs[rsrc1] as u16 & 0xFF) as usize;
                             memory[addr] = regs[rsrc2] as i32;
+                            accessed_regs.extend([rsrc1 as u8, rsrc2 as u8]);
                             stimulated_data_memory = Some(addr as i32);
                             stimulated_line_state = 5;
                         }
@@ -150,6 +160,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                             // ldi rdst,imm
                             let rdst = ((ir >> 16) & 0x1F) as usize;
                             let imm = (ir & 0xFFFF) as i16;
+                            accessed_regs.extend([rdst as u8]);
                             regs[rdst] = imm;
                             stimulated_line_state = 6;
                         }
@@ -185,6 +196,9 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     }
                 }
 
+                accessed_regs.sort_unstable();
+                accessed_regs.dedup();
+
                 pc = next_pc;
                 if stop {
                     halted = true;
@@ -203,6 +217,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     stimulated_line_state,
                     -1,
                     stimulated_data_memory,
+                    accessed_regs,
                 ));
 
                 state = FsmState::Fetch;
@@ -233,6 +248,7 @@ fn make_cycle_state(
     stimulated_line_state: i32,
     stimulated_memory: i32,
     stimulated_data_memory: Option<i32>,
+    stimulated_registers: Vec<u8>,
 ) -> CycleState {
     let mut reg_map = HashMap::new();
     reg_map.insert("PC".to_string(), pc as i32);
@@ -253,6 +269,7 @@ fn make_cycle_state(
         stimulated_line_state,
         stimulated_memory,
         stimulated_data_memory,
+        stimulated_registers,
         instruction_memory: Some(inst_mem.to_vec()),
     }
 }

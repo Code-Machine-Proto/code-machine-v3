@@ -117,6 +117,9 @@ export default function Workspace() {
   });
 
   const stimulatedDataMemory = createMemo(() => store.currentCycle()?.stimulated_data_memory ?? null);
+  const stimulatedRegisters = createMemo(
+    () => new Set((store.currentCycle()?.stimulated_registers ?? []).map((i) => `r${i}`))
+  );
 
   const [regHex, setRegHex] = createSignal(true);
   const [regCollapsed, setRegCollapsed] = createSignal(false);
@@ -150,12 +153,14 @@ export default function Workspace() {
     });
   });
 
+  const idleRegColor = 'border-main-600 ng-main-800/50';
+  const stimulatedRegColor = 'border-yellow-500 bg-yellow-500/10';
+
   const regColors: Record<string, string> = {
     PC: 'border-blue-500 bg-blue-500/10',
     IR: 'border-purple-500 bg-purple-500/10',
     ACC: 'border-emerald-500 bg-emerald-500/10',
     MA: 'border-amber-500 bg-amber-500/10',
-    PolyRiscReg: 'border-yellow-500 bg-yellow-500/10',
     FlagN: 'border-rose-500 bg-rose-500/10',
     FlagZ: 'border-rose-500 bg-rose-500/10',
   };
@@ -418,7 +423,7 @@ export default function Workspace() {
                             {([name, value]) => {
                               const color =
                                 regColors[name] ??
-                                (/^r/i.test(name) ? regColors.PolyRiscReg : 'border-main-600 bg-main-800/50');
+                                (stimulatedRegisters().has(name) ? stimulatedRegColor : idleRegColor);
                               return (
                                 <div
                                   class={`flex items-center justify-between rounded border ${color}`}

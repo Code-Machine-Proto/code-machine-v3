@@ -68,6 +68,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     stimulated_line_state: 0, // fetch
                     stimulated_memory: pc as i32,
                     stimulated_data_memory: None,
+                    stimulated_registers: Vec::new(),
                     instruction_memory: None,
                 });
 
@@ -90,6 +91,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     stimulated_line_state: 1, // decode
                     stimulated_memory: ir_addr as i32,
                     stimulated_data_memory: None,
+                    stimulated_registers: Vec::new(),
                     instruction_memory: None,
                 });
 
@@ -241,6 +243,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     stimulated_line_state,
                     stimulated_memory: addr as i32,
                     stimulated_data_memory: None,
+                    stimulated_registers: Vec::new(),
                     instruction_memory: None,
                 });
 
