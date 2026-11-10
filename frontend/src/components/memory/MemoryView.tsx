@@ -150,65 +150,64 @@ export default function MemoryView(props: Props) {
       </div>
 
       {/* Content */}
-      <div class="flex-1 overflow-auto p-1.5" classList={{ hidden: props.collapsed }}>
+      <div class="flex-1 overflow-auto" classList={{ hidden: props.collapsed }}>
         <Show
           when={props.isCompiled()}
           fallback={<p class="text-main-600 text-xs text-center mt-8">Compilez pour voir la memoire</p>}
         >
-          <table
-            class="w-full table-fixed border-collapse font-mono"
-            classList={{ 'text-xs': wide(), 'text-[10px]': !wide() }}
-          >
-            <thead>
-              <tr>
-                <th class="sticky top-0 z-10 bg-main-900 w-10" />
-                <For each={Array.from({ length: columns() }, (_, i) => i)}>
-                  {(offset) => (
-                    <th class="sticky top-0 z-10 bg-main-900 text-main-600 text-center py-0.5 font-normal">
-                      +{offset}
-                    </th>
+          <div class="px-1.5 pb-1.5">
+            <table
+              class="w-full table-fixed border-seperate border-spacing-0 font-mono"
+              classList={{ 'text-xs': wide(), 'text-[10px]': !wide() }}
+            >
+              <thead>
+                <tr>
+                  <th class="sticky top-0 z-10 bg-main-900 w-10 pt-1.5" />
+                  <For each={Array.from({ length: columns() }, (_, i) => i)}>
+                    {(offset) => (
+                      <th class="sticky top-0 z-10 bg-main-900 text-main-600 text-center pt-1.5 pb-0.5 font-normal">
+                        +{offset}
+                      </th>
+                    )}
+                  </For>
+                </tr>
+              </thead>
+              <tbody>
+                <For each={rows()}>
+                  {(row) => (
+                    <tr>
+                      <td class="text-main-500 text-right pr-1.5 py-0.5 w-10 shrink-0">{formatAddr(row.address)}</td>
+                      <For each={row.values}>
+                        {(val, idx) => {
+                          const addr = row.address + idx();
+                          const isStimulated = () =>
+                            (!hasMemoryTabs() || activeTab() === 'instructions') &&
+                            addr === props.stimulatedMemory() &&
+                            props.stimulatedMemory() >= 0;
+                          return (
+                            <td class="text-center py-0.5 px-0.5 overflow-hidden">
+                              <div
+                                class="rounded px-1 truncate transition-colors"
+                                title={formatValue(val)}
+                                classList={{
+                                  'bg-main-800 text-main-400': !isStimulated(),
+                                  'bg-green-700 text-white': isStimulated(),
+                                  'py-1.5': wide(),
+                                  'py-1': !wide(),
+                                }}
+                              >
+                                {formatValue(val)}
+                              </div>
+                            </td>
+                          );
+                        }}
+                      </For>
+                    </tr>
                   )}
                 </For>
-              </tr>
-            </thead>
-            <tbody>
-              <For each={rows()}>
-                {(row) => (
-                  <tr>
-                    <td class="text-main-500 text-right pr-1.5 py-0.5 w-10 shrink-0">{formatAddr(row.address)}</td>
-                    <For each={row.values}>
-                      {(val, idx) => {
-                        const addr = row.address + idx();
-                        // PolyRisc's stimulated_memory only ever reflects the
-                        // instruction-fetch address (never a data access), so
-                        // only apply it while that tab is the one showing.
-                        const isStimulated = () =>
-                          (!hasMemoryTabs() || activeTab() === 'instructions') &&
-                          addr === props.stimulatedMemory() &&
-                          props.stimulatedMemory() >= 0;
-                        return (
-                          <td class="text-center py-0.5 px-0.5 overflow-hidden">
-                            <div
-                              class="rounded px-1 truncate transition-colors"
-                              title={formatValue(val)}
-                              classList={{
-                                'bg-main-800 text-main-400': !isStimulated(),
-                                'bg-green-700 text-white': isStimulated(),
-                                'py-1.5': wide(),
-                                'py-1': !wide(),
-                              }}
-                            >
-                              {formatValue(val)}
-                            </div>
-                          </td>
-                        );
-                      }}
-                    </For>
-                  </tr>
-                )}
-              </For>
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
         </Show>
       </div>
     </div>
