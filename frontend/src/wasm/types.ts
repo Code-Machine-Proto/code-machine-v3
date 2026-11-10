@@ -15,6 +15,7 @@ export interface CycleState {
   active_buses: BusActivity[];
   stimulated_line_state: number;
   stimulated_memory: number;
+  stimulated_data_memory: number | null;
   instruction_memory: number[] | null;
 }
 

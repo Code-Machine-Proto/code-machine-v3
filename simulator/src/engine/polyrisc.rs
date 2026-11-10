@@ -63,6 +63,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     flag_n,
                     0,
                     pc as i32,
+                    None,
                 ));
 
                 state = FsmState::Decode;
@@ -80,12 +81,14 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     flag_n,
                     1,
                     -1,
+                    None,
                 ));
 
                 state = FsmState::Execute;
             }
             FsmState::Execute => {
                 let stimulated_line_state: i32;
+                let mut stimulated_data_memory = None;
                 let mut next_pc = pc.wrapping_add(1) & 0xFFF;
                 let mut stop = false;
 
@@ -131,6 +134,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                             let rsrc1 = ((ir >> 8) & 0x1F) as usize;
                             let addr = (regs[rsrc1] as u16 & 0xFF) as usize;
                             regs[rdst] = memory[addr] as i16;
+                            stimulated_data_memory = Some(addr as i32);
                             stimulated_line_state = 4;
                         }
                         0x9 => {
@@ -139,6 +143,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                             let rsrc2 = (ir & 0x1F) as usize;
                             let addr = (regs[rsrc1] as u16 & 0xFF) as usize;
                             memory[addr] = regs[rsrc2] as i32;
+                            stimulated_data_memory = Some(addr as i32);
                             stimulated_line_state = 5;
                         }
                         0xA => {
@@ -197,6 +202,7 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     flag_n,
                     stimulated_line_state,
                     -1,
+                    stimulated_data_memory,
                 ));
 
                 state = FsmState::Fetch;
@@ -226,6 +232,7 @@ fn make_cycle_state(
     flag_n: bool,
     stimulated_line_state: i32,
     stimulated_memory: i32,
+    stimulated_data_memory: Option<i32>,
 ) -> CycleState {
     let mut reg_map = HashMap::new();
     reg_map.insert("PC".to_string(), pc as i32);
@@ -245,6 +252,7 @@ fn make_cycle_state(
         active_buses: Vec::new(),
         stimulated_line_state,
         stimulated_memory,
+        stimulated_data_memory,
         instruction_memory: Some(inst_mem.to_vec()),
     }
 }

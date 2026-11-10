@@ -7,6 +7,7 @@ interface Props {
   memory: Accessor<number[]>;
   instructionMemory?: Accessor<number[]>;
   stimulatedMemory: Accessor<number>;
+  stimulatedDataMemory?: Accessor<number | null>;
   isCompiled: Accessor<boolean>;
   processorId: ProcessorId;
   collapsed?: boolean;
@@ -157,7 +158,7 @@ export default function MemoryView(props: Props) {
         >
           <div class="px-1.5 pb-1.5">
             <table
-              class="w-full table-fixed border-seperate border-spacing-0 font-mono"
+              class="w-full table-fixed border-separate border-spacing-0 font-mono"
               classList={{ 'text-xs': wide(), 'text-[10px]': !wide() }}
             >
               <thead>
@@ -180,10 +181,13 @@ export default function MemoryView(props: Props) {
                       <For each={row.values}>
                         {(val, idx) => {
                           const addr = row.address + idx();
-                          const isStimulated = () =>
-                            (!hasMemoryTabs() || activeTab() === 'instructions') &&
-                            addr === props.stimulatedMemory() &&
-                            props.stimulatedMemory() >= 0;
+                          const isStimulated = () => {
+                            const stimulated =
+                              hasMemoryTabs() && activeTab() === 'data'
+                                ? props.stimulatedDataMemory?.()
+                                : props.stimulatedMemory();
+                            return stimulated != null && stimulated >= 0 && addr === stimulated;
+                          };
                           return (
                             <td class="text-center py-0.5 px-0.5 overflow-hidden">
                               <div

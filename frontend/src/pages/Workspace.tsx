@@ -116,6 +116,8 @@ export default function Workspace() {
     return cycle?.stimulated_memory ?? 0;
   });
 
+  const stimulatedDataMemory = createMemo(() => store.currentCycle()?.stimulated_data_memory ?? null);
+
   const [regHex, setRegHex] = createSignal(true);
   const [regCollapsed, setRegCollapsed] = createSignal(false);
   const [memCollapsed, setMemCollapsed] = createSignal(false);
@@ -453,6 +455,7 @@ export default function Workspace() {
                     memory={store.memory}
                     instructionMemory={store.instructionMemory}
                     stimulatedMemory={stimulatedMemory}
+                    stimulatedDataMemory={stimulatedDataMemory}
                     isCompiled={store.isCompiled}
                     processorId={processorId()}
                     collapsed={memCollapsed()}
