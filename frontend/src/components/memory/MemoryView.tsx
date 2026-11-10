@@ -158,7 +158,7 @@ export default function MemoryView(props: Props) {
         >
           <div class="px-1.5 pb-1.5">
             <table
-              class="w-full table-fixed border-seperate border-spacing-0 font-mono"
+              class="w-full table-fixed border-separate border-spacing-0 font-mono"
               classList={{ 'text-xs': wide(), 'text-[10px]': !wide() }}
             >
               <thead>
