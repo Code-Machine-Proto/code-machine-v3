@@ -5,7 +5,7 @@ use std::fs;
 
 #[test]
 fn test_simulate_ld() {
-    let source = "ld x\nst y\nstop\nx: 42\ny: 0";
+    let source = ".text\nld x\nst y\nstop\nx: 42\ny: 0";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -16,7 +16,7 @@ fn test_simulate_ld() {
 
 #[test]
 fn test_simulate_st() {
-    let source = "ld x\nst y\nstop\nx: 42\ny: 0";
+    let source = ".text\nld x\nst y\nstop\nx: 42\ny: 0";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -28,7 +28,7 @@ fn test_simulate_st() {
 
 #[test]
 fn test_simulate_add() {
-    let source = "ld x\nadd y\nst z\nstop\nx: 10\ny: 20\nz: 0";
+    let source = ".text\nld x\nadd y\nst z\nstop\nx: 10\ny: 20\nz: 0";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -40,7 +40,7 @@ fn test_simulate_add() {
 
 #[test]
 fn test_simulate_sub() {
-    let source = "ld x\nsub y\nst z\nstop\nx: 50\ny: 20\nz: 0";
+    let source = ".text\nld x\nsub y\nst z\nstop\nx: 50\ny: 20\nz: 0";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -51,7 +51,7 @@ fn test_simulate_sub() {
 
 #[test]
 fn test_simulate_mul() {
-    let source = "ld x\nmul y\nstop\nx: 3\ny: 7";
+    let source = ".text\nld x\nmul y\nstop\nx: 3\ny: 7";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -62,7 +62,7 @@ fn test_simulate_mul() {
 
 #[test]
 fn test_simulate_adda() {
-    let source = "lda x\nadda y\nstop\nx: 5\ny: 6";
+    let source = ".text\nlda x\nadda y\nstop\nx: 5\ny: 6";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -73,7 +73,7 @@ fn test_simulate_adda() {
 
 #[test]
 fn test_simulate_suba() {
-    let source = "lda x\nsuba y\nstop\nx: 10\ny: 4";
+    let source = ".text\nlda x\nsuba y\nstop\nx: 10\ny: 4";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -84,7 +84,7 @@ fn test_simulate_suba() {
 
 #[test]
 fn test_simulate_addx() {
-    let source = "ld x\nlea y\naddx\nstop\nx: 5\ny: 6";
+    let source = ".text\nld x\nlea y\naddx\nstop\nx: 5\ny: 6";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -95,7 +95,7 @@ fn test_simulate_addx() {
 
 #[test]
 fn test_simulate_subx() {
-    let source = "ld x\nlea y\nsubx\nstop\nx: 10\ny: 4";
+    let source = ".text\nld x\nlea y\nsubx\nstop\nx: 10\ny: 4";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -106,7 +106,7 @@ fn test_simulate_subx() {
 
 #[test]
 fn test_simulate_lda() {
-    let source = "lda x\nstop\nx: 99";
+    let source = ".text\nlda x\nstop\nx: 99";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -118,7 +118,7 @@ fn test_simulate_lda() {
 
 #[test]
 fn test_simulate_sta() {
-    let source = "lda x\nsta y\nstop\nx: 77\ny: 0";
+    let source = ".text\nlda x\nsta y\nstop\nx: 77\ny: 0";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -129,7 +129,7 @@ fn test_simulate_sta() {
 
 #[test]
 fn test_simulate_lea_sets_ma() {
-    let source = "lea x\nstop\nx: 55";
+    let source = ".text\nlea x\nstop\nx: 55";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -141,7 +141,7 @@ fn test_simulate_lea_sets_ma() {
 
 #[test]
 fn test_simulate_line_state_lea_is_distinct_from_nop() {
-    let source = "lea x\nstop\nx: 0";
+    let source = ".text\nlea x\nstop\nx: 0";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success, "diagnostics: {:?}", compiled.diagnostics);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -156,7 +156,7 @@ fn test_simulate_line_state_lea_is_distinct_from_nop() {
 
 #[test]
 fn test_simulate_line_state_branch_taken_vs_untaken() {
-    let taken_source = "brz target\ntarget: stop"; // ACC starts at 0, so brz is taken
+    let taken_source = ".text\nbrz target\ntarget: stop"; // ACC starts at 0, so brz is taken
     let taken = compiler::compile(taken_source, ProcessorId::AccumulatorMa);
     assert!(taken.success);
     let taken_trace = engine::simulate(&taken.program, ProcessorId::AccumulatorMa, None);
@@ -168,7 +168,7 @@ fn test_simulate_line_state_branch_taken_vs_untaken() {
         .collect();
     assert_eq!(taken_states, vec![13, 14]); // brz (taken), stop
 
-    let untaken_source = "brnz target\nstop\ntarget: stop"; // ACC starts at 0, so brnz is not taken
+    let untaken_source = ".text\nbrnz target\nstop\ntarget: stop"; // ACC starts at 0, so brnz is not taken
     let untaken = compiler::compile(untaken_source, ProcessorId::AccumulatorMa);
     assert!(untaken.success);
     let untaken_trace = engine::simulate(&untaken.program, ProcessorId::AccumulatorMa, None);
@@ -183,7 +183,7 @@ fn test_simulate_line_state_branch_taken_vs_untaken() {
 
 #[test]
 fn test_simulate_ldi() {
-    let source = "lea x\nldi\nstop\nx: 55";
+    let source = ".text\nlea x\nldi\nstop\nx: 55";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -194,7 +194,7 @@ fn test_simulate_ldi() {
 
 #[test]
 fn test_simulate_sti() {
-    let source = "ld val\nlea dest\nsti\nstop\nval: 33\ndest: 0";
+    let source = ".text\nld val\nlea dest\nsti\nstop\nval: 33\ndest: 0";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -205,7 +205,7 @@ fn test_simulate_sti() {
 
 #[test]
 fn test_simulate_shl() {
-    let source = "ld x\nshl\nstop\nx: 5";
+    let source = ".text\nld x\nshl\nstop\nx: 5";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -216,7 +216,7 @@ fn test_simulate_shl() {
 
 #[test]
 fn test_simulate_shr() {
-    let source = "ld x\nshr\nstop\nx: 8";
+    let source = ".text\nld x\nshr\nstop\nx: 8";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -228,7 +228,7 @@ fn test_simulate_shr() {
 #[test]
 fn test_simulate_shr_is_arithmetic() {
     // shr must sign-extend (arithmetic shift), matching the hardware's SInt semantics
-    let source = "ld x\nshr\nstop\nx: -8";
+    let source = ".text\nld x\nshr\nstop\nx: -8";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -239,7 +239,7 @@ fn test_simulate_shr_is_arithmetic() {
 
 #[test]
 fn test_simulate_br_unconditional() {
-    let source = "br target\nld skipped\nstop\ntarget: ld hit\nstop\nskipped: 1\nhit: 9";
+    let source = ".text\nbr target\nld skipped\nstop\ntarget: ld hit\nstop\nskipped: 1\nhit: 9";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -250,7 +250,7 @@ fn test_simulate_br_unconditional() {
 
 #[test]
 fn test_simulate_brz_taken() {
-    let source = "ld zero\nbrz target\nld one\nstop\ntarget: stop\nzero: 0\none: 1";
+    let source = ".text\nld zero\nbrz target\nld one\nstop\ntarget: stop\nzero: 0\none: 1";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -261,7 +261,7 @@ fn test_simulate_brz_taken() {
 
 #[test]
 fn test_simulate_brz_not_taken() {
-    let source = "ld one\nbrz target\nld two\nstop\ntarget: stop\none: 1\ntwo: 2";
+    let source = ".text\nld one\nbrz target\nld two\nstop\ntarget: stop\none: 1\ntwo: 2";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -272,7 +272,7 @@ fn test_simulate_brz_not_taken() {
 
 #[test]
 fn test_simulate_brnz_taken() {
-    let source = "ld one\nbrnz target\nld two\nstop\ntarget: stop\none: 1\ntwo: 2";
+    let source = ".text\nld one\nbrnz target\nld two\nstop\ntarget: stop\none: 1\ntwo: 2";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -283,7 +283,7 @@ fn test_simulate_brnz_taken() {
 
 #[test]
 fn test_simulate_brnz_not_taken() {
-    let source = "ld zero\nbrnz target\nld two\nstop\ntarget: stop\nzero: 0\ntwo: 2";
+    let source = ".text\nld zero\nbrnz target\nld two\nstop\ntarget: stop\nzero: 0\ntwo: 2";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -294,7 +294,7 @@ fn test_simulate_brnz_not_taken() {
 
 #[test]
 fn test_simulate_stop_halts_immediately() {
-    let source = "stop\nld x\nx: 5";
+    let source = ".text\nstop\nld x\nx: 5";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -306,7 +306,7 @@ fn test_simulate_stop_halts_immediately() {
 
 #[test]
 fn test_simulate_nop() {
-    let source = "nop\nld x\nstop\nx: 7";
+    let source = ".text\nnop\nld x\nstop\nx: 7";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -320,7 +320,7 @@ fn test_simulate_nop() {
 
 #[test]
 fn test_simulate_phases() {
-    let source = "ld 2\nstop\n";
+    let source = ".text\nld 2\nstop\n";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
@@ -331,7 +331,7 @@ fn test_simulate_phases() {
 
 #[test]
 fn test_simulate_max_cycles() {
-    let source = "br 0";
+    let source = ".text\nbr 0";
     let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);

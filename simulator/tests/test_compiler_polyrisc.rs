@@ -126,3 +126,107 @@ fn test_compile_mv() {
     assert!(result.success);
     assert_eq!(result.program[0], 0x07010200);
 }
+
+fn assert_compile_error(source: &str, expected: &str) {
+    let result = compiler::compile(source, ProcessorId::PolyRisc);
+    assert!(!result.success, "expected a compile error for {:?}", source);
+    assert!(result.program.is_empty());
+    assert!(
+        result.diagnostics.iter().any(|d| d.message.contains(expected)),
+        "expected a diagnostic containing {:?}, got {:?}",
+        expected,
+        result.diagnostics
+    );
+}
+
+// --- section directives ---
+
+#[test]
+fn test_missing_section_directive_errors() {
+    assert_compile_error("ldi r1,10\nstop", "Missing section directive");
+}
+
+#[test]
+fn test_empty_source_errors() {
+    assert_compile_error("", "Missing section directive");
+}
+
+#[test]
+fn test_commented_out_directive_does_not_count() {
+    assert_compile_error("// .text\nldi r1,10", "Missing section directive");
+}
+
+#[test]
+fn test_data_directive_alone_is_enough() {
+    let result = compiler::compile(".data\nmydata: 1,2", ProcessorId::PolyRisc);
+    assert!(result.success, "diagnostics: {:?}", result.diagnostics);
+}
+
+// --- mandatory parentheses on ld / st ---
+
+#[test]
+fn test_ld_without_parentheses_errors() {
+    assert_compile_error(".text\nld r1,r2", "ld requires parentheses");
+}
+
+#[test]
+fn test_st_without_parentheses_errors() {
+    assert_compile_error(".text\nst r3,r4", "st requires parentheses");
+}
+
+#[test]
+fn test_ld_parentheses_on_wrong_operand_errors() {
+    assert_compile_error(".text\nld (r1),r2", "ld destination cannot be in parentheses");
+}
+
+#[test]
+fn test_st_parentheses_on_wrong_operand_errors() {
+    assert_compile_error(".text\nst r3,(r4)", "st requires parentheses");
+}
+
+#[test]
+fn test_unbalanced_parentheses_error() {
+    assert_compile_error(".text\nld r1,(r2", "parentheses");
+    assert_compile_error(".text\nld r1,r2)", "parentheses");
+    assert_compile_error(".text\nst ((r3)),r4", "parentheses");
+}
+
+#[test]
+fn test_parentheses_outside_ld_st_error() {
+    assert_compile_error(".text\nadd r1,(r2),r3", "only allowed in ld and st");
+    assert_compile_error(".text\nldi (r1),5", "only allowed in ld and st");
+}
+
+#[test]
+fn test_ld_st_accept_spaces_around_parentheses() {
+    let result = compiler::compile(".text\nld r1 , ( r2 )\nst ( r3 ) , r4", ProcessorId::PolyRisc);
+    assert!(result.success, "diagnostics: {:?}", result.diagnostics);
+    assert_eq!(result.program, vec![0x08010200, 0x09000304]);
+}
+
+// --- mandatory commas ---
+
+#[test]
+fn test_missing_comma_in_alu_errors() {
+    assert_compile_error(".text\nadd r1 r2,r3", "Missing ','");
+    assert_compile_error(".text\nadd r1,r2 r3", "Missing ','");
+    assert_compile_error(".text\nmv r1 r2", "Missing ','");
+}
+
+#[test]
+fn test_missing_comma_in_ldi_errors() {
+    assert_compile_error(".text\nldi r1 10", "Missing ','");
+}
+
+#[test]
+fn test_missing_comma_in_ld_st_errors() {
+    assert_compile_error(".text\nld r1 (r2)", "Missing ','");
+    assert_compile_error(".text\nst (r3) r4", "Missing ','");
+}
+
+#[test]
+fn test_stray_comma_errors() {
+    assert_compile_error(".text\nadd r1,,r3", "missing operand");
+    assert_compile_error(".text\nmv r1,r2,", "missing operand");
+    assert_compile_error(".text\nmv ,r2", "missing operand");
+}

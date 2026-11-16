@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::compiler::lexer::{tokenize_line, Token};
+use crate::compiler::MISSING_SECTION_MESSAGE;
 use crate::types::{CompileResult, Diagnostic, ProcessorId, Severity, TokenSpan};
 
 /// Instruction definition: mnemonic -> (opcode, has_operand)
@@ -141,6 +142,7 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
     let mut label_addresses: HashMap<String, usize> = HashMap::new();
     let mut current_address: usize = 0;
     let mut section = Section::Text;
+    let mut has_section_directive = false;
     let mut bracket_depth: u32 = 0;
     let mut bracket_open_line: Option<usize> = None;
 
@@ -156,7 +158,7 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
         // Filter out comments
         let tokens: Vec<Token> = tokens
             .into_iter()
-            .filter(|t| !matches!(t, Token::Comment(_)))
+            .filter(|t| !matches!(t, Token::Comment(_) | Token::LParen | Token::RParen))
             .collect();
 
         if tokens.is_empty() {
@@ -166,8 +168,14 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
         // Check for directive
         if let Token::Directive(ref dir) = tokens[0] {
             match dir.as_str() {
-                ".text" => section = Section::Text,
-                ".data" => section = Section::Data,
+                ".text" => {
+                    section = Section::Text;
+                    has_section_directive = true;
+                }
+                ".data" => {
+                    section = Section::Data;
+                    has_section_directive = true;
+                }
                 _ => {}
             }
             continue;
@@ -272,6 +280,15 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
             // Already handled above, but just in case
             parsed_lines.push((line_idx, label, ParsedLine::Empty));
         }
+    }
+
+    if !has_section_directive {
+        diagnostics.push(Diagnostic {
+            line: 0,
+            column: 0,
+            message: MISSING_SECTION_MESSAGE.into(),
+            severity: Severity::Error,
+        });
     }
 
     if bracket_depth > 0 {

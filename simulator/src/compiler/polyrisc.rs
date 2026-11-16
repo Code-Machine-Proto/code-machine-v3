@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::compiler::lexer::{tokenize_line, Token};
+use crate::compiler::MISSING_SECTION_MESSAGE;
 use crate::types::{CompileResult, Diagnostic, Severity, TokenSpan};
 
 /// Strip // comments from a line before tokenizing
@@ -12,9 +13,54 @@ fn strip_line_comment(line: &str) -> &str {
     }
 }
 
-/// Strip parentheses from a line so the lexer can handle it
-fn strip_parens(line: &str) -> String {
-    line.replace(['(', ')'], " ")
+fn error(line: usize, message: impl Into<String>) -> Diagnostic {
+    Diagnostic {
+        line,
+        column: 0,
+        message: message.into(),
+        severity: Severity::Error,
+    }
+}
+
+fn is_paren(tok: &Token) -> bool {
+    matches!(tok, Token::LParen | Token::RParen)
+}
+
+/// An instruction operand: either bare (`r1`) or wrapped in parentheses (`(r1)`).
+enum Operand<'a> {
+    Plain(&'a Token),
+    Indirect(&'a Token),
+}
+
+impl<'a> Operand<'a> {
+    fn token(&self) -> &'a Token {
+        match self {
+            Operand::Plain(tok) | Operand::Indirect(tok) => *tok,
+        }
+    }
+}
+
+/// Split the tokens following a mnemonic into comma-separated operands, rejecting
+/// missing commas, stray commas and malformed parentheses.
+fn parse_operands(tokens: &[Token]) -> Result<Vec<Operand<'_>>, String> {
+    let mut operands = Vec::new();
+    if tokens.is_empty() {
+        return Ok(operands);
+    }
+    for group in tokens.split(|t| matches!(t, Token::Comma)) {
+        match group {
+            [] => return Err("Unexpected ',' (missing operand)".into()),
+            [tok] if !is_paren(tok) => operands.push(Operand::Plain(tok)),
+            [Token::LParen, tok, Token::RParen] if !is_paren(tok) => operands.push(Operand::Indirect(tok)),
+            // `ld r1 (r2)` / `st (r1) r2`
+            [_, Token::LParen, _, Token::RParen] | [Token::LParen, _, Token::RParen, _] => {
+                return Err("Missing ',' between operands".into());
+            }
+            _ if group.iter().any(is_paren) => return Err("Mismatched or misplaced parentheses".into()),
+            _ => return Err("Missing ',' between operands".into()),
+        }
+    }
+    Ok(operands)
 }
 
 /// Parse a register token like "r0" .. "r31", returning the register number.
@@ -98,6 +144,7 @@ pub fn compile(source: &str) -> CompileResult {
     let mut data_values: Vec<i32> = Vec::new();
     let mut current_address: usize = 0;
     let mut section = Section::Text;
+    let mut has_section_directive = false;
     let mut bracket_depth: u32 = 0;
     let mut bracket_open_line: Option<usize> = None;
 
@@ -107,9 +154,7 @@ pub fn compile(source: &str) -> CompileResult {
             continue;
         }
 
-        // Preprocess: strip parens for lexer
-        let cleaned = strip_parens(line);
-        let (tokens, spans) = tokenize_line(&cleaned, line_idx);
+        let (tokens, spans) = tokenize_line(line, line_idx);
         all_spans.extend(spans);
 
         // Filter out comments
@@ -125,8 +170,14 @@ pub fn compile(source: &str) -> CompileResult {
         // Check for directive
         if let Token::Directive(ref dir) = tokens[0] {
             match dir.as_str() {
-                ".text" => { section = Section::Text; }
-                ".data" => { section = Section::Data; }
+                ".text" => {
+                    section = Section::Text;
+                    has_section_directive = true;
+                }
+                ".data" => {
+                    section = Section::Data;
+                    has_section_directive = true;
+                }
                 _ => {}
             }
             continue;
@@ -221,54 +272,80 @@ pub fn compile(source: &str) -> CompileResult {
                     continue;
                 };
 
-                // Collect operand tokens (skip commas)
-                let operands: Vec<&Token> = rest[1..]
-                    .iter()
-                    .filter(|t| !matches!(t, Token::Comma))
-                    .collect();
-
+                // `stop` takes no operands
                 if mnemonic == "stop" {
                     parsed.push((line_idx, ParsedInstruction::Stop));
                     current_address += 1;
-                } else if mnemonic == "ld" {
-                    // ld rdst,(rsrc1) -> operands: rdst, rsrc1
-                    if operands.len() >= 2 {
-                        if let (Some(rdst), Some(rsrc1)) = (parse_register(operands[0]), parse_register(operands[1])) {
-                            parsed.push((line_idx, ParsedInstruction::Load { rdst, rsrc1 }));
-                            current_address += 1;
-                        } else {
-                            diagnostics.push(Diagnostic {
-                                line: line_idx, column: 0,
-                                message: "Invalid registers for ld".into(),
-                                severity: Severity::Error,
-                            });
+                    continue;
+                }
+
+                let operand_list = match parse_operands(&rest[1..]) {
+                    Ok(list) => list,
+                    Err(message) => {
+                        diagnostics.push(error(line_idx, message));
+                        continue;
+                    }
+                };
+
+                if mnemonic != "ld"
+                    && mnemonic != "st"
+                    && operand_list.iter().any(|o| matches!(o, Operand::Indirect(_)))
+                {
+                    diagnostics.push(error(line_idx, "Parentheses are only allowed in ld and st"));
+                    continue;
+                }
+
+                let operands: Vec<&Token> = operand_list.iter().map(Operand::token).collect();
+
+                if mnemonic == "ld" {
+                    // ld rdst, (rsrc1) -- the parentheses are mandatory
+                    match operand_list.as_slice() {
+                        [Operand::Plain(dst), Operand::Indirect(src), ..] => {
+                            if let (Some(rdst), Some(rsrc1)) = (parse_register(dst), parse_register(src)) {
+                                parsed.push((line_idx, ParsedInstruction::Load { rdst, rsrc1 }));
+                                current_address += 1;
+                            } else {
+                                diagnostics.push(error(line_idx, "Invalid registers for ld"));
+                            }
                         }
-                    } else {
-                        diagnostics.push(Diagnostic {
-                            line: line_idx, column: 0,
-                            message: "ld requires 2 operands".into(),
-                            severity: Severity::Error,
-                        });
+                        [Operand::Plain(_), Operand::Plain(_), ..] => {
+                            diagnostics.push(error(
+                                line_idx,
+                                "ld requires parentheses around the address register: ld rdst, (rsrc1)",
+                            ));
+                        }
+                        [Operand::Indirect(_), _, ..] => {
+                            diagnostics.push(error(
+                                line_idx,
+                                "ld destination cannot be in parentheses: ld rdst, (rsrc1)",
+                            ));
+                        }
+                        _ => diagnostics.push(error(line_idx, "ld requires 2 operands: ld rdst, (rsrc1)")),
                     }
                 } else if mnemonic == "st" {
-                    // st (rdst),rsrc2 -> operands: rdst, rsrc2
-                    if operands.len() >= 2 {
-                        if let (Some(rdst), Some(rsrc2)) = (parse_register(operands[0]), parse_register(operands[1])) {
-                            parsed.push((line_idx, ParsedInstruction::Store { rdst, rsrc2 }));
-                            current_address += 1;
-                        } else {
-                            diagnostics.push(Diagnostic {
-                                line: line_idx, column: 0,
-                                message: "Invalid registers for st".into(),
-                                severity: Severity::Error,
-                            });
+                    // st (rsrc1), rsrc2 -- the parentheses are mandatory
+                    match operand_list.as_slice() {
+                        [Operand::Indirect(addr), Operand::Plain(src), ..] => {
+                            if let (Some(rdst), Some(rsrc2)) = (parse_register(addr), parse_register(src)) {
+                                parsed.push((line_idx, ParsedInstruction::Store { rdst, rsrc2 }));
+                                current_address += 1;
+                            } else {
+                                diagnostics.push(error(line_idx, "Invalid registers for st"));
+                            }
                         }
-                    } else {
-                        diagnostics.push(Diagnostic {
-                            line: line_idx, column: 0,
-                            message: "st requires 2 operands".into(),
-                            severity: Severity::Error,
-                        });
+                        [Operand::Plain(_), _, ..] => {
+                            diagnostics.push(error(
+                                line_idx,
+                                "st requires parentheses around the address register: st (rsrc1), rsrc2",
+                            ));
+                        }
+                        [Operand::Indirect(_), Operand::Indirect(_), ..] => {
+                            diagnostics.push(error(
+                                line_idx,
+                                "st source cannot be in parentheses: st (rsrc1), rsrc2",
+                            ));
+                        }
+                        _ => diagnostics.push(error(line_idx, "st requires 2 operands: st (rsrc1), rsrc2")),
                     }
                 } else if mnemonic == "ldi" {
                     // ldi rdst,imm (imm may be a numeric literal or a label address)
@@ -383,6 +460,10 @@ pub fn compile(source: &str) -> CompileResult {
                 }
             }
         }
+    }
+
+    if !has_section_directive {
+        diagnostics.push(error(0, MISSING_SECTION_MESSAGE));
     }
 
     if bracket_depth > 0 {

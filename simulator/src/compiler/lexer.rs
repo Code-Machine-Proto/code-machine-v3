@@ -12,6 +12,8 @@ pub enum Token {
     Plus,
     LBracket,
     RBracket,
+    LParen,
+    RParen,
     Comment(String),
 }
 
@@ -77,6 +79,19 @@ pub fn tokenize_line(line: &str, line_index: usize) -> (Vec<Token>, Vec<TokenSpa
                 kind: TokenKind::Punctuation,
             });
             tokens.push(if c == '[' { Token::LBracket } else { Token::RBracket });
+            continue;
+        }
+
+        // Parentheses (indirect memory operands, e.g. `ld r1, (r2)`)
+        if c == '(' || c == ')' {
+            chars.next();
+            spans.push(TokenSpan {
+                line: line_index,
+                start: i,
+                end: i + 1,
+                kind: TokenKind::Punctuation,
+            });
+            tokens.push(if c == '(' { Token::LParen } else { Token::RParen });
             continue;
         }
 
