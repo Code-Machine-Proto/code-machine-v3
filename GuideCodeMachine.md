@@ -351,7 +351,9 @@ one: 1             # Occupe de la mémoire (adresse 6)
 
 - Le code devra toujours suivre les règles suivantes :
 
-- La directive « .data » est facultative et une directive « .data » vide est acceptée.
+- La directive « .text » est obligatoire (sa présence est vérifiée en premier, avant toute autre erreur).
+
+- La directive « .data » est facultative et une directive « .data » vide est acceptée. En revanche, toute déclaration de données (variables) doit se trouver après une directive « .data » : des données déclarées sans « .data » produisent une erreur.
 
 - Les étiquettes (« label ») doivent être constituées de seulement des lettres minuscules, des lettres majuscules, des chiffres et des tirets du bas(\_) (attention, les étiquettes sont sensibles à la case)
 

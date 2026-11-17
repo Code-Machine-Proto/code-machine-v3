@@ -142,23 +142,27 @@ fn assert_compile_error(source: &str, expected: &str) {
 // --- section directives ---
 
 #[test]
-fn test_missing_section_directive_errors() {
-    assert_compile_error("ldi r1,10\nstop", "Missing section directive");
+fn test_missing_text_section_errors() {
+    for source in ["ldi r1,10\nstop", "", "// .text\nldi r1,10", ".data\nmydata: 1,2"] {
+        let result = compiler::compile(source, ProcessorId::PolyRisc);
+        assert!(!result.success, "expected a compile error for {:?}", source);
+        assert!(result.program.is_empty());
+        let messages: Vec<&str> = result.diagnostics.iter().map(|d| d.message.as_str()).collect();
+        assert_eq!(messages.len(), 1, "messages: {:?}", messages);
+        assert!(messages[0].contains("Missing .text section"), "messages: {:?}", messages);
+    }
 }
 
 #[test]
-fn test_empty_source_errors() {
-    assert_compile_error("", "Missing section directive");
+fn test_missing_text_section_is_reported_before_other_errors() {
+    let result = compiler::compile("bogus r1\nstop", ProcessorId::PolyRisc);
+    assert_eq!(result.diagnostics.len(), 1, "diagnostics: {:?}", result.diagnostics);
+    assert!(result.diagnostics[0].message.contains("Missing .text section"));
 }
 
 #[test]
-fn test_commented_out_directive_does_not_count() {
-    assert_compile_error("// .text\nldi r1,10", "Missing section directive");
-}
-
-#[test]
-fn test_data_directive_alone_is_enough() {
-    let result = compiler::compile(".data\nmydata: 1,2", ProcessorId::PolyRisc);
+fn test_data_section_is_optional() {
+    let result = compiler::compile(".text\nldi r1,10\nstop", ProcessorId::PolyRisc);
     assert!(result.success, "diagnostics: {:?}", result.diagnostics);
 }
 
@@ -229,4 +233,30 @@ fn test_stray_comma_errors() {
     assert_compile_error(".text\nadd r1,,r3", "missing operand");
     assert_compile_error(".text\nmv r1,r2,", "missing operand");
     assert_compile_error(".text\nmv ,r2", "missing operand");
+}
+
+#[test]
+fn test_data_outside_data_section_errors() {
+    for (source, line) in [
+        (".text\nldi r1,0\nstop\nmydata: 1,2", 3),
+        (".text\nldi r1,0\nstop\nmydata: [1,2]", 3),
+        (".text\nldi r1,0\nstop\n42", 3),
+    ] {
+        let result = compiler::compile(source, ProcessorId::PolyRisc);
+        assert!(!result.success, "expected a compile error for {:?}", source);
+        assert!(result.program.is_empty());
+        let diag = result
+            .diagnostics
+            .iter()
+            .find(|d| d.message.contains("must be declared in a .data section"))
+            .unwrap_or_else(|| panic!("diagnostics: {:?}", result.diagnostics));
+        assert_eq!(diag.line, line);
+    }
+}
+
+#[test]
+fn test_data_after_data_directive_is_accepted() {
+    let result = compiler::compile(".text\nldi r1,0\nstop\n.data\nmydata: 1,2", ProcessorId::PolyRisc);
+    assert!(result.success, "diagnostics: {:?}", result.diagnostics);
+    assert_eq!(result.data_memory.as_deref(), Some(&[1, 2][..]));
 }

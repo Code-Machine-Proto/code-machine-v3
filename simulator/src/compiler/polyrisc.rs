@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::compiler::lexer::{tokenize_line, Token};
-use crate::compiler::MISSING_SECTION_MESSAGE;
+use crate::compiler::unexpected_text_token_message;
 use crate::types::{CompileResult, Diagnostic, Severity, TokenSpan};
 
 /// Strip // comments from a line before tokenizing
@@ -35,7 +35,7 @@ enum Operand<'a> {
 impl<'a> Operand<'a> {
     fn token(&self) -> &'a Token {
         match self {
-            Operand::Plain(tok) | Operand::Indirect(tok) => *tok,
+            Operand::Plain(tok) | Operand::Indirect(tok) => tok,
         }
     }
 }
@@ -144,7 +144,6 @@ pub fn compile(source: &str) -> CompileResult {
     let mut data_values: Vec<i32> = Vec::new();
     let mut current_address: usize = 0;
     let mut section = Section::Text;
-    let mut has_section_directive = false;
     let mut bracket_depth: u32 = 0;
     let mut bracket_open_line: Option<usize> = None;
 
@@ -172,11 +171,9 @@ pub fn compile(source: &str) -> CompileResult {
             match dir.as_str() {
                 ".text" => {
                     section = Section::Text;
-                    has_section_directive = true;
                 }
                 ".data" => {
                     section = Section::Data;
-                    has_section_directive = true;
                 }
                 _ => {}
             }
@@ -266,7 +263,7 @@ pub fn compile(source: &str) -> CompileResult {
                     diagnostics.push(Diagnostic {
                         line: line_idx,
                         column: 0,
-                        message: "Expected instruction mnemonic".into(),
+                        message: unexpected_text_token_message(&rest[0]).into(),
                         severity: Severity::Error,
                     });
                     continue;
@@ -460,10 +457,6 @@ pub fn compile(source: &str) -> CompileResult {
                 }
             }
         }
-    }
-
-    if !has_section_directive {
-        diagnostics.push(error(0, MISSING_SECTION_MESSAGE));
     }
 
     if bracket_depth > 0 {
