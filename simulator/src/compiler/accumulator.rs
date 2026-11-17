@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::compiler::lexer::{tokenize_line, Token};
+use crate::compiler::unexpected_text_token_message;
 use crate::types::{CompileResult, Diagnostic, ProcessorId, Severity, TokenSpan};
 
 /// Instruction definition: mnemonic -> (opcode, has_operand)
@@ -156,7 +157,7 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
         // Filter out comments
         let tokens: Vec<Token> = tokens
             .into_iter()
-            .filter(|t| !matches!(t, Token::Comment(_)))
+            .filter(|t| !matches!(t, Token::Comment(_) | Token::LParen | Token::RParen))
             .collect();
 
         if tokens.is_empty() {
@@ -166,8 +167,12 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
         // Check for directive
         if let Token::Directive(ref dir) = tokens[0] {
             match dir.as_str() {
-                ".text" => section = Section::Text,
-                ".data" => section = Section::Data,
+                ".text" => {
+                    section = Section::Text;
+                }
+                ".data" => {
+                    section = Section::Data;
+                }
                 _ => {}
             }
             continue;
@@ -222,18 +227,16 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
             continue;
         }
 
-        // Check if remaining tokens are data values (after a label def)
+        // Outside a .data section, a label followed by values is a data declaration
+        // without a .data directive.
         if label.is_some() && !matches!(&rest_tokens[0], Token::Identifier(_)) {
-            let values = parse_data_values(
-                rest_tokens,
-                line_idx,
-                &mut bracket_depth,
-                &mut bracket_open_line,
-                &mut diagnostics,
-            );
-            let count = values.len();
-            parsed_lines.push((line_idx, label, ParsedLine::Data(values)));
-            current_address += count;
+            diagnostics.push(Diagnostic {
+                line: line_idx,
+                column: 0,
+                message: unexpected_text_token_message(&rest_tokens[0]).into(),
+                severity: Severity::Error,
+            });
+            parsed_lines.push((line_idx, label, ParsedLine::Empty));
             continue;
         }
 
@@ -268,8 +271,13 @@ pub fn compile(source: &str, processor_id: ProcessorId) -> CompileResult {
                 parsed_lines.push((line_idx, label, ParsedLine::Empty));
             }
         } else {
-            // Data values after label that start with a number
-            // Already handled above, but just in case
+            // Not an instruction mnemonic (e.g. bare data values in .text)
+            diagnostics.push(Diagnostic {
+                line: line_idx,
+                column: 0,
+                message: unexpected_text_token_message(&rest_tokens[0]).into(),
+                severity: Severity::Error,
+            });
             parsed_lines.push((line_idx, label, ParsedLine::Empty));
         }
     }

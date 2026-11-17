@@ -38,19 +38,19 @@ function assertJunctions(stimulatedLineState: number, expected: AccumulatorMaJun
 
 describe('AccumulatorMa memory', () => {
   it('stores the loaded value at the destination address', () => {
-    const memory = finalMemory('ld x\nst y\nstop\nx: 42\ny: 0');
+    const memory = finalMemory('.text\nld x\nst y\nstop\n.data\nx: 42\ny: 0');
     expect(memory[4]).toBe(42);
   });
 
   it('stores through the indirect sti instruction', () => {
-    const memory = finalMemory('ld val\nlea dest\nsti\nstop\nval: 33\ndest: 0');
+    const memory = finalMemory('.text\nld val\nlea dest\nsti\nstop\n.data\nval: 33\ndest: 0');
     expect(memory[5]).toBe(33);
   });
 });
 
 describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   it('ld', () => {
-    const instrs = run('ld x\nst y\nstop\nx: 42\ny: 0');
+    const instrs = run('.text\nld x\nst y\nstop\n.data\nx: 42\ny: 0');
     const ld = instrs[0];
     assertWires(ld.execute.stimulated_line_state, ['mux-pc', 'inc', 'mux3-mem', 'mem-acc', 'ir-mem', 'mux-acc']);
     assertJunctions(ld.execute.stimulated_line_state, [
@@ -63,7 +63,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('st', () => {
-    const instrs = run('ld x\nst y\nstop\nx: 42\ny: 0');
+    const instrs = run('.text\nld x\nst y\nstop\n.data\nx: 42\ny: 0');
     const st = instrs[1];
     assertWires(st.execute.stimulated_line_state, ['mux-pc', 'inc', 'mux3-mem', 'ir-mem', 'acc-mem', 'mux-mem']);
     assertJunctions(st.execute.stimulated_line_state, [
@@ -75,7 +75,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('add', () => {
-    const instrs = run('ld x\nadd y\nst z\nstop\nx: 10\ny: 20\nz: 0');
+    const instrs = run('.text\nld x\nadd y\nst z\nstop\n.data\nx: 10\ny: 20\nz: 0');
     const add = instrs[1];
     assertWires(add.execute.stimulated_line_state, [
       'mux-pc',
@@ -100,7 +100,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('sub', () => {
-    const instrs = run('ld x\nsub y\nst z\nstop\nx: 50\ny: 20\nz: 0');
+    const instrs = run('.text\nld x\nsub y\nst z\nstop\n.data\nx: 50\ny: 20\nz: 0');
     const sub = instrs[1];
     assertWires(sub.execute.stimulated_line_state, [
       'mux-pc',
@@ -125,7 +125,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('mul', () => {
-    const instrs = run('ld x\nmul y\nstop\nx: 3\ny: 7');
+    const instrs = run('.text\nld x\nmul y\nstop\n.data\nx: 3\ny: 7');
     const mul = instrs[1];
     assertWires(mul.execute.stimulated_line_state, [
       'mux-pc',
@@ -150,7 +150,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('adda', () => {
-    const instrs = run('lda x\nadda y\nstop\nx: 5\ny: 6');
+    const instrs = run('.text\nlda x\nadda y\nstop\n.data\nx: 5\ny: 6');
     const adda = instrs[1];
     assertWires(adda.execute.stimulated_line_state, [
       'mux-pc',
@@ -175,7 +175,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('suba', () => {
-    const instrs = run('lda x\nsuba y\nstop\nx: 10\ny: 4');
+    const instrs = run('.text\nlda x\nsuba y\nstop\n.data\nx: 10\ny: 4');
     const suba = instrs[1];
     assertWires(suba.execute.stimulated_line_state, [
       'mux-pc',
@@ -200,7 +200,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('addx', () => {
-    const instrs = run('ld x\nlea y\naddx\nstop\nx: 5\ny: 6');
+    const instrs = run('.text\nld x\nlea y\naddx\nstop\n.data\nx: 5\ny: 6');
     const addx = instrs[2];
     assertWires(addx.execute.stimulated_line_state, [
       'mux-pc',
@@ -226,7 +226,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('subx', () => {
-    const instrs = run('ld x\nlea y\nsubx\nstop\nx: 10\ny: 4');
+    const instrs = run('.text\nld x\nlea y\nsubx\nstop\n.data\nx: 10\ny: 4');
     const subx = instrs[2];
     assertWires(subx.execute.stimulated_line_state, [
       'mux-pc',
@@ -252,7 +252,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('lda', () => {
-    const instrs = run('lda x\nstop\nx: 99');
+    const instrs = run('.text\nlda x\nstop\n.data\nx: 99');
     const lda = instrs[0];
     assertWires(lda.execute.stimulated_line_state, ['mux-pc', 'inc', 'mux3-mem', 'mem-ma', 'ir-mem', 'mux-ma']);
     assertJunctions(lda.execute.stimulated_line_state, [
@@ -265,7 +265,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('sta', () => {
-    const instrs = run('lda x\nsta y\nstop\nx: 77\ny: 0');
+    const instrs = run('.text\nlda x\nsta y\nstop\n.data\nx: 77\ny: 0');
     const sta = instrs[1];
     assertWires(sta.execute.stimulated_line_state, ['mux-pc', 'inc', 'mux3-mem', 'ir-mem', 'ma-mem', 'mux-mem']);
     assertJunctions(sta.execute.stimulated_line_state, [
@@ -277,14 +277,14 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('lea', () => {
-    const instrs = run('lea x\nstop\nx: 55');
+    const instrs = run('.text\nlea x\nstop\n.data\nx: 55');
     const lea = instrs[0];
     assertWires(lea.execute.stimulated_line_state, ['mux-pc', 'inc', 'mux-ma', 'mux3-ma']);
     assertJunctions(lea.execute.stimulated_line_state, ['inc-pcmux-junction', 'addr-select-junction']);
   });
 
   it('ldi', () => {
-    const instrs = run('lea x\nldi\nstop\nx: 55');
+    const instrs = run('.text\nlea x\nldi\nstop\n.data\nx: 55');
     const ldi = instrs[1];
     assertWires(ldi.execute.stimulated_line_state, ['mux-pc', 'inc', 'mux3-mem', 'mem-acc', 'mux-acc', 'ma-addr']);
     assertJunctions(ldi.execute.stimulated_line_state, [
@@ -298,7 +298,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('sti', () => {
-    const instrs = run('ld val\nlea dest\nsti\nstop\nval: 33\ndest: 0');
+    const instrs = run('.text\nld val\nlea dest\nsti\nstop\n.data\nval: 33\ndest: 0');
     const sti = instrs[2];
     assertWires(sti.execute.stimulated_line_state, ['mux-pc', 'inc', 'mux3-mem', 'acc-mem', 'ma-addr', 'mux-mem']);
     assertJunctions(sti.execute.stimulated_line_state, [
@@ -311,7 +311,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('shl', () => {
-    const instrs = run('ld x\nshl\nstop\nx: 5');
+    const instrs = run('.text\nld x\nshl\nstop\n.data\nx: 5');
     const shl = instrs[1];
     assertWires(shl.execute.stimulated_line_state, ['mux-pc', 'inc', 'alu-acc', 'mux-acc', 'acc-alu', 'mux-alu']);
     assertJunctions(shl.execute.stimulated_line_state, [
@@ -323,7 +323,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('shr', () => {
-    const instrs = run('ld x\nshr\nstop\nx: 8');
+    const instrs = run('.text\nld x\nshr\nstop\n.data\nx: 8');
     const shr = instrs[1];
     assertWires(shr.execute.stimulated_line_state, ['mux-pc', 'inc', 'alu-acc', 'mux-acc', 'acc-alu', 'mux-alu']);
     assertJunctions(shr.execute.stimulated_line_state, [
@@ -335,49 +335,49 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
   });
 
   it('br (unconditional, always taken)', () => {
-    const instrs = run('br target\nld skipped\nstop\ntarget: ld hit\nstop\nskipped: 1\nhit: 9');
+    const instrs = run('.text\nbr target\nld skipped\nstop\ntarget: ld hit\nstop\n.data\nskipped: 1\nhit: 9');
     const br = instrs[0];
     assertWires(br.execute.stimulated_line_state, ['mux-pc', 'ir-pc']);
     assertJunctions(br.execute.stimulated_line_state, ['ir-addr-junction']);
   });
 
   it('brz taken', () => {
-    const instrs = run('ld zero\nbrz target\ntarget: stop\nzero: 0');
+    const instrs = run('.text\nld zero\nbrz target\ntarget: stop\n.data\nzero: 0');
     const brz = instrs[1];
     assertWires(brz.execute.stimulated_line_state, ['mux-pc', 'ir-pc']);
     assertJunctions(brz.execute.stimulated_line_state, ['ir-addr-junction']);
   });
 
   it('brz not taken', () => {
-    const instrs = run('ld one\nbrz target\nstop\ntarget: stop\none: 1');
+    const instrs = run('.text\nld one\nbrz target\nstop\ntarget: stop\n.data\none: 1');
     const brz = instrs[1];
     assertWires(brz.execute.stimulated_line_state, ['mux-pc', 'inc']);
     assertJunctions(brz.execute.stimulated_line_state, ['inc-pcmux-junction']);
   });
 
   it('brnz taken', () => {
-    const instrs = run('ld one\nbrnz target\ntarget: stop\none: 1');
+    const instrs = run('.text\nld one\nbrnz target\ntarget: stop\n.data\none: 1');
     const brnz = instrs[1];
     assertWires(brnz.execute.stimulated_line_state, ['mux-pc', 'ir-pc']);
     assertJunctions(brnz.execute.stimulated_line_state, ['ir-addr-junction']);
   });
 
   it('brnz not taken', () => {
-    const instrs = run('ld zero\nbrnz target\nstop\ntarget: stop\nzero: 0');
+    const instrs = run('.text\nld zero\nbrnz target\nstop\ntarget: stop\n.data\nzero: 0');
     const brnz = instrs[1];
     assertWires(brnz.execute.stimulated_line_state, ['mux-pc', 'inc']);
     assertJunctions(brnz.execute.stimulated_line_state, ['inc-pcmux-junction']);
   });
 
   it('stop', () => {
-    const instrs = run('stop');
+    const instrs = run('.text\nstop');
     const stop = instrs[0];
     assertWires(stop.execute.stimulated_line_state, ['mux-pc', 'inc']);
     assertJunctions(stop.execute.stimulated_line_state, ['inc-pcmux-junction']);
   });
 
   it('nop', () => {
-    const instrs = run('nop\nld x\nstop\nx: 7');
+    const instrs = run('.text\nnop\nld x\nstop\n.data\nx: 7');
     const nop = instrs[0];
     assertWires(nop.execute.stimulated_line_state, ['mux-pc', 'inc']);
     assertJunctions(nop.execute.stimulated_line_state, ['inc-pcmux-junction']);
@@ -386,7 +386,7 @@ describe('AccumulatorMa instruction -> active wires (Execute)', () => {
 
 describe('AccumulatorMa Fetch and Decode phases -> active wires', () => {
   it('fetch lights the fetch-specific wires and junctions', () => {
-    const [instr] = run('stop');
+    const [instr] = run('.text\nstop');
     assertWires(instr.fetch.stimulated_line_state, ['pc-mux', 'mux3-mem', 'mem-ir']);
     assertJunctions(instr.fetch.stimulated_line_state, [
       'mem-out-junction',
@@ -396,7 +396,7 @@ describe('AccumulatorMa Fetch and Decode phases -> active wires', () => {
   });
 
   it('decode lights the decode-specific wires and junctions', () => {
-    const [instr] = run('stop');
+    const [instr] = run('.text\nstop');
     assertWires(instr.decode.stimulated_line_state, ['ir-control', 'acc-control']);
     assertJunctions(instr.decode.stimulated_line_state, ['acc-in-junction', 'acc-alu-control-junction']);
   });
