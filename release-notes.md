@@ -1,3 +1,19 @@
+## [3.1.2](https://github.com/Code-Machine-Proto/code-machine-v3/compare/v3.1.1...v3.1.2) (2026-11-18)
+
+
+### Bug Fixes
+
+* autoscroll only code editor and not whole view ([#47](https://github.com/Code-Machine-Proto/code-machine-v3/issues/47)) ([da1a400](https://github.com/Code-Machine-Proto/code-machine-v3/commit/da1a4004b3193265fd0a1e08de3907452f053bf0))
+* highlight accessed polyrisc registers ([#50](https://github.com/Code-Machine-Proto/code-machine-v3/issues/50)) ([5bb3106](https://github.com/Code-Machine-Proto/code-machine-v3/commit/5bb31061675b06ce19bb2ea10b20ca40f05b67a2))
+* highlight polyrisc data memory on ld and st ([#49](https://github.com/Code-Machine-Proto/code-machine-v3/issues/49)) ([a96a059](https://github.com/Code-Machine-Proto/code-machine-v3/commit/a96a059098ed5d00be0603b67fb1716e040b7e52))
+* make memory offset header sticky ([#48](https://github.com/Code-Machine-Proto/code-machine-v3/issues/48)) ([0eda6cd](https://github.com/Code-Machine-Proto/code-machine-v3/commit/0eda6cd14a383f228c9aff2914c7712a34d41cab))
+* order PolyRisc ALU flags and color registers ([#43](https://github.com/Code-Machine-Proto/code-machine-v3/issues/43)) ([244eafe](https://github.com/Code-Machine-Proto/code-machine-v3/commit/244eafec7bb710ac9696fd773c0c785dd514685c))
+* release assets with explicit os names ([#54](https://github.com/Code-Machine-Proto/code-machine-v3/issues/54)) ([cb81e2d](https://github.com/Code-Machine-Proto/code-machine-v3/commit/cb81e2d55b0aba8b2e96f46bd7572f61eecc094e))
+* signal colors of memory and register box when on ([#46](https://github.com/Code-Machine-Proto/code-machine-v3/issues/46)) ([f4a0d8a](https://github.com/Code-Machine-Proto/code-machine-v3/commit/f4a0d8adcb17763873a82a913b086990044e7e44))
+* switch to execution mode continues instruction instead of restarting ([#44](https://github.com/Code-Machine-Proto/code-machine-v3/issues/44)) ([e896bbe](https://github.com/Code-Machine-Proto/code-machine-v3/commit/e896bbea7862f7b27daae73ce3ca73b21a732d7b))
+* syntax error on lack of commas, parenthesis and code sections ([#51](https://github.com/Code-Machine-Proto/code-machine-v3/issues/51)) ([f94acd3](https://github.com/Code-Machine-Proto/code-machine-v3/commit/f94acd375cc449066051b02222373ae18ce32811))
+* update register and memory on rising edge ([#53](https://github.com/Code-Machine-Proto/code-machine-v3/issues/53)) ([fc3e0f9](https://github.com/Code-Machine-Proto/code-machine-v3/commit/fc3e0f9b58399b5a1367da1319b3cc446548c157))
+
 ## [3.1.1](https://github.com/Code-Machine-Proto/code-machine-v3/compare/v3.1.0...v3.1.1) (2026-09-21)
 
 
