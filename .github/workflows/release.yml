@@ -15,11 +15,11 @@ jobs:
       released: ${{ steps.check.outputs.released }}
       version: ${{ steps.check.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_TOKEN }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - run: npm ci
@@ -59,11 +59,11 @@ jobs:
             arch_flag: ''
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: v${{ needs.release.outputs.version }}
       - uses: dtolnay/rust-toolchain@stable
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
       - run: cargo install wasm-pack
