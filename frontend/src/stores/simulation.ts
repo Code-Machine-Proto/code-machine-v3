@@ -10,8 +10,11 @@ const AUTO_PLAY_INTERVAL_MS = 400;
 
 export type StepMode = 'regular' | 'execution';
 
+// Steps show the state *during* a cycle, so an instruction's results only appear in the next
+// Fetch snapshot. Execution mode therefore lands on Fetch steps (plus the very last step, since
+// `stop` writes nothing and no Fetch follows it).
 function isExecutionLanding(phase: string): boolean {
-  return phase !== 'Fetch' && phase !== 'Decode';
+  return phase === 'Fetch';
 }
 
 export function createSimulationStore(processorId: ProcessorId) {
@@ -34,13 +37,17 @@ export function createSimulationStore(processorId: ProcessorId) {
   const instructionMemory = () => currentCycle()?.instruction_memory ?? [];
   const totalSteps = () => steps().length;
   const phase = () => currentCycle()?.phase ?? 'Fetch';
+  // In execution mode the landing snapshot only stands for "the previous instruction has
+  // executed", so we show the mode instead of a cycle name that would be misleading.
+  const phaseLabel = () =>
+    stepMode() === 'execution' && (isExecutionLanding(phase()) || currentStep() === steps().length - 1)
+      ? 'Mode execute'
+      : phase();
   const stimulatedLineState = () => currentCycle()?.stimulated_line_state ?? -1;
   // Source line (0-indexed) of the instruction currently under the program counter,
-  // so the editor can highlight it in sync with the circuit animation. Only a
-  // Fetch step's PC reliably names the instruction being fetched — by Execute,
-  // PC has already advanced (increment or branch), which would otherwise skew
-  // the highlight to the next line one phase early. So we look up the PC from
-  // the most recent Fetch and hold that line through Decode/Execute.
+  // so the editor can highlight it in sync with the circuit animation. A Fetch
+  // step's PC names the instruction being fetched; we look it up from the most
+  // recent Fetch and hold that line through Decode/Execute.
   const currentLine = () => {
     const all = steps();
     let i = currentStep();
@@ -63,7 +70,7 @@ export function createSimulationStore(processorId: ProcessorId) {
   });
 
   // Find the next/previous step index to land on given the current step mode.
-  // Regular mode moves one step at a time; execution mode skips Fetch/Decode.
+  // Regular mode moves one step at a time; execution mode jumps from Fetch to Fetch.
   function nextLanding(from: number): number | null {
     const all = steps();
     if (stepMode() === 'regular') {
@@ -72,7 +79,8 @@ export function createSimulationStore(processorId: ProcessorId) {
     for (let i = from + 1; i < all.length; i++) {
       if (isExecutionLanding(all[i].phase)) return i;
     }
-    return null;
+    // No Fetch left: the last step (the executing `stop`) is the final state.
+    return from < all.length - 1 ? all.length - 1 : null;
   }
 
   function prevLanding(from: number): number | null {
@@ -177,6 +185,7 @@ export function createSimulationStore(processorId: ProcessorId) {
     instructionMemory,
     totalSteps,
     phase,
+    phaseLabel,
     stimulatedLineState,
     currentLine,
     compileAndRun,

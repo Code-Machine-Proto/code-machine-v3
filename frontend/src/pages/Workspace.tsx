@@ -291,7 +291,7 @@ export default function Workspace() {
           totalSteps={store.totalSteps}
           isPlaying={store.isPlaying}
           isCompiled={store.isCompiled}
-          phase={store.phase}
+          phase={store.phaseLabel}
           stepMode={store.stepMode}
           setStepMode={store.setStepMode}
           onStepForward={store.stepForward}

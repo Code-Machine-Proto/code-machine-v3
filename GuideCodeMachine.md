@@ -269,7 +269,9 @@ En haut de l’éditeur de code, un menu vous donne accès à trois actions :
 
 - Lorsque vous utilisez le mode « régulier », une étape correspond à un cycle. Donc chaque instruction passera par les étapes : « fetch », « decode », « execute » (3 cycles).
 
-- Lorsque vous utilisez le mode « exécution », chaque étape correspond à une instruction. Ainsi, chaque étape passera d’un cycle « execute » d’une instruction à l’autre (par bond de 3 cycles).
+- Lorsque vous utilisez le mode « exécution », chaque étape correspond à une instruction. Vous passez d’un « fetch » au « fetch » suivant (par bond de 3 cycles, la dernière étape étant celle du « stop »), ce qui permet de voir le résultat de l’instruction qui vient de s’exécuter. Le rectangle affiche alors « Mode execute » plutôt que le nom du cycle.
+
+- Comme dans un vrai circuit synchrone, les registres et la mémoire changent au front d’horloge qui termine le cycle : une valeur écrite pendant un cycle (par exemple dans l’IR pendant le « fetch », ou dans l’accumulateur et la mémoire pendant le « execute ») est visible à partir du cycle suivant.
    <p>
    <img src="docs/assets/guide/Modes.png" width="150">
    </p>

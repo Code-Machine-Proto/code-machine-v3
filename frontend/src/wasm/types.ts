@@ -1,4 +1,5 @@
 // frontend/src/wasm/types.ts
+// Each step is the state *during* a cycle (before its closing clock edge).
 export type Phase = 'Fetch' | 'Decode' | 'Execute';
 
 export interface BusActivity {

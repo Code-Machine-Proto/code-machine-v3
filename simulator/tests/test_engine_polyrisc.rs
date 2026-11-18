@@ -324,3 +324,33 @@ fn test_example_test_registres() {
     let expected: Vec<i32> = (200..=231).collect();
     assert_eq!(&last.memory[0..32], expected.as_slice());
 }
+
+#[test]
+fn test_registers_update_after_the_clock_edge() {
+    let source = ".text\nldi r1,5\nstop";
+    let compiled = compiler::compile(source, ProcessorId::PolyRisc);
+    let trace = engine::simulate(&compiled.program, ProcessorId::PolyRisc, None);
+    let (fetch, decode, execute, next_fetch) = (&trace.steps[0], &trace.steps[1], &trace.steps[2], &trace.steps[3]);
+    // wr_ir is active during fetch, but IR only changes at the edge: visible in decode.
+    assert_eq!(*fetch.registers.get("IR").unwrap(), 0);
+    assert_ne!(*decode.registers.get("IR").unwrap(), 0);
+    // ldi writes r1 and PC during execute: visible in the next fetch.
+    assert_eq!(*execute.registers.get("r1").unwrap(), 0);
+    assert_eq!(*execute.registers.get("PC").unwrap(), 0);
+    assert_eq!(*next_fetch.registers.get("r1").unwrap(), 5);
+    assert_eq!(*next_fetch.registers.get("PC").unwrap(), 1);
+    // The data memory is not read during decode.
+    assert_eq!(decode.stimulated_memory, -1);
+}
+
+#[test]
+fn test_memory_write_visible_in_next_fetch() {
+    let source = ".text\nldi r1,0\nldi r2,7\nst (r1),r2\nstop";
+    let compiled = compiler::compile(source, ProcessorId::PolyRisc);
+    let trace = engine::simulate(&compiled.program, ProcessorId::PolyRisc, None);
+    let st_execute = &trace.steps[8];
+    assert_eq!(st_execute.phase, Phase::Execute);
+    assert_eq!(st_execute.stimulated_data_memory, Some(0));
+    assert_eq!(st_execute.memory[0], 0);
+    assert_eq!(trace.steps[9].memory[0], 7);
+}

@@ -49,42 +49,21 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
     while cycle < MAX_CYCLES && !halted {
         match state {
             FsmState::Fetch => {
-                ir = inst_mem[pc as usize];
+                // IR still holds the previous instruction while wr_ir is active.
+                let mut snap = make_cycle_state(cycle, Phase::Fetch, &regs, &memory, &inst_mem, pc, ir, flag_z, flag_n);
+                snap.stimulated_line_state = 0;
+                snap.stimulated_memory = pc as i32;
+                steps.push(snap);
 
-                steps.push(make_cycle_state(
-                    cycle,
-                    Phase::Fetch,
-                    &regs,
-                    &memory,
-                    &inst_mem,
-                    pc,
-                    ir,
-                    flag_z,
-                    flag_n,
-                    0,
-                    pc as i32,
-                    None,
-                    Vec::new(),
-                ));
+                ir = inst_mem[pc as usize];
 
                 state = FsmState::Decode;
             }
             FsmState::Decode => {
-                steps.push(make_cycle_state(
-                    cycle,
-                    Phase::Decode,
-                    &regs,
-                    &memory,
-                    &inst_mem,
-                    pc,
-                    ir,
-                    flag_z,
-                    flag_n,
-                    1,
-                    -1,
-                    None,
-                    Vec::new(),
-                ));
+                let mut snap =
+                    make_cycle_state(cycle, Phase::Decode, &regs, &memory, &inst_mem, pc, ir, flag_z, flag_n);
+                snap.stimulated_line_state = 1;
+                steps.push(snap);
 
                 state = FsmState::Execute;
             }
@@ -94,6 +73,9 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                 let mut accessed_regs: Vec<u8> = Vec::new();
                 let mut next_pc = pc.wrapping_add(1) & 0xFFF;
                 let mut stop = false;
+                // Pre-edge state: the results computed below show up in the next cycle.
+                let mut snap =
+                    make_cycle_state(cycle, Phase::Execute, &regs, &memory, &inst_mem, pc, ir, flag_z, flag_n);
 
                 let top_nibble = (ir >> 24) & 0xF;
 
@@ -204,21 +186,10 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
                     halted = true;
                 }
 
-                steps.push(make_cycle_state(
-                    cycle,
-                    Phase::Execute,
-                    &regs,
-                    &memory,
-                    &inst_mem,
-                    pc,
-                    ir,
-                    flag_z,
-                    flag_n,
-                    stimulated_line_state,
-                    -1,
-                    stimulated_data_memory,
-                    accessed_regs,
-                ));
+                snap.stimulated_line_state = stimulated_line_state;
+                snap.stimulated_data_memory = stimulated_data_memory;
+                snap.stimulated_registers = accessed_regs;
+                steps.push(snap);
 
                 state = FsmState::Fetch;
             }
@@ -234,6 +205,9 @@ pub fn simulate(program: &[u32], data_memory: Option<&[i32]>) -> SimulationTrace
     }
 }
 
+/// Snapshot of the processor *during* a cycle: register and memory values are the
+/// ones held before the clock edge that ends the cycle. Whatever the cycle's control
+/// signals write only becomes visible in the next snapshot.
 #[allow(clippy::too_many_arguments)]
 fn make_cycle_state(
     cycle: u32,
@@ -245,10 +219,6 @@ fn make_cycle_state(
     ir: u32,
     flag_z: bool,
     flag_n: bool,
-    stimulated_line_state: i32,
-    stimulated_memory: i32,
-    stimulated_data_memory: Option<i32>,
-    stimulated_registers: Vec<u8>,
 ) -> CycleState {
     let mut reg_map = HashMap::new();
     reg_map.insert("PC".to_string(), pc as i32);
@@ -266,10 +236,10 @@ fn make_cycle_state(
         memory: memory.to_vec(),
         active_signals: Vec::new(),
         active_buses: Vec::new(),
-        stimulated_line_state,
-        stimulated_memory,
-        stimulated_data_memory,
-        stimulated_registers,
+        stimulated_line_state: -1,
+        stimulated_memory: -1,
+        stimulated_data_memory: None,
+        stimulated_registers: Vec::new(),
         instruction_memory: Some(inst_mem.to_vec()),
     }
 }
