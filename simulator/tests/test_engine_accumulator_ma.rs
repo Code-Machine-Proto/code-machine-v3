@@ -311,9 +311,15 @@ fn test_simulate_nop() {
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
     assert!(trace.halted);
-    let after_nop_execute = &trace.steps[2];
-    assert_eq!(*after_nop_execute.registers.get("ACC").unwrap(), 0);
-    assert_eq!(*after_nop_execute.registers.get("PC").unwrap(), 1);
+    // Registers are sampled at the clock edge ending the cycle, so the nop's PC increment
+    // is only visible in the following fetch.
+    let nop_execute = &trace.steps[2];
+    assert_eq!(nop_execute.phase, Phase::Execute);
+    assert_eq!(*nop_execute.registers.get("PC").unwrap(), 0);
+    let next_fetch = &trace.steps[3];
+    assert_eq!(next_fetch.phase, Phase::Fetch);
+    assert_eq!(*next_fetch.registers.get("ACC").unwrap(), 0);
+    assert_eq!(*next_fetch.registers.get("PC").unwrap(), 1);
     let last = trace.steps.last().unwrap();
     assert_eq!(*last.registers.get("ACC").unwrap(), 7);
 }
@@ -389,4 +395,18 @@ fn test_example_somme_carres() {
     let last = trace.steps.last().unwrap();
     assert_eq!(last.memory[10], 285); // somme
     assert_eq!(&last.memory[13..22], &[1, 4, 9, 16, 25, 36, 49, 64, 81]); // addmem preserved
+}
+
+#[test]
+fn test_decode_does_not_highlight_memory() {
+    let source = ".text\nld x\nstop\n.data\nx: 3";
+    let compiled = compiler::compile(source, ProcessorId::AccumulatorMa);
+    let trace = engine::simulate(&compiled.program, ProcessorId::AccumulatorMa, None);
+    assert_eq!(trace.steps[1].phase, Phase::Decode);
+    assert_eq!(trace.steps[1].stimulated_memory, -1);
+    assert_eq!(trace.steps[2].phase, Phase::Execute);
+    assert!(trace.steps[2].stimulated_memory >= 0);
+    // ACC is loaded at the edge ending execute: visible in the next fetch.
+    assert_eq!(*trace.steps[2].registers.get("ACC").unwrap(), 0);
+    assert_eq!(*trace.steps[3].registers.get("ACC").unwrap(), 3);
 }

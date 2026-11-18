@@ -123,9 +123,15 @@ fn test_simulate_nop() {
     assert!(compiled.success);
     let trace = engine::simulate(&compiled.program, ProcessorId::Accumulator, None);
     assert!(trace.halted);
-    let after_nop_execute = &trace.steps[2];
-    assert_eq!(*after_nop_execute.registers.get("ACC").unwrap(), 0);
-    assert_eq!(*after_nop_execute.registers.get("PC").unwrap(), 1);
+    // Registers are sampled at the clock edge ending the cycle, so the nop's PC increment
+    // is only visible in the following fetch.
+    let nop_execute = &trace.steps[2];
+    assert_eq!(nop_execute.phase, Phase::Execute);
+    assert_eq!(*nop_execute.registers.get("PC").unwrap(), 0);
+    let next_fetch = &trace.steps[3];
+    assert_eq!(next_fetch.phase, Phase::Fetch);
+    assert_eq!(*next_fetch.registers.get("ACC").unwrap(), 0);
+    assert_eq!(*next_fetch.registers.get("PC").unwrap(), 1);
     let last = trace.steps.last().unwrap();
     assert_eq!(*last.registers.get("ACC").unwrap(), 7);
 }
@@ -208,4 +214,25 @@ fn test_example_testacc() {
     assert!(trace.error.is_none());
     let last = trace.steps.last().unwrap();
     assert_eq!(*last.registers.get("ACC").unwrap(), 1);
+}
+
+#[test]
+fn test_ir_and_memory_update_after_the_clock_edge() {
+    let source = ".text\nld x\nst y\nstop\n.data\nx: 42\ny: 0";
+    let compiled = compiler::compile(source, ProcessorId::Accumulator);
+    let trace = engine::simulate(&compiled.program, ProcessorId::Accumulator, None);
+    let (fetch, decode) = (&trace.steps[0], &trace.steps[1]);
+    // wr_ir is active during fetch, but IR only changes at the edge: visible in decode.
+    assert_eq!(*fetch.registers.get("IR").unwrap(), 0);
+    assert_ne!(*decode.registers.get("IR").unwrap(), 0);
+    // The operand is read from memory in execute only, never highlighted in decode.
+    assert_eq!(decode.stimulated_memory, -1);
+    assert_eq!(trace.steps[2].stimulated_memory, 3);
+    // ld: ACC is loaded at the edge ending execute, visible in the next fetch.
+    assert_eq!(*trace.steps[2].registers.get("ACC").unwrap(), 0);
+    assert_eq!(*trace.steps[3].registers.get("ACC").unwrap(), 42);
+    // st: the memory write is visible in the following fetch.
+    let y = 4; // x is at 3, y at 4 (the data follows the 3 instructions)
+    assert_eq!(trace.steps[5].memory[y], 0);
+    assert_eq!(trace.steps[6].memory[y], 42);
 }
